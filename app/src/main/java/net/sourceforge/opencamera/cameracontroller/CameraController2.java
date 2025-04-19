@@ -6189,7 +6189,7 @@ public class CameraController2 extends CameraController {
             if( cameraIdSPhysical != null ) {
                 config.setPhysicalCameraId(cameraIdSPhysical);
             }
-            // On Galaxy S24+ at least, we seem to get UltraHDR photos even without setting DynamicRangeProfiles.HLG10
+            // On Galaxy S24+ at least, we seem to get Ultra HDR photos even without setting DynamicRangeProfiles.HLG10
             // furthermore, calling setDynamicRangeProfile with HLG10 gives photos with much lower saturation, so have
             // disabled this
             /*if( want_jpeg_r && surface == preview_surface && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ) {
@@ -7859,7 +7859,7 @@ public class CameraController2 extends CameraController {
                     // We disable noise-reduction etc for photo mode NR because on many devices this smears out detail that we actually
                     // aim to recover by averaging a stack of multiple images.
                     // Disabled for Samsung - firstly at least on Galaxy S24+ this has no effect except for unstable situations (e.g.,
-                    // if UltraHDR/JPEG_R is enabled then switching from STD to NR mode means this works for some reason, even though we
+                    // if Ultra HDR / JPEG_R is enabled then switching from STD to NR mode means this works for some reason, even though we
                     // don't enable JPEG_R for NR mode...). We could fix it by also changing for the preview, although this makes the
                     // code more complicated (we'd need to save the old values, and also avoid interactions with setNoiseReductionMode() and
                     // setEdgeMode()). But Galaxy S24+ at least seems to have better noise reduction such that detail is less likely to be

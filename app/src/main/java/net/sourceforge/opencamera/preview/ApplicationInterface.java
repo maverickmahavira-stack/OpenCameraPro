@@ -179,7 +179,7 @@ public interface ApplicationInterface {
     @RequiresApi(api = Build.VERSION_CODES.S)
     int getCameraExtensionPref(); // if isCameraExtensionPref() returns true, the camera extension mode to use
     float getAperturePref(); // get desired aperture (called if Preview.getSupportedApertures() returns non-null); return -1.0f for no preference
-    boolean getJpegRPref(); // whether to request JPEG_R (UltraHDR) photos
+    boolean getJpegRPref(); // whether to request JPEG_R (Ultra HDR) photos
     enum RawPref {
         RAWPREF_JPEG_ONLY, // JPEG only
         RAWPREF_JPEG_DNG // JPEG and RAW (DNG)

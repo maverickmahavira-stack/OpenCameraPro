@@ -733,7 +733,7 @@
 
     <string name="preference_image_format">Format zdjęć</string>
     <string name="preference_image_format_jpeg">JPEG</string>
-    <string name="preference_image_format_jpeg_r">UltraHDR JPEG</string>
+    <string name="preference_image_format_jpeg_r">Ultra HDR JPEG</string>
     <string name="preference_image_format_webp">WebP</string>
     <string name="preference_image_format_png">PNG</string>
 
@@ -887,7 +887,7 @@
 
     <string name="exposure_compensation_seekbar">Pasek do zmiany kompensacji ekspozycji</string>
 
-    <string name="preference_image_format_summary">Wybierz format pliku używany do zapisywania zdjęć. Dotyczy to zdjęć „standardowych” (nie RAW). Tylko JPEG obsługuje zapisywanie metadanych Exif. UltraHDR nie jest obsługiwany dla trybów RSz, HDR, Pan, X-. Należy pamiętać, że format PNG nie jest naprawdę bezstratny, zamiast tego jest konwertowany z JPEG przy 100%% jakości.\n%s</string>
+    <string name="preference_image_format_summary">Wybierz format pliku używany do zapisywania zdjęć. Dotyczy to zdjęć „standardowych” (nie RAW). Tylko JPEG obsługuje zapisywanie metadanych Exif. Ultra HDR nie jest obsługiwany dla trybów RSz, HDR, Pan, X-. Należy pamiętać, że format PNG nie jest naprawdę bezstratny, zamiast tego jest konwertowany z JPEG przy 100%% jakości.\n%s</string>
 
     <string name="preference_camera_api">Interfejs aparatu (Camera API)</string>
     <string name="preference_camera_api_summary">Wybierz interfejs (Camera2 API), aby włączyć dodatkowe funkcje, takie jak ręczne tryby ekspozycji, ostrości, balansu bieli oraz RAW (jeśli jest obsługiwany przez urządzenie). Zmiana interfejsu API spowoduje ponowne uruchomienie aplikacji.\n%s</string>

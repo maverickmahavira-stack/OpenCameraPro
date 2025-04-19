@@ -737,7 +737,7 @@
 
     <string name="preference_image_format">Image format</string>
     <string name="preference_image_format_jpeg">JPEG</string>
-    <string name="preference_image_format_jpeg_r">UltraHDR JPEG</string>
+    <string name="preference_image_format_jpeg_r">Ultra HDR JPEG</string>
     <string name="preference_image_format_webp">WebP</string>
     <string name="preference_image_format_png">PNG</string>
 
@@ -893,7 +893,7 @@
 
     <string name="exposure_compensation_seekbar">Seekbar to change exposure compensation</string>
 
-    <string name="preference_image_format_summary">Select the file format used for saving photos. This affects \"standard\" (not RAW) photos. Only JPEG formats support saving Exif metadata. UltraHDR not supported for NR, HDR, Pano, X- modes. Note that PNG format is not truly lossless, instead it is converted from a JPEG at 100%% quality.\n%s</string>
+    <string name="preference_image_format_summary">Select the file format used for saving photos. This affects \"standard\" (not RAW) photos. Only JPEG formats support saving Exif metadata. Ultra HDR not supported for NR, HDR, Pano, X- modes. Note that PNG format is not truly lossless, instead it is converted from a JPEG at 100%% quality.\n%s</string>
 
     <string name="preference_camera_api">Camera API</string>
     <string name="preference_camera_api_summary">Select Camera2 API to enable extra features such as manual modes for exposure, focus, white balance, along with RAW (if supported by the device). Changing the API will cause a restart.\n%s</string>
