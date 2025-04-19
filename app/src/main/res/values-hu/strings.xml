@@ -131,8 +131,6 @@
     <string name="preference_immersive_mode">Kiterjesztett üzemmód</string>
     <string name="preference_show_zoom">Zoom megjelenítése</string>
     <string name="preference_show_zoom_summary">Az aktuális zoomszint megjelenítése a képernyőn (zoomolt állapotban)</string>
-    <string name="preference_show_zoom_controls">Zoom -/+ gombok</string>
-    <string name="preference_show_zoom_controls_summary">A zoom +/- vezérlőgombjainak megjelenítése</string>
     <string name="preference_show_zoom_slider_controls">Zoomcsúszka megjelenítése</string>
     <string name="preference_show_zoom_slider_controls_summary">Zoomszint állító csúszka megjelenítése</string>
     <string name="preference_show_iso">ISO megjelenítése</string>

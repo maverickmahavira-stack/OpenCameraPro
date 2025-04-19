@@ -132,8 +132,6 @@
     <string name="preference_immersive_mode">全画面表示モード</string>
     <string name="preference_show_zoom">ズーム倍率を表示する</string>
     <string name="preference_show_zoom_summary">画面上にズーム倍率を表示します(ズームインする場合)</string>
-    <string name="preference_show_zoom_controls">ズームボタンを表示する</string>
-    <string name="preference_show_zoom_controls_summary">画面上にズーム制御の -/+ ボタンを表示します</string>
     <string name="preference_show_zoom_slider_controls">ズーム制御のスライダーを表示する</string>
     <string name="preference_show_zoom_slider_controls_summary">画面上にズーム制御のスライダーを表示します</string>
     <string name="preference_show_iso">ISOを表示する</string>

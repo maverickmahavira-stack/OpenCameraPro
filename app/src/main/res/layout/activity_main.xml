@@ -116,17 +116,6 @@
         android:visibility="gone"
         />
 
-    <!-- n.b., need to specify a fixed width/height rather than wrap_content, so that MainUI.setFixedRotation()
-        works okay (to help layout in portrait system orientation)
-    -->
-    <ZoomControls
-        android:id="@+id/zoom"
-        android:contentDescription="@string/zoom"
-        android:layout_width="160dp"
-        android:layout_height="50dp"
-        android:alpha="0.5"
-        />
-
     <SeekBar
         android:id="@+id/zoom_seekbar"
         android:contentDescription="@string/zoom"
@@ -527,17 +516,6 @@
                 android:layout_alignTop="@+id/exposure_seekbar_text"
                 android:layout_alignBottom="@+id/exposure_seekbar_text"
                 android:alpha="0.9"
-                />
-
-            <ZoomControls
-                android:id="@+id/exposure_seekbar_zoom"
-                android:contentDescription="@string/exposure_compensation_zoom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/exposure_seekbar"
-                android:layout_alignRight="@+id/exposure_seekbar"
-                android:gravity="center"
-                android:layout_below="@+id/exposure_seekbar"
                 />
         </RelativeLayout>
 

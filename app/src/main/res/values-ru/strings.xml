@@ -132,8 +132,6 @@
     <string name="preference_immersive_mode">Режим погружения</string>
     <string name="preference_show_zoom">Показать масштаб</string>
     <string name="preference_show_zoom_summary">Отображение текущего уровня масштабирования камеры на экране (при увеличении масштаба)</string>
-    <string name="preference_show_zoom_controls">Показать кнопки масштаба (+/-)</string>
-    <string name="preference_show_zoom_controls_summary">Отображение кнопок управления масштабом</string>
     <string name="preference_show_zoom_slider_controls">Ползунок масштабирования</string>
     <string name="preference_show_zoom_slider_controls_summary">Отображение ползунка для управления масштабированием</string>
     <string name="preference_show_iso">Показать ISO</string>

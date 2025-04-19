@@ -124,8 +124,6 @@
     <string name="preference_immersive_mode">Рэжым захаплення</string>
     <string name="preference_show_zoom">Паказваць маштаб</string>
     <string name="preference_show_zoom_summary">Адлюстроўваць маштаб камеры на экране </string>
-    <string name="preference_show_zoom_controls">Паказваць  - / + кнопкі кіравання павелічэннем</string>
-    <string name="preference_show_zoom_controls_summary">Паказваць - / + кнопкі кіравання павелічэннем</string>
     <string name="preference_show_zoom_slider_controls">Паказваць паўзунок павелічэння</string>
     <string name="preference_show_zoom_slider_controls_summary">Паказваць паўзунок павелічэння</string>
     <string name="preference_show_iso">Паказваць ISO</string>

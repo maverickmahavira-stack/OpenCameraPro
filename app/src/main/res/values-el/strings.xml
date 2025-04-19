@@ -130,8 +130,6 @@
     <string name="preference_immersive_mode">Μοναδική λειτουργία</string>
     <string name="preference_show_zoom">Εμφάνιση μεγέθυνσης</string>
     <string name="preference_show_zoom_summary">Εμφανίζει το τρέχον επίπεδο μεγέθυνσης</string>
-    <string name="preference_show_zoom_controls">Ελεγχος μεγέθυνσης με -/+</string>
-    <string name="preference_show_zoom_controls_summary">Εμφάνιση των πλήκτρων -/+ για τον έλεγχο της μεγέθυνσης</string>
     <string name="preference_show_zoom_slider_controls">Εμφάνιση ρυθμιστικού ελέγχου μεγέθυνσης</string>
     <string name="preference_show_zoom_slider_controls_summary">Εμφάνιση ρυθμιστικού ελέγχου μεγέθυνσης</string>
     <string name="preference_show_iso">Εμφάνιση ISO επιπέδου</string>

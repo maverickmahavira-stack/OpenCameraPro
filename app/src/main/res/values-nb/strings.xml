@@ -131,8 +131,6 @@
     <string name="preference_immersive_mode">Oppslukkende modus</string>
     <string name="preference_show_zoom">Vis forstørring</string>
     <string name="preference_show_zoom_summary">Vis det nåværende kameraforstørringsnivået på skjermen (under forstørring)</string>
-    <string name="preference_show_zoom_controls">Vis -/+—forstørringskontrollere</string>
-    <string name="preference_show_zoom_controls_summary">Vis -/+—knappene for forstørringskontrollering.</string>
     <string name="preference_show_zoom_slider_controls">Vis forstørringsgliderkontrolleren</string>
     <string name="preference_show_zoom_slider_controls_summary">Vis glideren for forstørringskontroll.</string>
     <string name="preference_show_iso">Vis ISO</string>

@@ -111,8 +111,6 @@
     <string name="preference_immersive_mode">Yüklənmə rejimi</string>
     <string name="preference_show_zoom">Miqyası göstər</string>
     <string name="preference_show_zoom_summary">Kameranın cari miqyas səviyyəsi (miqyas böyüdülən zaman) ekranda görünür</string>
-    <string name="preference_show_zoom_controls">Miqyasın -/+ idarəsi</string>
-    <string name="preference_show_zoom_controls_summary">Miqyasla işləmək üçün +/- düyməsi ekranda görünür</string>
     <string name="preference_show_zoom_slider_controls">Miqyas sürüşdürməsi</string>
     <string name="preference_show_zoom_slider_controls_summary">Miqyas idarəsi üçün sürüşdürmə düyməsi ekranda görünür</string>
     <string name="preference_show_iso">ISO göstər</string>

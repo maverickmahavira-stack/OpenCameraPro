@@ -61,7 +61,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.ZoomControls;
 
 // ignore warning about "Call to Thread.sleep in a loop", this is only test code
 @SuppressWarnings("BusyWait")
@@ -9664,9 +9663,6 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mActivity);
         SharedPreferences.Editor editor = settings.edit();
 
-        final ZoomControls zoomControls = mActivity.findViewById(net.sourceforge.opencamera.R.id.zoom);
-        assertEquals(zoomControls.getVisibility(), View.GONE);
-
         final SeekBar zoomSeekBar = mActivity.findViewById(net.sourceforge.opencamera.R.id.zoom_seekbar);
         assertEquals(zoomSeekBar.getVisibility(), View.VISIBLE);
         int max_zoom = mPreview.getMaxZoom();
@@ -9781,13 +9777,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertEquals(mPreview.getCameraController().getZoom(), 0);
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
 
-        // now test with -/+ controls
-
-        editor.putBoolean(PreferenceKeys.ShowZoomControlsPreferenceKey, true);
-        editor.apply();
-        updateForSettings();
-
-        assertEquals(zoomControls.getVisibility(), View.VISIBLE);
+        // now test with -/+ control
 
         Log.d(TAG, "zoom in");
         mActivity.zoomIn();

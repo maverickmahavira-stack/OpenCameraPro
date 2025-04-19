@@ -129,8 +129,6 @@
     <string name="preference_immersive_mode">Mode immersif</string>
     <string name="preference_show_zoom">Afficher le zoom</string>
     <string name="preference_show_zoom_summary">Affiche le niveau actuel de zoom à l\'écran (quand le zoom est actif)</string>
-    <string name="preference_show_zoom_controls">Afficher les contrôles de zoom -/+</string>
-    <string name="preference_show_zoom_controls_summary">Affiche les bouttons -/+ pour contrôler le zoom</string>
     <string name="preference_show_zoom_slider_controls">Afficher le curseur de zoom</string>
     <string name="preference_show_zoom_slider_controls_summary">Affiche le curseur pour modifier le niveau de zoom</string>
     <string name="preference_show_iso">Afficher les ISO</string>

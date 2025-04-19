@@ -132,8 +132,6 @@
     <string name="preference_immersive_mode">Tryb pełnoekranowy</string>
     <string name="preference_show_zoom">Przybliżenie</string>
     <string name="preference_show_zoom_summary">Wyświetla aktualną wartość przybliżenia na ekranie (jeśli przybliżenie zostanie użyte)</string>
-    <string name="preference_show_zoom_controls">Przyciski przybliżenia</string>
-    <string name="preference_show_zoom_controls_summary">Wyświetla przyciski -/+ do kontroli wartości przybliżenia</string>
     <string name="preference_show_zoom_slider_controls">Suwak przybliżenia</string>
     <string name="preference_show_zoom_slider_controls_summary">Wyświetla suwak do zmiany wartości przybliżenia</string>
     <string name="preference_show_iso">ISO</string>

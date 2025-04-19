@@ -131,8 +131,6 @@
     <string name="preference_immersive_mode">Chế độ toàn màn hình</string>
     <string name="preference_show_zoom">Hiển thị mức thu phóng</string>
     <string name="preference_show_zoom_summary">Hiện mức thu phóng hiện tại của máy ảnh trên màn hình (khi phóng to)</string>
-    <string name="preference_show_zoom_controls">Hiển thị nút thu phóng</string>
-    <string name="preference_show_zoom_controls_summary">Hiện nút -/+ để điều khiển thu phóng</string>
     <string name="preference_show_zoom_slider_controls">Hiển thị thanh thu phóng</string>
     <string name="preference_show_zoom_slider_controls_summary">Hiện thanh trượt để điều khiển thu phóng</string>
     <string name="preference_show_iso">Hiển thị ISO</string>

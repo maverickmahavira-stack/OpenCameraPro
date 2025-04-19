@@ -107,7 +107,6 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.ZoomControls;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -498,8 +497,6 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         // however).
         View takePhotoButton = findViewById(R.id.take_photo);
         takePhotoButton.setVisibility(View.INVISIBLE);
-        View zoomControls = findViewById(R.id.zoom);
-        zoomControls.setVisibility(View.GONE);
         View zoomSeekbar = findViewById(R.id.zoom_seekbar);
         zoomSeekbar.setVisibility(View.INVISIBLE);
 
@@ -2895,7 +2892,6 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                     //case "preference_show_cycle_raw": // need to update the UI
                     //case "preference_show_white_balance_lock": // need to update the UI
                     //case "preference_show_exposure_lock": // need to update the UI
-                    //case "preference_show_zoom_controls": // need to update the UI
                     //case "preference_show_zoom_slider_controls": // need to update the UI
                     //case "preference_show_take_photo": // need to update the UI
                 case "preference_show_toasts":
@@ -5805,33 +5801,9 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 Log.d(TAG, "set up zoom");
             if( MyDebug.LOG )
                 Log.d(TAG, "has_zoom? " + preview.supportsZoom());
-            ZoomControls zoomControls = findViewById(R.id.zoom);
             SeekBar zoomSeekBar = findViewById(R.id.zoom_seekbar);
 
             if( preview.supportsZoom() ) {
-                if( sharedPreferences.getBoolean(PreferenceKeys.ShowZoomControlsPreferenceKey, false) ) {
-                    zoomControls.setIsZoomInEnabled(true);
-                    zoomControls.setIsZoomOutEnabled(true);
-                    zoomControls.setZoomSpeed(20);
-
-                    zoomControls.setOnZoomInClickListener(new View.OnClickListener(){
-                        public void onClick(View v){
-                            zoomIn();
-                        }
-                    });
-                    zoomControls.setOnZoomOutClickListener(new View.OnClickListener(){
-                        public void onClick(View v){
-                            zoomOut();
-                        }
-                    });
-                    if( !mainUI.inImmersiveMode() ) {
-                        zoomControls.setVisibility(View.VISIBLE);
-                    }
-                }
-                else {
-                    zoomControls.setVisibility(View.GONE);
-                }
-
                 zoomSeekBar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
                 zoomSeekBar.setMax(preview.getMaxZoom());
                 zoomSeekBar.setProgress(preview.getMaxZoom()-preview.getCameraController().getZoom());
@@ -5842,7 +5814,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if( MyDebug.LOG )
                             Log.d(TAG, "zoom onProgressChanged: " + progress);
-                        // note we zoom even if !fromUser, as various other UI controls (multitouch, volume key zoom, -/+ zoomcontrol)
+                        // note we zoom even if !fromUser, as various other UI controls (multitouch, volume key zoom)
                         // indirectly set zoom via this method, from setting the zoom slider
                         // if hasSmoothZoom()==true, then the preview already handled zooming to the current value
                         if( !preview.hasSmoothZoom() ) {
@@ -5877,7 +5849,6 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 }
             }
             else {
-                zoomControls.setVisibility(View.GONE);
                 zoomSeekBar.setVisibility(View.INVISIBLE); // should be INVISIBLE not GONE, as the focus_seekbar is aligned to be left to this; in future we might want this similarly for the exposure panel
             }
             if( MyDebug.LOG )
@@ -6049,18 +6020,6 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-                });
-
-                ZoomControls seek_bar_zoom = findViewById(R.id.exposure_seekbar_zoom);
-                seek_bar_zoom.setOnZoomInClickListener(new View.OnClickListener(){
-                    public void onClick(View v){
-                        changeExposure(1);
-                    }
-                });
-                seek_bar_zoom.setOnZoomOutClickListener(new View.OnClickListener(){
-                    public void onClick(View v){
-                        changeExposure(-1);
                     }
                 });
             }

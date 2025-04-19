@@ -40,7 +40,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.ZoomControls;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -699,51 +698,22 @@ public class MainUI {
             view.setLayoutParams(layoutParams);
             setViewRotation(view, ui_rotation);
 
-            view = main_activity.findViewById(R.id.zoom);
+            view = main_activity.findViewById(R.id.zoom_seekbar);
             layoutParams = (RelativeLayout.LayoutParams)view.getLayoutParams();
+            // align close to the edge of screen
             layoutParams.addRule(align_parent_left, 0);
             layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
             layoutParams.addRule(align_parent_top, 0);
             layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
-            view.setLayoutParams(layoutParams);
-            setFixedRotation(main_activity.findViewById(R.id.zoom), 0, navigation_gap_reverse_landscape_align_parent_bottom, navigation_gap, navigation_gap_landscape_align_parent_bottom);
-            view.setRotation(view.getRotation()+180.0f); // should always match the zoom_seekbar, so that zoom in and out are in the same directions
-
-            view = main_activity.findViewById(R.id.zoom_seekbar);
-            layoutParams = (RelativeLayout.LayoutParams)view.getLayoutParams();
-            // if we are showing the zoom control, then align next to that; otherwise have it aligned close to the edge of screen
-            if( sharedPreferences.getBoolean(PreferenceKeys.ShowZoomControlsPreferenceKey, false) ) {
-                layoutParams.addRule(align_parent_left, 0);
-                layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
-                layoutParams.addRule(align_parent_top, 0);
-                layoutParams.addRule(align_parent_bottom, 0);
-                layoutParams.addRule(above, R.id.zoom);
-                layoutParams.addRule(below, 0);
-                layoutParams.addRule(left_of, 0);
-                layoutParams.addRule(right_of, 0);
-                // margins set below in setFixedRotation()
-            }
-            else {
-                layoutParams.addRule(align_parent_left, 0);
-                layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
-                layoutParams.addRule(align_parent_top, 0);
-                layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
-                // margins set below in setFixedRotation()
-                // need to clear the others, in case we turn zoom controls on/off
-                layoutParams.addRule(above, 0);
-                layoutParams.addRule(below, 0);
-                layoutParams.addRule(left_of, 0);
-                layoutParams.addRule(right_of, 0);
-            }
+            // margins set below in setFixedRotation()
+            // need to clear the others, in case we turn zoom controls on/off
+            layoutParams.addRule(above, 0);
+            layoutParams.addRule(below, 0);
+            layoutParams.addRule(left_of, 0);
+            layoutParams.addRule(right_of, 0);
             view.setLayoutParams(layoutParams);
             int margin = (int) (20 * scale + 0.5f); // convert dps to pixels
-            if( sharedPreferences.getBoolean(PreferenceKeys.ShowZoomControlsPreferenceKey, false) ) {
-                // if zoom control is being shown, we don't need to offset the zoom seekbar from landscape navigation gaps
-                setFixedRotation(main_activity.findViewById(R.id.zoom_seekbar), 0, 0, margin+navigation_gap, 0);
-            }
-            else {
-                setFixedRotation(main_activity.findViewById(R.id.zoom_seekbar), 0, navigation_gap_reverse_landscape_align_parent_bottom, margin+navigation_gap, navigation_gap_landscape_align_parent_bottom);
-            }
+            setFixedRotation(main_activity.findViewById(R.id.zoom_seekbar), 0, navigation_gap_reverse_landscape_align_parent_bottom, margin+navigation_gap, navigation_gap_landscape_align_parent_bottom);
 
             view = main_activity.findViewById(R.id.focus_seekbar);
             layoutParams = (RelativeLayout.LayoutParams)view.getLayoutParams();
@@ -871,9 +841,6 @@ public class MainUI {
             lp.width = width_pixels;
             lp.height = height_pixels;
             view.setLayoutParams(lp);
-
-            view = main_activity.findViewById(R.id.exposure_seekbar_zoom);
-            view.setAlpha(0.5f);
 
             view = main_activity.findViewById(R.id.iso_seekbar);
             lp = (RelativeLayout.LayoutParams)view.getLayoutParams();
@@ -1371,7 +1338,6 @@ public class MainUI {
                 View popupButton = main_activity.findViewById(R.id.popup);
                 View galleryButton = main_activity.findViewById(R.id.gallery);
                 View settingsButton = main_activity.findViewById(R.id.settings);
-                View zoomControls = main_activity.findViewById(R.id.zoom);
                 View zoomSeekBar = main_activity.findViewById(R.id.zoom_seekbar);
                 View focusSeekBar = main_activity.findViewById(R.id.focus_seekbar);
                 View focusBracketingTargetSeekBar = main_activity.findViewById(R.id.focus_bracketing_target_seekbar);
@@ -1409,9 +1375,6 @@ public class MainUI {
                 settingsButton.setVisibility(visibility);
                 if( MyDebug.LOG ) {
                     Log.d(TAG, "has_zoom: " + main_activity.getPreview().supportsZoom());
-                }
-                if( main_activity.getPreview().supportsZoom() && sharedPreferences.getBoolean(PreferenceKeys.ShowZoomControlsPreferenceKey, false) ) {
-                    zoomControls.setVisibility(visibility);
                 }
                 if( main_activity.getPreview().supportsZoom() && sharedPreferences.getBoolean(PreferenceKeys.ShowZoomSliderControlsPreferenceKey, true) ) {
                     zoomSeekBar.setVisibility(visibility);
@@ -2265,8 +2228,6 @@ public class MainUI {
 
             if( main_activity.getPreview().supportsExposures() ) {
                 exposure_seek_bar.setVisibility(View.VISIBLE);
-                ZoomControls seek_bar_zoom = main_activity.findViewById(R.id.exposure_seekbar_zoom);
-                seek_bar_zoom.setVisibility(View.VISIBLE);
             }
             else {
                 exposure_seek_bar.setVisibility(View.GONE);

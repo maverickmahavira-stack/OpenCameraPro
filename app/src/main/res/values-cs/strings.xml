@@ -126,8 +126,6 @@
     <string name="preference_immersive_mode">Immersive režim</string>
     <string name="preference_show_zoom">Zobrazit zoom</string>
     <string name="preference_show_zoom_summary">Zobrazovat aktuální přiblížení na obrazovce (při přiblížení)</string>
-    <string name="preference_show_zoom_controls">Zobrazit -/+ ovládání přiblížení</string>
-    <string name="preference_show_zoom_controls_summary">Zobrazit -/+ tlačítka pro ovládání přiblížení</string>
     <string name="preference_show_zoom_slider_controls">Zobrazit jezdec přiblížení</string>
     <string name="preference_show_zoom_slider_controls_summary">Zobrazovat jezdec pro ovládání přiblížení</string>
     <string name="preference_show_iso">Zobrazit ISO</string>

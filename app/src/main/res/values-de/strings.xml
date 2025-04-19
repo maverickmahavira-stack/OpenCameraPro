@@ -131,8 +131,6 @@
     <string name="preference_immersive_mode">Automatisches Ausblenden</string>
     <string name="preference_show_zoom">Zoomfaktor anzeigen</string>
     <string name="preference_show_zoom_summary">Zeigt beim Zoomen den aktuellen Zoomfaktor auf dem Bildschirm an</string>
-    <string name="preference_show_zoom_controls">Zoom-Tasten anzeigen</string>
-    <string name="preference_show_zoom_controls_summary">Zeigt +/- Tasten zur Zoomsteuerung an</string>
     <string name="preference_show_zoom_slider_controls">Zoom-Schieberegler anzeigen</string>
     <string name="preference_show_zoom_slider_controls_summary">Zeigt einen Schieberegler zur Zoomsteuerung an</string>
     <string name="preference_show_iso">ISO-Wert anzeigen</string>

@@ -126,8 +126,6 @@
     <string name="preference_immersive_mode">Immersive(Tutulma) mod</string>
     <string name="preference_show_zoom">Zoomu göster</string>
     <string name="preference_show_zoom_summary">Ekranda şu anki zoom seviyesini göster(büyütüldüğünde)</string>
-    <string name="preference_show_zoom_controls">Zoom -/+ kontrollerini göster</string>
-    <string name="preference_show_zoom_controls_summary">Zoom kontrolü için -/+ butonlarını göster</string>
     <string name="preference_show_zoom_slider_controls">Zoom kaydırma kontrolünü göster</string>
     <string name="preference_show_zoom_slider_controls_summary">Zoom kontrolü için kaydırma barını göster</string>
     <string name="preference_show_iso">ISO yu göster</string>

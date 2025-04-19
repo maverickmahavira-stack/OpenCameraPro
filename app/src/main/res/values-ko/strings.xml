@@ -119,8 +119,6 @@
     <string name="preference_immersive_mode">전체화면 모드</string>
     <string name="preference_show_zoom">줌 배율 표시</string>
     <string name="preference_show_zoom_summary">현재 카메라 줌 배율을 화면에 표시합니다 (확대시)</string>
-    <string name="preference_show_zoom_controls">줌 -/+ 조작계 표시</string>
-    <string name="preference_show_zoom_controls_summary">줌 조작을 위한 -/+ 버튼을 표시합니다</string>
     <string name="preference_show_zoom_slider_controls">줌 슬라이더 조작계 표시</string>
     <string name="preference_show_zoom_slider_controls_summary">줌 조작을 위한 슬라이더를 표시합니다</string>
     <string name="preference_show_iso">ISO 표시</string>

@@ -132,8 +132,6 @@
     <string name="preference_immersive_mode">Vdelan način</string>
     <string name="preference_show_zoom">Prikaži povečavo</string>
     <string name="preference_show_zoom_summary">Prikaži trenutno raven povečave na zaslonu (ob povečavi)</string>
-    <string name="preference_show_zoom_controls">Prikaži nadzorna gumba za povečavo -/+</string>
-    <string name="preference_show_zoom_controls_summary">Prikaži gumba -/+ za nadzor povečave</string>
     <string name="preference_show_zoom_slider_controls">Prikaži drsnik povečave</string>
     <string name="preference_show_zoom_slider_controls_summary">Prikaži drsnik za nadzor povečave</string>
     <string name="preference_show_iso">Prikaži ISO</string>

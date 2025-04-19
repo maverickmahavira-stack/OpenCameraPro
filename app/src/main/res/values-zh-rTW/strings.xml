@@ -132,8 +132,6 @@
     <string name="preference_immersive_mode">全螢幕模式</string>
     <string name="preference_show_zoom">顯示縮放</string>
     <string name="preference_show_zoom_summary">在螢幕上顯示目前的相機縮放等級 (當放大時)</string>
-    <string name="preference_show_zoom_controls">顯示縮放 -/+ 控制</string>
-    <string name="preference_show_zoom_controls_summary">顯示縮放控制的 -/+ 按鈕</string>
     <string name="preference_show_zoom_slider_controls">顯示縮放滑桿控制</string>
     <string name="preference_show_zoom_slider_controls_summary">顯示縮放控制的滑桿</string>
     <string name="preference_show_iso">顯示 ISO</string>

@@ -131,8 +131,6 @@
     <string name="preference_immersive_mode">Modo imersivo</string>
     <string name="preference_show_zoom">Mostrar ampliação</string>
     <string name="preference_show_zoom_summary">Exibir no ecrã o nível de ampliação da câmara atual (quando ampliado)</string>
-    <string name="preference_show_zoom_controls">Mostrar controlos de ampliação</string>
-    <string name="preference_show_zoom_controls_summary">Mostrar os botões de -/+ para controlar a ampliação</string>
     <string name="preference_show_zoom_slider_controls">Show zoom slider control</string>
     <string name="preference_show_zoom_slider_controls_summary">Show the slider for zoom control</string>
     <string name="preference_show_iso">Mostrar ISO</string>

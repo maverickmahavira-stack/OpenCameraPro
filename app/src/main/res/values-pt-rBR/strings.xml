@@ -120,8 +120,6 @@
     <string name="preference_immersive_mode">Modo Imersivo</string>
     <string name="preference_show_zoom">Mostrar zoom</string>
     <string name="preference_show_zoom_summary">Exibe o atual nível de zoom da câmera na tela (quando ampliado)</string>
-    <string name="preference_show_zoom_controls">Mostrar controle de zoom -/+</string>
-    <string name="preference_show_zoom_controls_summary">Mostrar botões -/+ para controlar o zoom</string>
     <string name="preference_show_zoom_slider_controls">Mostrar controle deslizante de zoom</string>
     <string name="preference_show_zoom_slider_controls_summary">Mostrar controle deslizante de zoom</string>
     <string name="preference_show_iso">Mostrar ISO</string>
