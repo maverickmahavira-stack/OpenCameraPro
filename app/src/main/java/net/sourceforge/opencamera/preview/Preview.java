@@ -268,7 +268,10 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
     private int remaining_repeat_photos;
     private int remaining_restart_video;
 
-    private boolean is_preview_started;
+    //private boolean is_preview_started;
+    private static final int PREVIEW_NOT_STARTED = 0;
+    private static final int PREVIEW_STARTED = 1;
+    private int preview_started_state = PREVIEW_NOT_STARTED; // state of the camera preview
 
     private OrientationEventListener orientationEventListener;
     private int current_orientation; // orientation received by onOrientationChanged
@@ -625,7 +628,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         // doesn't seem a bad idea to clear fake toasts (touching screen gets rid of standard toasts on Android 10+ at least)
         this.clearActiveFakeToast();
 
-        boolean was_paused = !this.is_preview_started;
+        //boolean was_paused = !this.is_preview_started;
+        boolean was_paused = this.preview_started_state != PREVIEW_STARTED;
         if( MyDebug.LOG )
             Log.d(TAG, "was_paused: " + was_paused);
 
@@ -910,7 +914,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             // double tap).
             if( takePhotoOnDoubleTap() ) {
                 // now safe to handle the single touch
-                boolean was_paused = !is_preview_started;
+                //boolean was_paused = !is_preview_started;
+                boolean was_paused = preview_started_state != PREVIEW_STARTED;
                 if( MyDebug.LOG )
                     Log.d(TAG, "was_paused: " + was_paused);
                 return handleSingleTouch(e, was_paused);
@@ -1364,7 +1369,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 // this happens on Nexus 7 if trying to record video at bitrate 50Mbits or higher - it's fair enough that it fails, but we need to recover without a crash!
                 // not safe to call closeCamera, as any call to getParameters may cause a RuntimeException
                 // update: can no longer reproduce failures on Nexus 7?!
-                this.is_preview_started = false;
+                //this.is_preview_started = false;
+                this.preview_started_state = PREVIEW_NOT_STARTED;
                 if( !quiet ) {
                     VideoProfile profile = getVideoProfile();
                     applicationInterface.onVideoRecordStopError(profile);
@@ -1588,7 +1594,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             }
         }
         this.phase = PHASE_NORMAL;
-        this.is_preview_started = false;
+        //this.is_preview_started = false;
+        this.preview_started_state = PREVIEW_NOT_STARTED;
         if( MyDebug.LOG ) {
             Log.d(TAG, "pausePreview: about to call cameraInOperation: " + (System.currentTimeMillis() - debug_time));
         }
@@ -1633,7 +1640,9 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         }
         // need to init everything now, in case we don't open the camera (but these may already be initialised from an earlier call - e.g., if we are now switching to another camera)
         // n.b., don't reset has_set_location, as we can remember the location when switching camera
-        is_preview_started = false; // theoretically should be false anyway, but I had one RuntimeException from surfaceCreated()->openCamera()->setupCamera()->setPreviewSize() because is_preview_started was true, even though the preview couldn't have been started
+        //is_preview_started = false; // theoretically should be false anyway, but I had one RuntimeException from surfaceCreated()->openCamera()->setupCamera()->setPreviewSize() because is_preview_started was true, even though the preview couldn't have been started
+        this.preview_started_state = PREVIEW_NOT_STARTED; // theoretically should be PREVIEW_NOT_STARTED anyway, but I had one RuntimeException from surfaceCreated()->openCamera()->setupCamera()->setPreviewSize() because is_preview_started was true, even though the preview couldn't have been started
+
         set_preview_size = false;
         preview_w = 0;
         preview_h = 0;
@@ -3346,7 +3355,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 Log.d(TAG, "camera not opened!");
             return;
         }
-        if( is_preview_started ) {
+        //if( is_preview_started ) {
+        if( preview_started_state != PREVIEW_NOT_STARTED ) {
             Log.e(TAG, "setPreviewSize() shouldn't be called when preview is running");
             //throw new RuntimeException(); // throw as RuntimeException, as this is a programming error
             // Bizarrely I have seen the above crash reported from Google Play devices, but inspection of the code leaves it unclear
@@ -6508,11 +6518,13 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     Log.d(TAG, "onCompleted");
                 applicationInterface.onPictureCompleted();
                 if( !using_android_l ) {
-                    is_preview_started = false; // preview automatically stopped due to taking photo on original Camera API
+                    //is_preview_started = false; // preview automatically stopped due to taking photo on original Camera API
+                    preview_started_state = PREVIEW_NOT_STARTED; // preview automatically stopped due to taking photo on original Camera API
                 }
                 phase = PHASE_NORMAL; // need to set this even if remaining repeat photos, so we can restart the preview
                 if( remaining_repeat_photos == -1 || remaining_repeat_photos > 0 ) {
-                    if( !is_preview_started ) {
+                    //if( !is_preview_started ) {
+                    if( preview_started_state == PREVIEW_NOT_STARTED ) {
                         // we need to restart the preview; and we do this in the callback, as we need to restart after saving the image
                         // (otherwise this can fail, at least on Nexus 7)
                         if( MyDebug.LOG )
@@ -6529,19 +6541,22 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     if( MyDebug.LOG )
                         Log.d(TAG, "pause_preview? " + pause_preview);
                     if( pause_preview && success ) {
-                        if( is_preview_started ) {
+                        //if( is_preview_started ) {
+                        if( preview_started_state == PREVIEW_STARTED ) {
                             // need to manually stop preview on Android L Camera2
                             // also note: even though we now draw the last image on top of the screen instead of relying on the
                             // camera preview being paused, it's still good practice to pause the preview/camera for privacy reasons
                             if( camera_controller != null ) {
                                 camera_controller.stopPreview();
                             }
-                            is_preview_started = false;
+                            //is_preview_started = false;
+                            preview_started_state = PREVIEW_NOT_STARTED;
                         }
                         setPreviewPaused(true);
                     }
                     else {
-                        if( !is_preview_started ) {
+                        //if( !is_preview_started ) {
+                        if( preview_started_state == PREVIEW_NOT_STARTED ) {
                             // we need to restart the preview; and we do this in the callback, as we need to restart after saving the image
                             // (otherwise this can fail, at least on Nexus 7)
                             startCameraPreview();
@@ -6767,7 +6782,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             if( MyDebug.LOG )
                 Log.d(TAG, "preview surface not yet available");
         }
-        else if( !this.is_preview_started ) {
+        //else if( !this.is_preview_started ) {
+        else if( preview_started_state != PREVIEW_STARTED ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "preview not yet started");
         }
@@ -6959,7 +6975,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             Log.d(TAG, "startCameraPreview");
             debug_time = System.currentTimeMillis();
         }
-        if( camera_controller != null && !this.isTakingPhotoOrOnTimer() && !is_preview_started ) {
+        //if( camera_controller != null && !this.isTakingPhotoOrOnTimer() && !is_preview_started ) {
+        if( camera_controller != null && !this.isTakingPhotoOrOnTimer() && preview_started_state == PREVIEW_NOT_STARTED ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "starting the camera preview");
             {
@@ -6979,7 +6996,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 applicationInterface.onFailedStartPreview();
                 return;
             }
-            this.is_preview_started = true;
+            //this.is_preview_started = true;
+            this.preview_started_state = PREVIEW_STARTED;
             if( MyDebug.LOG ) {
                 Log.d(TAG, "startCameraPreview: time after starting camera preview: " + (System.currentTimeMillis() - debug_time));
             }
@@ -9224,12 +9242,17 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         return take_photo_time;
     }
 
+    /** Note this means the state of being paused after taking a photo (when pause preview option is
+     *  enabled). Callers wanting to know if the camera preview is started or not should use
+     *  isPreviewStarted().
+     */
     public boolean isPreviewPaused() {
         return this.phase == PHASE_PREVIEW_PAUSED;
     }
 
     public boolean isPreviewStarted() {
-        return this.is_preview_started;
+        //return this.is_preview_started;
+        return preview_started_state == PREVIEW_STARTED;
     }
 
     public boolean isFocusWaiting() {
