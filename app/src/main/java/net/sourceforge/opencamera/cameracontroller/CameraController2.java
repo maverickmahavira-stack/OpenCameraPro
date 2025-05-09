@@ -6464,6 +6464,8 @@ public class CameraController2 extends CameraController {
                 }
             }
             if( sessionType == SessionType.SESSIONTYPE_EXTENSION ) {
+                resetCaptureResultInfo(); // important as extension modes don't receive capture result info
+
                 if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ) {
                     if( MyDebug.LOG )
                         Log.d(TAG, "create extension capture session");
@@ -6573,9 +6575,6 @@ public class CameraController2 extends CameraController {
                     Log.d(TAG, "created captureSession: " + captureSession);
                 if( extensionSession != null )
                     Log.d(TAG, "created extensionSession: " + extensionSession);
-            }
-            if( sessionType == SessionType.SESSIONTYPE_EXTENSION ) {
-                resetCaptureResultInfo(); // important as extension modes don't receive capture result info
             }
             synchronized( background_camera_lock ) {
                 if( !hasCaptureSession() ) {
