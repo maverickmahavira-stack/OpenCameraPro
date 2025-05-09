@@ -68,6 +68,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
+import android.view.WindowMetrics;
 
 /** Provides support using Android 5's Camera 2 API
  *  android.hardware.camera2.*.
@@ -3225,19 +3226,25 @@ public class CameraController2 extends CameraController {
         camera_features.preview_sizes = new ArrayList<>();
         Point display_size = new Point();
         Activity activity = (Activity)context;
-        {
+        if( Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R ) {
+            // use non-deprecated equivalent of Display.getRealSize()
+            WindowMetrics window_metrics = activity.getWindowManager().getCurrentWindowMetrics();
+            final Rect bounds = window_metrics.getBounds();
+            display_size.x = bounds.width();
+            display_size.y = bounds.height();
+        }
+        else {
             Display display = activity.getWindowManager().getDefaultDisplay();
             display.getRealSize(display_size);
-            // getRealSize() is adjusted based on the current rotation, so should already be landscape format, but it
-            // would be good to not assume Open Camera runs in landscape mode (if we ever ran in portrait mode,
-            // we'd still want display_size.x > display_size.y as preview resolutions also have width > height)
-            if( display_size.x < display_size.y ) {
-                //noinspection SuspiciousNameCombination
-                display_size.set(display_size.y, display_size.x);
-            }
-            if( MyDebug.LOG )
-                Log.d(TAG, "display_size: " + display_size.x + " x " + display_size.y);
         }
+        // getRealSize() is adjusted based on the current rotation, but we still want
+        // display_size.x > display_size.y as preview resolutions also have width > height
+        if( display_size.x < display_size.y ) {
+            //noinspection SuspiciousNameCombination
+            display_size.set(display_size.y, display_size.x);
+        }
+        if( MyDebug.LOG )
+            Log.d(TAG, "display_size: " + display_size.x + " x " + display_size.y);
         if( camera_preview_sizes == null ) {
             // camera_preview_sizes is null on Samsung Galaxy Note 10+ and S20 for camera ID 4!
             Log.e(TAG, "no preview sizes returned by getOutputSizes");
@@ -3247,9 +3254,12 @@ public class CameraController2 extends CameraController {
             for(android.util.Size camera_size : camera_preview_sizes) {
                 if( MyDebug.LOG )
                     Log.d(TAG, "preview size: " + camera_size.getWidth() + " x " + camera_size.getHeight());
-                if( camera_size.getWidth() > display_size.x || camera_size.getHeight() > display_size.y ) {
+                if( camera_size.getWidth() > Math.max(display_size.x, 1280) || camera_size.getHeight() > Math.max(display_size.y, 720) ) {
                     // Nexus 6 returns these, even though not supported?! (get green corruption lines if we allow these)
                     // Google Camera filters anything larger than height 1080, with a todo saying to use device's measurements
+                    // But we only considering filtering if also greater than width 1280 or height 720, as these should be fine - also
+                    // need to account for running in multi-window mode - we don't want to exclude all preview resolutions just because the
+                    // window size was small!
                     continue;
                 }
                 camera_features.preview_sizes.add(new CameraController.Size(camera_size.getWidth(), camera_size.getHeight()));
