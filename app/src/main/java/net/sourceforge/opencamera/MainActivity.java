@@ -47,6 +47,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
@@ -85,6 +86,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.util.Log;
+import android.util.Size;
 import android.util.SizeF;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -4706,7 +4708,13 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                             else {
                                 if( MyDebug.LOG )
                                     Log.d(TAG, "load thumbnail for video");
-                                thumbnail = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), media.id, MediaStore.Video.Thumbnails.MINI_KIND, null);
+                                if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ) {
+                                    final Size size = new Size(512, 384); // same as MediaStore.ThumbnailConstants.MINI_SIZE, which is used for MediaStore.Video.Thumbnails.MINI_KIND
+                                    thumbnail = getContentResolver().loadThumbnail(media.uri, size, new CancellationSignal());
+                                }
+                                else {
+                                    thumbnail = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), media.id, MediaStore.Video.Thumbnails.MINI_KIND, null);
+                                }
                             }
                         }
                         catch(Throwable exception) {
