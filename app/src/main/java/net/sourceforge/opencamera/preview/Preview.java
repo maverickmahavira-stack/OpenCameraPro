@@ -4444,6 +4444,11 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
                     zoom_transition_runnable = new Runnable() {
                         public void run() {
+                            // check just in case camera is closed or changed to a state where has_zoom==false,
+                            // without cancelling the zoom_transition_runnable
+                            if( camera_controller == null || !has_zoom ) {
+                                return;
+                            }
                             int this_zoom_value;
                             long time = System.currentTimeMillis() - start_time;
                             time += delay; // so we have a quicker transition
