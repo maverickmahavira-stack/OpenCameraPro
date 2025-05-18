@@ -1472,6 +1472,11 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             continuous_focus_move_is_started = false;
             applicationInterface.onContinuousFocusMove(false);
         }
+        if( zoom_transition_runnable != null ) {
+            // cancel an existing runnable
+            zoom_transition_handler.removeCallbacks(zoom_transition_runnable);
+            zoom_transition_runnable = null;
+        }
         applicationInterface.cameraClosed();
         cancelTimer();
         cancelRepeat();
@@ -4394,23 +4399,78 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         }
     }
 
+    private final Handler zoom_transition_handler = new Handler();
+    private Runnable zoom_transition_runnable;
+
+    private void zoomTo(int new_zoom_factor, boolean allow_smooth_zoom) {
+        zoomTo(new_zoom_factor, allow_smooth_zoom, false);
+    }
+
     /** Zooms to the supplied index (within the zoom_ratios array).
      * @param new_zoom_factor The index to zoom to.
+     * @param allow_smooth_zoom Whether zooming as part of pinch zooming.
+     * @param allow_zoom_transition If true, then change zoom gradually towards the requested zoom,
+     *                              rather than zooming immediately to the requested zoom. Only
+     *                              supported if allow_smooth_zoom==false.
      */
-    public void zoomTo(int new_zoom_factor, boolean allow_smooth_zoom) {
+    public void zoomTo(int new_zoom_factor, boolean allow_smooth_zoom, boolean allow_zoom_transition) {
         if( MyDebug.LOG )
             Log.d(TAG, "ZoomTo(): " + new_zoom_factor);
         if( new_zoom_factor < 0 )
             new_zoom_factor = 0;
         else if( new_zoom_factor > max_zoom_factor )
             new_zoom_factor = max_zoom_factor;
+        if( zoom_transition_runnable != null ) {
+            // cancel an existing runnable
+            zoom_transition_handler.removeCallbacks(zoom_transition_runnable);
+            zoom_transition_runnable = null;
+        }
         // problem where we crashed due to calling this function with null camera should be fixed now, but check again just to be safe
         if( camera_controller != null ) {
             if( this.has_zoom ) {
                 // don't cancelAutoFocus() here, otherwise we get sluggish zoom behaviour on Camera2 API
-                // if pinch zooming, pass through the "smooth" zoom factor so for Camera2 API we get perfectly smooth zoom, rather than it
-                // being snapped to the discrete zoom values
-                camera_controller.setZoom(new_zoom_factor, (allow_smooth_zoom && has_smooth_zoom) ? smooth_zoom : -1.0f);
+                allow_zoom_transition = allow_zoom_transition && using_android_l; // only for Camera2
+                allow_zoom_transition = allow_zoom_transition && !allow_smooth_zoom; // only if not smooth zooming
+                if( allow_zoom_transition && Math.abs(camera_controller.getZoom() - new_zoom_factor) < 6 ) {
+                    // don't bother with transition if only changing a small amount
+                    allow_zoom_transition = false;
+                }
+                if( allow_zoom_transition ) {
+                    final int start_zoom_value = camera_controller.getZoom();
+                    final int target_zoom_value = new_zoom_factor;
+                    //final float start_zoom = zoom_ratios.get(start_zoom_value)/100.0f;
+                    final long start_time = System.currentTimeMillis();
+                    final long delay = 16;
+
+                    zoom_transition_runnable = new Runnable() {
+                        public void run() {
+                            int this_zoom_value;
+                            long time = System.currentTimeMillis() - start_time;
+                            time += delay; // so we have a quicker transition
+                            final long duration = 200;
+                            if( time >= duration ) {
+                                this_zoom_value = target_zoom_value;
+                            }
+                            else {
+                                float alpha = time / (float)duration;
+                                alpha = Math.min(alpha, 1.0f);
+                                this_zoom_value = (int)((1.0f-alpha) * start_zoom_value + alpha * target_zoom_value + 0.5f);
+                            }
+                            if( MyDebug.LOG )
+                                Log.d(TAG, "ZoomTo runnable, this_zoom_value: " + this_zoom_value);
+                            camera_controller.setZoom(this_zoom_value, -1.0f);
+                            if( time < duration ) {
+                                zoom_transition_handler.postDelayed(this, delay);
+                            }
+                        }
+                    };
+                    zoom_transition_runnable.run();
+                }
+                else {
+                    // if pinch zooming, pass through the "smooth" zoom factor so for Camera2 API we get perfectly smooth zoom, rather than it
+                    // being snapped to the discrete zoom values
+                    camera_controller.setZoom(new_zoom_factor, (allow_smooth_zoom && has_smooth_zoom) ? smooth_zoom : -1.0f);
+                }
                 applicationInterface.setZoomPref(new_zoom_factor);
                 clearFocusAreas();
             }

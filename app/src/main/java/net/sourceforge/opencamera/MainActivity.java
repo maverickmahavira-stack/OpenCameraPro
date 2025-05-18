@@ -5834,7 +5834,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                                     last_haptic_time = performHapticFeedback(seekBar, last_haptic_time);
                                 }
                             }
-                            preview.zoomTo(new_zoom_factor, false);
+                            preview.zoomTo(new_zoom_factor, false, true);
                         }
                     }
 
