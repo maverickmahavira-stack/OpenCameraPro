@@ -8061,6 +8061,11 @@ public class CameraController2 extends CameraController {
         ErrorCallback push_take_picture_error_cb = null;
 
         synchronized( background_camera_lock ) {
+            if( camera == null || !hasCaptureSession() ) {
+                if( MyDebug.LOG )
+                    Log.d(TAG, "no camera or capture session");
+                return;
+            }
             if( MyDebug.LOG ) {
                 if( use_fake_precapture_mode )
                     Log.e(TAG, "shouldn't be doing standard precapture when use_fake_precapture_mode is true!");
