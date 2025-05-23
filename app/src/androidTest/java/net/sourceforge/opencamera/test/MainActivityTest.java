@@ -9712,12 +9712,14 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         // now test multitouch zoom
         mPreview.scaleZoom(2.0f);
         this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500); // need to wait for zoom transition (for Camera2 API)
         Log.d(TAG, "compare actual zoom " + mPreview.getCameraController().getZoom() + " to zoom " + zoom);
         assertTrue(mPreview.getCameraController().getZoom() > zoom);
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
 
         mPreview.scaleZoom(0.5f);
         this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500); // need to wait for zoom transition (for Camera2 API)
         Log.d(TAG, "compare actual zoom " + mPreview.getCameraController().getZoom() + " to zoom " + zoom);
         // here test the zoom ratio values themselves rather than the indices, as we may have repeated zoom_ratios entries for 1x zoom
         assertEquals( mPreview.getZoomRatio(mPreview.getCameraController().getZoom()), mPreview.getZoomRatio(zoom) );
@@ -9726,12 +9728,14 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         // test to max/min
         mPreview.scaleZoom(10000.0f);
         this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500); // need to wait for zoom transition (for Camera2 API)
         Log.d(TAG, "compare actual zoom " + mPreview.getCameraController().getZoom() + " to max_zoom " + max_zoom);
         assertEquals(mPreview.getCameraController().getZoom(), max_zoom);
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
 
         mPreview.scaleZoom(1.0f/10000.0f);
         this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500); // need to wait for zoom transition (for Camera2 API)
         Log.d(TAG, "compare actual zoom " + mPreview.getCameraController().getZoom() + " to zero");
         assertEquals(0, mPreview.getCameraController().getZoom());
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
@@ -9741,6 +9745,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         Log.d(TAG, "progress was: " + zoomSeekBar.getProgress());
         zoomSeekBar.setProgress(0);
         this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500); // need to wait for zoom transition (for Camera2 API)
         Log.d(TAG, "compare actual zoom " + mPreview.getCameraController().getZoom() + " to max_zoom " + max_zoom);
         assertEquals(mPreview.getCameraController().getZoom(), max_zoom);
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
@@ -9755,6 +9760,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         Log.d(TAG, "progress was: " + zoomSeekBar.getProgress());
         zoomSeekBar.setProgress(zoomSeekBar.getMax());
         this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500); // need to wait for zoom transition (for Camera2 API)
         Log.d(TAG, "compare actual zoom " + mPreview.getCameraController().getZoom() + " to zoom " + zoom);
         assertEquals(mPreview.getCameraController().getZoom(), 0);
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
@@ -9844,7 +9850,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
     }
 
-    public void testZoomIdle() {
+    public void testZoomIdle() throws InterruptedException {
         Log.d(TAG, "testZoomIdle");
         setToDefault();
 
@@ -9859,6 +9865,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         int max_zoom = mPreview.getMaxZoom();
         zoomSeekBar.setProgress(0);
         this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500); // need to wait for zoom transition (for Camera2 API)
         Log.d(TAG, "compare actual zoom " + mPreview.getCameraController().getZoom() + " to zoom " + max_zoom);
         assertEquals(mPreview.getCameraController().getZoom(), max_zoom);
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
@@ -9871,7 +9878,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
     }
 
-    public void testZoomSwitchCamera() {
+    public void testZoomSwitchCamera() throws InterruptedException {
         Log.d(TAG, "testZoomSwitchCamera");
         setToDefault();
 
@@ -9890,6 +9897,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         int max_zoom = mPreview.getMaxZoom();
         zoomSeekBar.setProgress(0);
         this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500); // need to wait for zoom transition (for Camera2 API)
         Log.d(TAG, "compare actual zoom " + mPreview.getCameraController().getZoom() + " to zoom " + max_zoom);
         assertEquals(mPreview.getCameraController().getZoom(), max_zoom);
         assertEquals(max_zoom - zoomSeekBar.getProgress(), mPreview.getCameraController().getZoom());
