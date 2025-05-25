@@ -660,7 +660,25 @@ public abstract class CameraController {
     /** Starts the camera preview.
      *  @throws CameraControllerException if the camera preview fails to start.
      */
-    public abstract void startPreview() throws CameraControllerException;
+    /** Starts the camera preview.
+     * @param wait_until_started Whether to wait until the preview is started. Only relevant for
+     *                           CameraController2; CameraController1 will always wait.
+     * @param runnable           If non-null, a runnable to be called once preview is started. If
+     *                           wait_until_started==true, or using CameraController1, this will be
+     *                           called on the current thread, before this method exits. Otherwise,
+     *                           this will be called on the UI thread, after this method exits (once
+     *                           the preview has started).
+     * @param on_failed          If non-null, a runnable to be called if the preview fails to start.
+     *                           Only relevant for wait_until_started==false and when using
+     *                           CameraController2. In such cases, failing to start the camera preview
+     *                           may result in either CameraControllerException being thrown, or
+     *                           on_failed being called on the UI thread after this method exits
+     *                           (depending on when the failure occurs). If either of these happens,
+     *                           the "runnable" runnable will not be called.
+     * @throws CameraControllerException Failed to start preview. In this case, the runnable will not
+     *                                   be called.
+     */
+    public abstract void startPreview(boolean wait_until_started, Runnable runnable, Runnable on_failed) throws CameraControllerException;
     /** Only relevant for CameraController2: stops the repeating burst for the previous (so effectively
      *  stops the preview), but does not close the capture session for the preview (for that, using
      *  stopPreview() instead of stopRepeating()).

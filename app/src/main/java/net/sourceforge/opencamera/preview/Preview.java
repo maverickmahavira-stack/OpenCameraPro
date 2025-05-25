@@ -270,7 +270,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
     //private boolean is_preview_started;
     private static final int PREVIEW_NOT_STARTED = 0;
-    private static final int PREVIEW_STARTED = 1;
+    private static final int PREVIEW_IS_STARTING = 1;
+    private static final int PREVIEW_STARTED = 2;
     private int preview_started_state = PREVIEW_NOT_STARTED; // state of the camera preview
 
     private OrientationEventListener orientationEventListener;
@@ -713,7 +714,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         // note, we always try to force start the preview (in case is_preview_paused has become false)
         // except if recording video (firstly, the preview should be running; secondly, we don't want to reset the phase!)
         if( !this.is_video ) {
-            startCameraPreview();
+            startCameraPreview(true, null);
         }
 
         // whether to clear focus area instead of setting new one
@@ -1502,6 +1503,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 // to use it
                 final CameraController camera_controller_local = camera_controller;
                 camera_controller = null;
+                preview_started_state = PREVIEW_NOT_STARTED;
                 if( async ) {
                     if( MyDebug.LOG )
                         Log.d(TAG, "close camera on background async");
@@ -1895,6 +1897,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                             Log.e(TAG, "set camera_controller to null");
                         camera_controller = null;
                         camera_open_state = CameraOpenState.CAMERAOPENSTATE_CLOSED;
+                        preview_started_state = PREVIEW_NOT_STARTED;
                         applicationInterface.onCameraError();
                     }
                 }
@@ -1979,10 +1982,18 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 Log.d(TAG, "openCamera: time after setting preview display: " + (System.currentTimeMillis() - debug_time));
             }
 
-            setupCamera(take_photo);
-            if( this.using_android_l ) {
-                configureTransform();
-            }
+            final boolean wait_until_started = true;
+            //final boolean wait_until_started = false; // test
+            setupCamera(take_photo, wait_until_started, new Runnable() {
+                @Override
+                public void run() {
+                    if( MyDebug.LOG )
+                        Log.d(TAG, "cameraOpened: runnable for starting camera preview");
+                    if( using_android_l ) {
+                        configureTransform();
+                    }
+                }
+            });
         }
 
         if( MyDebug.LOG ) {
@@ -2055,14 +2066,16 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         return camera_open_state == CameraOpenState.CAMERAOPENSTATE_OPENED && camera_controller == null;
     }
 
-    /* Should only be called after camera first opened, or after preview is paused.
-     * take_photo is true if we have been called from the TakePhoto widget (which means
-     * we'll take a photo immediately after startup).
-     * Important to call this when switching between photo and video mode, as ApplicationInterface
-     * preferences/parameters may be different (since we can support taking photos in video snapshot
-     * mode, but this may have different parameters).
+    /** Should only be called after camera first opened, or after preview is paused.
+     *  Important to call this when switching between photo and video mode, as ApplicationInterface
+     *  preferences/parameters may be different (since we can support taking photos in video snapshot
+     *  mode, but this may have different parameters).
+     * @param take_photo         take_photo is true if we have been called from the TakePhoto widget
+     *                           (which means we'll take a photo immediately after startup).
+     * @param wait_until_started For CameraController.startPreview().
+     * @param preview_opened     For CameraController.startPreview().
      */
-    public void setupCamera(boolean take_photo) {
+    public void setupCamera(boolean take_photo, boolean wait_until_started, Runnable preview_opened) {
         if( MyDebug.LOG )
             Log.d(TAG, "setupCamera()");
         long debug_time = 0;
@@ -2281,73 +2294,85 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         if( MyDebug.LOG ) {
             Log.d(TAG, "setupCamera: time after setting preview size: " + (System.currentTimeMillis() - debug_time));
         }
+
+        final long debug_time_f = debug_time;
         // Must call startCameraPreview after checking if face detection is present - probably best to call it after setting all parameters that we want
-        startCameraPreview();
+        startCameraPreview(wait_until_started, new Runnable() {
+            @Override
+            public void run() {
+                if( MyDebug.LOG )
+                    Log.d(TAG, "setupCamera: runnable for starting camera preview");
+
+                // must be done after setting parameters, as this function may set parameters
+                // also needs to be done after starting preview for some devices (e.g., Nexus 7)
+                if( has_zoom ) {
+                    int zoom_pref = applicationInterface.getZoomPref();
+                    if( zoom_pref == -1 ) {
+                        zoom_pref = find1xZoom();
+                    }
+                    zoomTo(zoom_pref, false);
+                    if( MyDebug.LOG ) {
+                        Log.d(TAG, "setupCamera: total time after zoomTo: " + (System.currentTimeMillis() - debug_time_f));
+                    }
+                }
+                else if( camera_controller_supports_zoom && !has_zoom ) {
+                    if( MyDebug.LOG )
+                        Log.d(TAG, "camera supports zoom but application disabled zoom, so reset zoom to default");
+                    // if the application switches zoom off via ApplicationInterface.allowZoom(), we need to support
+                    // resetting the zoom (in case the application called setupCamera() rather than reopening the camera).
+                    camera_controller.resetZoom();
+                }
+
+                /*if( take_photo ) {
+                    if( this.is_video ) {
+                        if( MyDebug.LOG )
+                            Log.d(TAG, "switch to video for take_photo widget");
+                        this.switchVideo(false); // set during_startup to false, as we now need to reset the preview
+                    }
+                }*/
+
+                applicationInterface.cameraSetup(); // must call this after the above take_photo code for calling switchVideo
+                if( MyDebug.LOG ) {
+                    Log.d(TAG, "setupCamera: total time after cameraSetup: " + (System.currentTimeMillis() - debug_time_f));
+                }
+
+                if( take_photo ) {
+                    // take photo after a delay - otherwise we sometimes get a black image?!
+                    // also need a longer delay for continuous picture focus, to allow a chance to focus - 1000ms seems to work okay for Nexus 6, put 1500ms to be safe
+                    String focus_value = getCurrentFocusValue();
+                    final int delay = ( focus_value != null && focus_value.equals("focus_mode_continuous_picture") ) ? 1500 : 500;
+                    if( MyDebug.LOG )
+                        Log.d(TAG, "delay for take photo: " + delay);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if( MyDebug.LOG )
+                                Log.d(TAG, "do automatic take picture");
+                            takePicture(false, false, false);
+                        }
+                    }, delay);
+                }
+
+                if( do_startup_focus ) {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if( MyDebug.LOG )
+                                Log.d(TAG, "do startup autofocus");
+                            tryAutoFocus(true, false); // so we get the autofocus when starting up - we do this on a delay, as calling it immediately means the autofocus doesn't seem to work properly sometimes (at least on Galaxy Nexus)
+                        }
+                    }, 500);
+                }
+
+                if( preview_opened != null ) {
+                    preview_opened.run();;
+                }
+            }
+        });
         if( MyDebug.LOG ) {
             Log.d(TAG, "setupCamera: time after starting camera preview: " + (System.currentTimeMillis() - debug_time));
-        }
-
-        // must be done after setting parameters, as this function may set parameters
-        // also needs to be done after starting preview for some devices (e.g., Nexus 7)
-        if( this.has_zoom ) {
-            int zoom_pref = applicationInterface.getZoomPref();
-            if( zoom_pref == -1 ) {
-                zoom_pref = find1xZoom();
-            }
-            zoomTo(zoom_pref, false);
-            if( MyDebug.LOG ) {
-                Log.d(TAG, "setupCamera: total time after zoomTo: " + (System.currentTimeMillis() - debug_time));
-            }
-        }
-        else if( camera_controller_supports_zoom && !has_zoom ) {
-            if( MyDebug.LOG )
-                Log.d(TAG, "camera supports zoom but application disabled zoom, so reset zoom to default");
-            // if the application switches zoom off via ApplicationInterface.allowZoom(), we need to support
-            // resetting the zoom (in case the application called setupCamera() rather than reopening the camera).
-            camera_controller.resetZoom();
-        }
-
-	    /*if( take_photo ) {
-			if( this.is_video ) {
-				if( MyDebug.LOG )
-					Log.d(TAG, "switch to video for take_photo widget");
-				this.switchVideo(false); // set during_startup to false, as we now need to reset the preview
-			}
-		}*/
-
-        applicationInterface.cameraSetup(); // must call this after the above take_photo code for calling switchVideo
-        if( MyDebug.LOG ) {
-            Log.d(TAG, "setupCamera: total time after cameraSetup: " + (System.currentTimeMillis() - debug_time));
-        }
-
-        if( take_photo ) {
-            // take photo after a delay - otherwise we sometimes get a black image?!
-            // also need a longer delay for continuous picture focus, to allow a chance to focus - 1000ms seems to work okay for Nexus 6, put 1500ms to be safe
-            String focus_value = getCurrentFocusValue();
-            final int delay = ( focus_value != null && focus_value.equals("focus_mode_continuous_picture") ) ? 1500 : 500;
-            if( MyDebug.LOG )
-                Log.d(TAG, "delay for take photo: " + delay);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "do automatic take picture");
-                    takePicture(false, false, false);
-                }
-            }, delay);
-        }
-
-        if( do_startup_focus ) {
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "do startup autofocus");
-                    tryAutoFocus(true, false); // so we get the autofocus when starting up - we do this on a delay, as calling it immediately means the autofocus doesn't seem to work properly sometimes (at least on Galaxy Nexus)
-                }
-            }, 500);
         }
 
         if( MyDebug.LOG ) {
@@ -5496,6 +5521,13 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             this.phase = PHASE_NORMAL;
             return;
         }
+        if( preview_started_state == PREVIEW_IS_STARTING ) {
+            // if it's PREVIEW_NOT_STARTED then we can start it, but if it's already starting on a background thread, better to exit here
+            if( MyDebug.LOG )
+                Log.d(TAG, "don't take photo, preview is still opening");
+            this.phase = PHASE_NORMAL;
+            return;
+        }
         if( is_video && continuous_fast_burst ) {
             Log.e(TAG, "continuous_fast_burst not supported for video mode");
             this.phase = PHASE_NORMAL;
@@ -5548,7 +5580,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         }
 
         // make sure that preview running (also needed to hide trash/share icons)
-        this.startCameraPreview();
+        this.startCameraPreview(true, null);
 
         if( photo_snapshot || continuous_fast_burst ) {
             // go straight to taking a photo, ignore timer or repeat options
@@ -5843,6 +5875,16 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         if( !this.has_surface ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "preview surface not yet available");
+            this.phase = PHASE_NORMAL;
+            applicationInterface.cameraInOperation(false, false);
+            if( is_video )
+                applicationInterface.cameraInOperation(false, true);
+            return;
+        }
+        if( preview_started_state == PREVIEW_IS_STARTING ) {
+            // just in case?
+            if( MyDebug.LOG )
+                Log.d(TAG, "don't take photo, preview is still opening");
             this.phase = PHASE_NORMAL;
             applicationInterface.cameraInOperation(false, false);
             if( is_video )
@@ -6372,6 +6414,12 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             Log.e(TAG, "camera not opened in takePhoto!");
             return;
         }
+        if( preview_started_state == PREVIEW_IS_STARTING ) {
+            // just in case?
+            if( MyDebug.LOG )
+                Log.d(TAG, "don't take photo, preview is still opening");
+            return;
+        }
         applicationInterface.cameraInOperation(true, false);
         String current_ui_focus_value = getCurrentFocusValue();
         if( MyDebug.LOG )
@@ -6535,6 +6583,14 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             applicationInterface.cameraInOperation(false, false);
             return;
         }
+        if( preview_started_state == PREVIEW_IS_STARTING ) {
+            // just in case?
+            if( MyDebug.LOG )
+                Log.d(TAG, "don't take photo, preview is still opening");
+            this.phase = PHASE_NORMAL;
+            applicationInterface.cameraInOperation(false, false);
+            return;
+        }
 
         final String focus_value = current_focus_index != -1 ? supported_focus_values.get(current_focus_index) : null;
         if( MyDebug.LOG ) {
@@ -6594,7 +6650,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                         // (otherwise this can fail, at least on Nexus 7)
                         if( MyDebug.LOG )
                             Log.d(TAG, "repeat mode photos remaining: onPictureTaken about to start preview: " + remaining_repeat_photos);
-                        startCameraPreview();
+                        startCameraPreview(true, null);
                         if( MyDebug.LOG )
                             Log.d(TAG, "repeat mode photos remaining: onPictureTaken started preview: " + remaining_repeat_photos);
                     }
@@ -6624,7 +6680,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                         if( preview_started_state == PREVIEW_NOT_STARTED ) {
                             // we need to restart the preview; and we do this in the callback, as we need to restart after saving the image
                             // (otherwise this can fail, at least on Nexus 7)
-                            startCameraPreview();
+                            startCameraPreview(true, null);
                         }
                         applicationInterface.cameraInOperation(false, false);
                         if( MyDebug.LOG )
@@ -6739,7 +6795,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 }
                 applicationInterface.onPhotoError();
                 phase = PHASE_NORMAL;
-                startCameraPreview();
+                startCameraPreview(true, null);
                 applicationInterface.cameraInOperation(false, false);
             }
         };
@@ -6785,6 +6841,11 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         if( remaining_repeat_photos == -1 || remaining_repeat_photos > 0 ) {
             if( camera_controller == null ) {
                 Log.e(TAG, "remaining_repeat_photos still set, but camera is closed!: " + remaining_repeat_photos);
+                cancelRepeat();
+            }
+            else if( preview_started_state == PREVIEW_IS_STARTING ) {
+                // just in case?
+                Log.e(TAG, "remaining_repeat_photos still set, but preview is still opening!: " + remaining_repeat_photos);
                 cancelRepeat();
             }
             else {
@@ -7034,11 +7095,21 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             Log.d(TAG, "autoFocusCompleted exit");
     }
 
-    public void startCameraPreview() {
+    /** Start the camera preview.
+     * @param wait_until_started For CameraController.startPreview().
+     * @param preview_opened     For CameraController.startPreview().
+     */
+    public void startCameraPreview(boolean wait_until_started, Runnable preview_opened) {
         long debug_time = 0;
         if( MyDebug.LOG ) {
             Log.d(TAG, "startCameraPreview");
             debug_time = System.currentTimeMillis();
+        }
+        if( preview_started_state == PREVIEW_IS_STARTING ) {
+            if( MyDebug.LOG )
+                Log.d(TAG, "preview is already starting!");
+            // avoid opening preview again - don't even run the preview_opened callback
+            return;
         }
         //if( camera_controller != null && !this.isTakingPhotoOrOnTimer() && !is_preview_started ) {
         if( camera_controller != null && !this.isTakingPhotoOrOnTimer() && preview_started_state == PREVIEW_NOT_STARTED ) {
@@ -7051,30 +7122,82 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             }
             setPreviewFps();
             try {
-                camera_controller.startPreview();
-                count_cameraStartPreview++;
+                preview_started_state = PREVIEW_IS_STARTING;
+                camera_controller.startPreview(wait_until_started, new Runnable() {
+                    @Override
+                    public void run() {
+                        if( MyDebug.LOG )
+                            Log.d(TAG, "startCameraPreview: runnable for starting camera preview");
+
+                        if( camera_controller == null ) {
+                            // Although at CameraController2 we have some checks for the camera closing in the meantime, this isn't
+                            // robust as if wait_until_started==false, both starting the preview and closing the camera may be running
+                            // on background threads.
+                            // However closeCamera() will set camera_controller to null on the UI thread before closing the camera
+                            // on the background thread.
+                            if( MyDebug.LOG )
+                                Log.d(TAG, "but camera closed in meantime");
+                            return;
+                        }
+
+                        count_cameraStartPreview++;
+
+                        //this.is_preview_started = true;
+                        preview_started_state = PREVIEW_STARTED;
+                        if( using_face_detection ) {
+                            if( MyDebug.LOG )
+                                Log.d(TAG, "start face detection");
+                            camera_controller.startFaceDetection();
+                            faces_detected = null;
+                        }
+                        setPreviewPaused(false);
+                        setupContinuousFocusMove();
+
+                        if( preview_opened != null ) {
+                            preview_opened.run();
+                        }
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e(TAG, "startCameraPreview: runnable for failing to start camera preview");
+                        if( camera_controller == null ) {
+                            // see comment above
+                            if( MyDebug.LOG )
+                                Log.d(TAG, "but camera closed in meantime");
+                            return;
+                        }
+                        // if we update this code, remember to also update the CameraControllerException code below
+                        preview_started_state = PREVIEW_NOT_STARTED;
+                        applicationInterface.onFailedStartPreview();
+                        if( preview_opened != null ) {
+                            // unclear if we need to run the caller's runnable on failure, but do so for consistency (either
+                            // with wait_until_started==true, or when a CameraControllerException was thrown instead)
+                            preview_opened.run();
+                        }
+                    }
+                });
             }
             catch(CameraControllerException e) {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "CameraControllerException trying to startPreview");
+                Log.e(TAG, "CameraControllerException trying to startPreview");
                 e.printStackTrace();
+                // if we update this code, remember to also update the on_failed runnable above
+                preview_started_state = PREVIEW_NOT_STARTED;
                 applicationInterface.onFailedStartPreview();
                 return;
             }
-            //this.is_preview_started = true;
-            this.preview_started_state = PREVIEW_STARTED;
             if( MyDebug.LOG ) {
                 Log.d(TAG, "startCameraPreview: time after starting camera preview: " + (System.currentTimeMillis() - debug_time));
             }
-            if( this.using_face_detection ) {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "start face detection");
-                camera_controller.startFaceDetection();
-                faces_detected = null;
+        }
+        else {
+            // unclear if we still need to run the following here?
+            this.setPreviewPaused(false);
+            this.setupContinuousFocusMove();
+            if( preview_opened != null ) {
+                preview_opened.run();
             }
         }
-        this.setPreviewPaused(false);
-        this.setupContinuousFocusMove();
         if( MyDebug.LOG ) {
             Log.d(TAG, "startCameraPreview: total time for startCameraPreview: " + (System.currentTimeMillis() - debug_time));
         }
@@ -9318,6 +9441,10 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
     public boolean isPreviewStarted() {
         //return this.is_preview_started;
         return preview_started_state == PREVIEW_STARTED;
+    }
+
+    public boolean isPreviewStarting() {
+        return preview_started_state == PREVIEW_IS_STARTING;
     }
 
     public boolean isFocusWaiting() {

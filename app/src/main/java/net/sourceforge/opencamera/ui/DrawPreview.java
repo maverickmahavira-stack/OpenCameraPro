@@ -2114,7 +2114,10 @@ public class DrawPreview {
                 }
             }
 
-            if( preview.supportsZoom() && show_zoom_pref ) {
+            if( preview.supportsZoom() && show_zoom_pref && preview.isPreviewStarted() ) {
+                // don't show if preview not started - otherwise if we're not waiting on UI thread for preview to start (see wait_until_started in
+                // Preview and CameraController), we may see incorrect zoom being shown until preview has started, as in Preview.setupCamera() we only
+                // set the default zoom for CameraController once preview has started
                 float zoom_ratio = preview.getZoomRatio();
                 // only show when actually zoomed in - or out!
                 // but only show if zoomed in by at least 1.1x, to avoid showing when only very slightly

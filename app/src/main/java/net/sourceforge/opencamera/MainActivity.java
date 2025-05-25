@@ -3461,6 +3461,11 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         if( !update_camera ) {
             // don't try to update camera
         }
+        else if( preview.isPreviewStarting() ) {
+            // ideally we should avoid getting into this state - we shouldn't allow changing settings if preview is still opening (e.g., we prevent opening
+            // the popup menu if preview is not started, and we close camera when going to settings)
+            Log.e(TAG, "updateForSettings: preview is still starting");
+        }
         else if( need_reopen || preview.getCameraController() == null ) { // if camera couldn't be opened before, might as well try again
             if( allow_dim )
                 applicationInterface.getDrawPreview().setDimPreview(true);
@@ -3486,7 +3491,10 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             // Even if allow_dim==false, still run as a postDelayed (a) for consistency, (b) to allow UI to run for a bit (to avoid risk of slow frames).
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    preview.setupCamera(false);
+                    // if we ever support calling this with wait_until_started==true, beware of trying to change resolution repeatedly when the popup menu
+                    // is open - as currently we'll have problems if trying to calling updateForSettings when preview is already starting on background
+                    // thread (see above)
+                    preview.setupCamera(false, true, null);
                 }
             }, DrawPreview.dim_effect_time_c+16); // +16 to allow time for a frame update to run
         }
@@ -3683,7 +3691,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 // starting the preview will disable the PausePreviewOnBackPressedCallback, so no need to do it here
                 if( MyDebug.LOG )
                     Log.d(TAG, "preview was paused, so unpause it");
-                preview.startCameraPreview();
+                preview.startCameraPreview(true, null);
             }
             else {
                 // shouldn't be here (if preview isn't paused, this callback shouldn't be enabled), but just in case

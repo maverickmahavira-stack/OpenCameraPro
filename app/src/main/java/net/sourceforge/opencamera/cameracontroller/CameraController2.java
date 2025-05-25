@@ -2451,11 +2451,21 @@ public class CameraController2 extends CameraController {
         if( MyDebug.LOG )
             Log.d(TAG, "release: " + this);
         closeCaptureSession();
-        previewBuilder = null;
-        previewIsVideoMode = false;
-        if( camera != null ) {
-            camera.close();
+        CameraDevice camera_to_close = this.camera;
+        synchronized( background_camera_lock ) {
+            // set all to null straight away, as this can be called on background thread, but also
+            // don't want to be in an incomplete state for other threads where camera is non-null but
+            // previewBuilder is null
+            previewBuilder = null;
+            previewIsVideoMode = false;
             camera = null;
+        }
+        if( camera_to_close != null ) {
+            if( MyDebug.LOG )
+                Log.d(TAG, "close camera: " + camera_to_close);
+            camera_to_close.close();
+            if( MyDebug.LOG )
+                Log.d(TAG, "close camera complete: " + camera_to_close);
         }
         closePictureImageReader();
         /*if( previewImageReader != null ) {
@@ -2476,6 +2486,8 @@ public class CameraController2 extends CameraController {
                 e.printStackTrace();
             }
         }
+        if( MyDebug.LOG )
+            Log.d(TAG, "release exit: " + this);
     }
 
     /** Enforce a minimum number of points in tonemap curves - needed due to Galaxy S10e having wrong behaviour if fewer
@@ -6210,7 +6222,60 @@ public class CameraController2 extends CameraController {
         return outputs;
     }
 
-    private void createCaptureSession(final MediaRecorder video_recorder, boolean want_photo_video_recording) throws CameraControllerException {
+    private abstract static class CreateCaptureSessionFunction {
+        public abstract void call() throws CameraAccessException;
+    }
+
+    /** Function to support calling a function either on background thread or not depending on wait_until_started.
+     */
+    private void launchCameraSession(boolean wait_until_started, CreateCaptureSessionFunction function, Runnable on_failed) throws CameraAccessException {
+        if( wait_until_started ) {
+            /*try {
+                Thread.sleep(6000); // test slow to start preview
+                //Thread.sleep(25000); // test slow to start preview
+            }
+            catch(InterruptedException e) {
+                throw new RuntimeException(e);
+            }*/
+            function.call();
+        }
+        else {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        /*try {
+                            Thread.sleep(6000); // test slow to start preview
+                            //Thread.sleep(25000); // test slow to start preview
+                        }
+                        catch(InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }*/
+                        function.call();
+                    }
+                    catch(CameraAccessException e) {
+                        Log.e(TAG, "exception create extension session on background thread");
+                        e.printStackTrace();
+                        //myStateCallback.onConfigureFailed();
+                        if( on_failed != null ) {
+                            // if waiting, failure will be indicated via CameraControllerException thrown from this method
+                            final Activity activity = (Activity)context;
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if( MyDebug.LOG )
+                                        Log.d(TAG, "call on_failed as preview failed to start");
+                                    on_failed.run();
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void createCaptureSession(boolean wait_until_started, Runnable runnable, Runnable on_failed, final MediaRecorder video_recorder, boolean want_photo_video_recording) throws CameraControllerException {
         if( MyDebug.LOG )
             Log.d(TAG, "create capture session");
         
@@ -6327,18 +6392,46 @@ public class CameraController2 extends CameraController {
             class MyStateCallback extends CameraCaptureSession.StateCallback {
                 private boolean callback_done; // must synchronize on this and notifyAll when setting to true
 
+                private void onFailure() {
+                    if( on_failed != null && !wait_until_started ) {
+                        // if waiting, failure will be indicated on main thread below via CameraControllerException
+                        final Activity activity = (Activity)context;
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if( MyDebug.LOG )
+                                    Log.d(TAG, "call on_failed as preview failed to start");
+                                on_failed.run();
+                            }
+                        });
+                    }
+                }
+
                 void onConfigured(@NonNull CameraCaptureSession session, @NonNull CameraExtensionSession eSession) {
-                    if( camera == null ) {
-                        if( MyDebug.LOG ) {
-                            Log.d(TAG, "camera is closed");
-                        }
-                        synchronized( background_camera_lock ) {
+                    boolean success = false; // whether we successfully started the preview
+                    /*try {
+                        Thread.sleep(6000); // test slow to start preview
+                        //Thread.sleep(25000); // test slow to start preview
+                    }
+                    catch(InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }*/
+                    synchronized( background_camera_lock ) {
+                        if( camera == null ) {
+                            if( MyDebug.LOG ) {
+                                Log.d(TAG, "camera is closed");
+                            }
                             callback_done = true;
                             background_camera_lock.notifyAll();
+                            // don't call onFailure() - if camera has closed in the meantime, no need to report to user (e.g. this might be going to Settings
+                            // whilst preview was starting)
+                            return;
                         }
-                        return;
-                    }
-                    synchronized( background_camera_lock ) {
+
+                        if( MyDebug.LOG ) {
+                            Log.d(TAG, "camera: " + camera);
+                            Log.d(TAG, "previewBuilder: " + previewBuilder);
+                        }
                         captureSession = session;
                         extensionSession = eSession;
                         previewBuilder.addTarget(surface_texture);
@@ -6350,6 +6443,7 @@ public class CameraController2 extends CameraController {
                         }
                         try {
                             setRepeatingRequest();
+                            success = true;
                         }
                         catch(CameraAccessException e) {
                             if( MyDebug.LOG ) {
@@ -6359,7 +6453,8 @@ public class CameraController2 extends CameraController {
                             }
                             e.printStackTrace();
                             // we indicate that we failed to start the preview by setting captureSession back to null
-                            // this will cause a CameraControllerException to be thrown below
+                            // this will cause a CameraControllerException to be thrown below (if wait_until_started==true),
+                            // or via the on_failed callback (if wait_until_started==false)
                             captureSession = null;
                             extensionSession = null;
                         }
@@ -6367,6 +6462,31 @@ public class CameraController2 extends CameraController {
                     synchronized( background_camera_lock ) {
                         callback_done = true;
                         background_camera_lock.notifyAll();
+                    }
+                    if( success && runnable != null && !wait_until_started ) {
+                        // if not waiting, we run the runnable on UI thread now that preview is started
+                        final Activity activity = (Activity)context;
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if( MyDebug.LOG )
+                                    Log.d(TAG, "call runnable as preview now started");
+                                synchronized( background_camera_lock ) {
+                                    if( camera == null ) {
+                                        if( MyDebug.LOG ) {
+                                            Log.d(TAG, "but camera is closed in the meantime");
+                                        }
+                                        // don't call onFailure() - if camera has closed in the meantime, no need to report to user (e.g. this might be going to Settings
+                                        // whilst preview was starting)
+                                        return;
+                                    }
+                                }
+                                runnable.run();
+                            }
+                        });
+                    }
+                    else if( !success ) {
+                        onFailure();
                     }
                 }
 
@@ -6383,7 +6503,9 @@ public class CameraController2 extends CameraController {
                         callback_done = true;
                         background_camera_lock.notifyAll();
                     }
-                    // don't throw CameraControllerException here, as won't be caught - instead we throw CameraControllerException below
+                    onFailure();
+                    // don't throw CameraControllerException here, as won't be caught - instead we throw CameraControllerException below (if wait_until_started==true),
+                    // or via the on_failed callback (if wait_until_started==false)
                 }
 
                 @Override
@@ -6512,7 +6634,17 @@ public class CameraController2 extends CameraController {
                                 }
                             }
                     );
-                    camera.createExtensionSession(extensionConfiguration);
+                    launchCameraSession(wait_until_started, new CreateCaptureSessionFunction() {
+                        @Override
+                        public void call() throws CameraAccessException {
+                            if( camera == null ) {
+                                // just in case - don't throw exception as we don't want to show error toast, as it may be that another request to start preview is already active
+                                Log.e(TAG, "camera is no longer open");
+                                return;
+                            }
+                            camera.createExtensionSession(extensionConfiguration);
+                        }
+                    }, on_failed);
                 }
                 is_video_high_speed = false;
             }
@@ -6523,12 +6655,32 @@ public class CameraController2 extends CameraController {
                 if( ( cameraIdSPhysical != null || want_jpeg_r ) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ) {
                     List<OutputConfiguration> outputs = createOutputConfigurationList(surfaces, preview_surface);
                     SessionConfiguration sessionConfiguration = new SessionConfiguration(SessionConfiguration.SESSION_HIGH_SPEED, outputs, executor, myStateCallback);
-                    camera.createCaptureSession(sessionConfiguration);
+                    launchCameraSession(wait_until_started, new CreateCaptureSessionFunction() {
+                        @Override
+                        public void call() throws CameraAccessException {
+                            if( camera == null ) {
+                                // just in case - don't throw exception as we don't want to show error toast, as it may be that another request to start preview is already active
+                                Log.e(TAG, "camera is no longer open");
+                                return;
+                            }
+                            camera.createCaptureSession(sessionConfiguration);
+                        }
+                    }, on_failed);
                 }
                 else {
-                    camera.createConstrainedHighSpeedCaptureSession(surfaces,
-                            myStateCallback,
-                            handler);
+                    launchCameraSession(wait_until_started, new CreateCaptureSessionFunction() {
+                        @Override
+                        public void call() throws CameraAccessException {
+                            if( camera == null ) {
+                                // just in case - don't throw exception as we don't want to show error toast, as it may be that another request to start preview is already active
+                                Log.e(TAG, "camera is no longer open");
+                                return;
+                            }
+                            camera.createConstrainedHighSpeedCaptureSession(surfaces,
+                                    myStateCallback,
+                                    handler);
+                        }
+                    }, on_failed);
                 }
                 is_video_high_speed = true;
             }
@@ -6542,12 +6694,34 @@ public class CameraController2 extends CameraController {
                                 myStateCallback,
                                 handler);*/
                         SessionConfiguration sessionConfiguration = new SessionConfiguration(SessionConfiguration.SESSION_REGULAR, outputs, executor, myStateCallback);
-                        camera.createCaptureSession(sessionConfiguration);
+                        launchCameraSession(wait_until_started, new CreateCaptureSessionFunction() {
+                            @Override
+                            public void call() throws CameraAccessException {
+                                if( camera == null ) {
+                                    // just in case - don't throw exception as we don't want to show error toast, as it may be that another request to start preview is already active
+                                    Log.e(TAG, "camera is no longer open");
+                                    return;
+                                }
+                                camera.createCaptureSession(sessionConfiguration);
+                            }
+                        }, on_failed);
                     }
                     else {
-                        camera.createCaptureSession(surfaces,
-                                myStateCallback,
-                                handler);
+                        launchCameraSession(wait_until_started, new CreateCaptureSessionFunction() {
+                            @Override
+                            public void call() throws CameraAccessException {
+                                /*if( true )
+                                    throw new CameraAccessException(CameraAccessException.CAMERA_ERROR); // test*/
+                                if( camera == null ) {
+                                    // just in case - don't throw exception as we don't want to show error toast, as it may be that another request to start preview is already active
+                                    Log.e(TAG, "camera is no longer open");
+                                    return;
+                                }
+                                camera.createCaptureSession(surfaces,
+                                        myStateCallback,
+                                        handler);
+                            }
+                        }, on_failed);
                     }
                     is_video_high_speed = false;
                 }
@@ -6563,35 +6737,47 @@ public class CameraController2 extends CameraController {
                     throw new CameraControllerException();
                 }
             }
-            if( MyDebug.LOG )
-                Log.d(TAG, "wait until session created...");
-            // n.b., we use the background_camera_lock lock instead of a separate lock, so that it's safe to call this
-            // method under the background_camera_lock (if we did so but used a separate lock, we'd hang here, because
-            // MyStateCallback.onConfigured() needs to lock on background_camera_lock, before it completes and sets
-            // myStateCallback.callback_done to true.
-            synchronized( background_camera_lock ) {
-                while( !myStateCallback.callback_done ) {
-                    try {
-                        // release the lock, and wait until myStateCallback calls notifyAll()
-                        background_camera_lock.wait();
-                    }
-                    catch(InterruptedException e) {
-                        e.printStackTrace();
+
+            if( wait_until_started ) {
+                if( MyDebug.LOG )
+                    Log.d(TAG, "wait until session created...");
+                // n.b., we use the background_camera_lock lock instead of a separate lock, so that it's safe to call this
+                // method under the background_camera_lock (if we did so but used a separate lock, we'd hang here, because
+                // MyStateCallback.onConfigured() needs to lock on background_camera_lock, before it completes and sets
+                // myStateCallback.callback_done to true.
+                synchronized( background_camera_lock ) {
+                    while( !myStateCallback.callback_done ) {
+                        try {
+                            // release the lock, and wait until myStateCallback calls notifyAll()
+                            background_camera_lock.wait();
+                        }
+                        catch(InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
-            if( MyDebug.LOG ) {
-                if( captureSession != null )
-                    Log.d(TAG, "created captureSession: " + captureSession);
-                if( extensionSession != null )
-                    Log.d(TAG, "created extensionSession: " + extensionSession);
-            }
-            synchronized( background_camera_lock ) {
-                if( !hasCaptureSession() ) {
-                    if( MyDebug.LOG )
-                        Log.e(TAG, "failed to create capture session");
-                    throw new CameraControllerException();
+                if( MyDebug.LOG ) {
+                    if( captureSession != null )
+                        Log.d(TAG, "created captureSession: " + captureSession);
+                    if( extensionSession != null )
+                        Log.d(TAG, "created extensionSession: " + extensionSession);
                 }
+                synchronized( background_camera_lock ) {
+                    if( !hasCaptureSession() ) {
+                        if( MyDebug.LOG )
+                            Log.e(TAG, "failed to create capture session");
+                        throw new CameraControllerException();
+                    }
+                }
+
+                if( runnable != null ) {
+                    runnable.run();
+                }
+            }
+            else {
+                if( MyDebug.LOG )
+                    Log.d(TAG, "NOT waiting until session created");
+                // runnable is instead run from callback once preview is started
             }
         }
         catch(CameraAccessException e) {
@@ -6616,7 +6802,7 @@ public class CameraController2 extends CameraController {
     }
 
     @Override
-    public void startPreview() throws CameraControllerException {
+    public void startPreview(boolean wait_until_started, Runnable runnable, Runnable on_failed) throws CameraControllerException {
         if( MyDebug.LOG )
             Log.d(TAG, "startPreview");
 
@@ -6648,10 +6834,13 @@ public class CameraController2 extends CameraController {
                     // do via CameraControllerException instead of preview_error_cb, so caller immediately knows preview has failed
                     throw new CameraControllerException();
                 }
+                if( runnable != null ) {
+                    runnable.run();
+                }
                 return;
             }
         }
-        createCaptureSession(null, false);
+        createCaptureSession(wait_until_started, runnable, on_failed, null, false);
     }
 
     @Override
@@ -8446,7 +8635,7 @@ public class CameraController2 extends CameraController {
             previewIsVideoMode = true;
             previewBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT, CaptureRequest.CONTROL_CAPTURE_INTENT_VIDEO_RECORD);
             camera_settings.setupBuilder(previewBuilder, false);
-            createCaptureSession(video_recorder, want_photo_video_recording);
+            createCaptureSession(true, null, null, video_recorder, want_photo_video_recording);
         }
         catch(CameraAccessException e) {
             if( MyDebug.LOG ) {
@@ -8466,7 +8655,7 @@ public class CameraController2 extends CameraController {
         // if we change where we play the STOP_VIDEO_RECORDING sound, make sure it can't be heard in resultant video
         playSound(MediaActionSound.STOP_VIDEO_RECORDING);
         createPreviewRequest();
-        createCaptureSession(null, false);
+        createCaptureSession(true, null, null, null, false);
         /*if( MyDebug.LOG )
             Log.d(TAG, "add preview surface to previewBuilder");
         Surface surface = getPreviewSurface();

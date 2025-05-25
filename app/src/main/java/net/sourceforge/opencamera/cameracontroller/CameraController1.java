@@ -1577,7 +1577,7 @@ public class CameraController1 extends CameraController {
     }
 
     @Override
-    public void startPreview() throws CameraControllerException {
+    public void startPreview(boolean wait_until_started, Runnable runnable, Runnable on_failed) throws CameraControllerException {
         if( MyDebug.LOG )
             Log.d(TAG, "startPreview");
         try {
@@ -1588,6 +1588,9 @@ public class CameraController1 extends CameraController {
                 Log.e(TAG, "failed to start preview");
             e.printStackTrace();
             throw new CameraControllerException();
+        }
+        if( runnable != null ) {
+            runnable.run();
         }
     }
 
@@ -1838,7 +1841,7 @@ public class CameraController1 extends CameraController {
                         // need to start preview again: otherwise fail to take subsequent photos on Nexus 6
                         // and Nexus 7; on Galaxy Nexus we succeed, but exposure compensation has no effect
                         try {
-                            startPreview();
+                            startPreview(true, null, null);
                         }
                         catch(CameraControllerException e) {
                             if( MyDebug.LOG )

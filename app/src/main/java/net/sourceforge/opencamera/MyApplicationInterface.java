@@ -3833,7 +3833,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             }
             if( done ) {
                 clearLastImages();
-                preview.startCameraPreview();
+                preview.startCameraPreview(true, null);
             }
         }
     }
@@ -3907,7 +3907,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             }
             clearLastImages();
             drawPreview.clearGhostImage(); // doesn't make sense to show the last image as a ghost, if the user has trashed it!
-            preview.startCameraPreview();
+            preview.startCameraPreview(true, null);
         }
         // Calling updateGalleryIcon() immediately has problem that it still returns the latest image that we've just deleted!
         // But works okay if we call after a delay. 100ms works fine on Nexus 7 and Galaxy Nexus, but set to 500 just to be safe.

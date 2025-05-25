@@ -1667,7 +1667,10 @@ public class MainUI {
         if( isExposureUIOpen() ) {
             closeExposureUI();
         }
-        else if( main_activity.getPreview().getCameraController() != null && main_activity.supportsExposureButton() ) {
+        else if( main_activity.getPreview().getCameraController() != null && main_activity.getPreview().isPreviewStarted() && main_activity.supportsExposureButton() ) {
+            // make sure preview is started - main risk here is if preview is currently opening on
+            // background thread - don't want to open exposure UI that would allow being
+            // able to change settings that would then require restarting the preview
             setupExposureUI();
             if (main_activity.getBluetoothRemoteControl().remoteEnabled()) {
                 initRemoteControlForExposureUI();
@@ -2608,6 +2611,13 @@ public class MainUI {
         if( main_activity.getPreview().getCameraController() == null ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "camera not opened!");
+            return;
+        }
+        else if( !main_activity.getPreview().isPreviewStarted() ) {
+            if( MyDebug.LOG )
+                Log.d(TAG, "preview not started!");
+            // main risk here is if preview is currently opening on background thread - don't want to open popup menu that would allow being
+            // able to change settings that would then require restarting the preview
             return;
         }
 
