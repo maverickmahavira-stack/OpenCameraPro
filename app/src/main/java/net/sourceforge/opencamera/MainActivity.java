@@ -4721,6 +4721,8 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                                     thumbnail = getContentResolver().loadThumbnail(media.uri, size, new CancellationSignal());
                                 }
                                 else {
+                                    // non-deprecated getContentResolver().loadThumbnail requires Android Q
+                                    //noinspection deprecation
                                     thumbnail = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), media.id, MediaStore.Video.Thumbnails.MINI_KIND, null);
                                 }
                             }
