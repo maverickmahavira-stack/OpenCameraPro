@@ -20,6 +20,9 @@ import android.view.TextureView;
 
 /** Provides support using Android's original camera API
  *  android.hardware.Camera.
+ *  Deprecation warnings are suppressed, as we intentionally
+ *  offer both old and Camera2 APIs to users.
+ * @noinspection deprecation
  */
 public class CameraController1 extends CameraController {
     private static final String TAG = "CameraController1";
