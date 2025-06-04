@@ -2,6 +2,7 @@ package net.sourceforge.opencamera.preview;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import net.sourceforge.opencamera.cameracontroller.RawImage;
  */
 public interface ApplicationInterface {
     class NoFreeStorageException extends Exception {
+        @Serial
         private static final long serialVersionUID = -2021932609486148748L;
     }
     class VideoMaxFileSize {

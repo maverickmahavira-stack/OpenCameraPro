@@ -2,6 +2,7 @@ package net.sourceforge.opencamera.cameracontroller;
 
 import net.sourceforge.opencamera.MyDebug;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,6 +170,7 @@ public abstract class CameraController {
 
     // Android docs and FindBugs recommend that Comparators also be Serializable
     static class RangeSorter implements Comparator<int[]>, Serializable {
+        @Serial
         private static final long serialVersionUID = 5802214721073728212L;
         @Override
         public int compare(int[] o1, int[] o2) {
@@ -181,6 +183,7 @@ public abstract class CameraController {
      * Android docs and FindBugs recommend that Comparators also be Serializable
      */
     static class SizeSorter implements Comparator<Size>, Serializable {
+        @Serial
         private static final long serialVersionUID = 5802214721073718212L;
 
         @Override

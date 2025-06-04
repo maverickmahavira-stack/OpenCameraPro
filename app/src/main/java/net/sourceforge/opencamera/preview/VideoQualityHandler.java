@@ -6,6 +6,7 @@ import android.util.Log;
 import net.sourceforge.opencamera.cameracontroller.CameraController;
 import net.sourceforge.opencamera.MyDebug;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,6 +77,7 @@ public class VideoQualityHandler {
 
     // Android docs and FindBugs recommend that Comparators also be Serializable
     private static class SortVideoSizesComparator implements Comparator<CameraController.Size>, Serializable {
+        @Serial
         private static final long serialVersionUID = 5802214721033718212L;
 
         @Override
