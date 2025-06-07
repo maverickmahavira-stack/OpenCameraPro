@@ -4106,9 +4106,9 @@ public class JavaImageFunctions {
 
                         // end unrolled loop
 
-                        sum_fr *= 2.0;
-                        sum_fg *= 2.0;
-                        sum_fb *= 2.0;
+                        sum_fr *= 2.0f;
+                        sum_fg *= 2.0f;
+                        sum_fb *= 2.0f;
 
                         int r = (int)(sum_fr+0.5f);
                         int g = (int)(sum_fg+0.5f);
@@ -4275,9 +4275,9 @@ public class JavaImageFunctions {
 
                         // end unrolled loop
 
-                        sum_fr *= 2.0;
-                        sum_fg *= 2.0;
-                        sum_fb *= 2.0;
+                        sum_fr *= 2.0f;
+                        sum_fg *= 2.0f;
+                        sum_fb *= 2.0f;
 
                         int r = (int)(sum_fr+0.5f);
                         int g = (int)(sum_fg+0.5f);
@@ -4500,9 +4500,9 @@ public class JavaImageFunctions {
 
                         // end unrolled loop
 
-                        sum_fr *= 2.0;
-                        sum_fg *= 2.0;
-                        sum_fb *= 2.0;
+                        sum_fr *= 2.0f;
+                        sum_fg *= 2.0f;
+                        sum_fb *= 2.0f;
 
                         int r = (int)(sum_fr+0.5f);
                         int g = (int)(sum_fg+0.5f);
@@ -4635,9 +4635,9 @@ public class JavaImageFunctions {
 
                         // end unrolled loop
 
-                        sum_fr *= 2.0;
-                        sum_fg *= 2.0;
-                        sum_fb *= 2.0;
+                        sum_fr *= 2.0f;
+                        sum_fg *= 2.0f;
+                        sum_fb *= 2.0f;
 
                         int r = (int)(sum_fr+0.5f);
                         int g = (int)(sum_fg+0.5f);

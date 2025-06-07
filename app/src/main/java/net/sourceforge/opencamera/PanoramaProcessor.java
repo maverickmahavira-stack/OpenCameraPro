@@ -2196,9 +2196,9 @@ public class PanoramaProcessor {
 
                         float angle = (float)(Math.atan2(dy1, dx1) - Math.atan2(dy0, dx0));
                         if( angle < -Math.PI )
-                            angle += 2.0f*Math.PI;
+                            angle += (float) (2.0f*Math.PI);
                         else if( angle > Math.PI )
-                            angle -= 2.0f*Math.PI;
+                            angle -= (float) (2.0f*Math.PI);
                         if( Math.abs(angle) > 30.0f*Math.PI/180.0f ) {
                             // reject too large angles
                             continue;
@@ -2373,9 +2373,9 @@ public class PanoramaProcessor {
 
                 float angle = (float)(Math.atan2(dy1, dx1) - Math.atan2(dy0, dx0));
                 if( angle < -Math.PI )
-                    angle += 2.0f*Math.PI;
+                    angle += (float) (2.0f*Math.PI);
                 else if( angle > Math.PI )
-                    angle -= 2.0f*Math.PI;
+                    angle -= (float) (2.0f*Math.PI);
                 if( MyDebug.LOG )
                     Log.d(TAG, "    match has angle: " + angle);
                 angle_sum += angle;
