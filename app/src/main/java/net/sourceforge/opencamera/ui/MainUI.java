@@ -223,7 +223,6 @@ public class MainUI {
             Log.d(TAG, "    system_orientation_portrait? " + system_orientation_portrait);
         }
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(main_activity);
         // we cache the preference_ui_placement to save having to check it in the draw() method
         this.ui_placement = computeUIPlacement();
         if( MyDebug.LOG )
