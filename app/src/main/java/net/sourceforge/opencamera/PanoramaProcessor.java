@@ -2243,6 +2243,11 @@ public class PanoramaProcessor {
                             //y0 *= y_scale;
                             int transformed_x0 = (int)(x0 * Math.cos(angle) - y0 * Math.sin(angle));
                             int transformed_y0 = (int)(x0 * Math.sin(angle) + y0 * Math.cos(angle));
+                            // warning "Possibly lossy implicit cast in compound assignment" suppressed:
+                            // it's intentional that we multiply int by float, and implicitly cast back to int
+                            // (the suggested solution is to first cast the float to int before multiplying, which
+                            // we don't want)
+                            //noinspection lossy-conversions
                             transformed_y0 *= y_scale;
                             transformed_x0 += c1_x;
                             transformed_y0 += c1_y;
@@ -2428,7 +2433,9 @@ public class PanoramaProcessor {
                 Log.d(TAG, "offset_y before rotation: " + offset_y);
                 Log.d(TAG, "rotated_centre: " + rotated_centre_x + " , " + rotated_centre_y);
             }
+            //noinspection lossy-conversions
             offset_x += centres[0].x - rotated_centre_x;
+            //noinspection lossy-conversions
             offset_y += centres[0].y - rotated_centre_y;
 
         }
@@ -2508,6 +2515,11 @@ public class PanoramaProcessor {
                 //int t_cy = (int)(x0 * Math.sin(rotation) + y_scale * y0 * Math.cos(rotation));
                 int t_cx = (int)(x0 * Math.cos(rotation) - y0 * Math.sin(rotation));
                 int t_cy = (int)(x0 * Math.sin(rotation) + y0 * Math.cos(rotation));
+                // warning "Possibly lossy implicit cast in compound assignment" suppressed:
+                // it's intentional that we multiply int by float, and implicitly cast back to int
+                // (the suggested solution is to first cast the float to int before multiplying, which
+                // we don't want)
+                //noinspection lossy-conversions
                 t_cy *= y_scale;
                 t_cx += offset_x;
                 t_cy += offset_y;
@@ -2530,7 +2542,13 @@ public class PanoramaProcessor {
                 int dir_u_x = 0, dir_u_y = -50;
                 if( i == 1 ) {
                     // transform
+                    // warning "Possibly lossy implicit cast in compound assignment" suppressed:
+                    // it's intentional that we multiply int by float, and implicitly cast back to int
+                    // (the suggested solution is to first cast the float to int before multiplying, which
+                    // we don't want)
+                    //noinspection lossy-conversions
                     dir_r_y *= y_scale;
+                    //noinspection lossy-conversions
                     dir_u_y *= y_scale;
                     int n_dir_r_x = (int)(dir_r_x * Math.cos(rotation) - dir_r_y * Math.sin(rotation));
                     int n_dir_r_y = (int)(dir_r_x * Math.sin(rotation) + dir_r_y * Math.cos(rotation));
@@ -2564,6 +2582,11 @@ public class PanoramaProcessor {
                             //t_cy = (int)(cx * Math.sin(rotation) + y_scale * cy * Math.cos(rotation));
                             t_cx = (int)(cx * Math.cos(rotation) - cy * Math.sin(rotation));
                             t_cy = (int)(cx * Math.sin(rotation) + cy * Math.cos(rotation));
+                            // warning "Possibly lossy implicit cast in compound assignment" suppressed:
+                            // it's intentional that we multiply int by float, and implicitly cast back to int
+                            // (the suggested solution is to first cast the float to int before multiplying, which
+                            // we don't want)
+                            //noinspection lossy-conversions
                             t_cy *= y_scale;
                             t_cx += offset_x;
                             t_cy += offset_y;
@@ -3289,7 +3312,13 @@ public class PanoramaProcessor {
                 }
                 if( MyDebug.LOG )
                     Log.d(TAG, "### time after auto-alignment for " + i + "th bitmap: " + (System.currentTimeMillis() - time_s));
+                // warning "Possibly lossy implicit cast in compound assignment" suppressed:
+                // it's intentional that we multiply int by float, and implicitly cast back to int
+                // (the suggested solution is to first cast the float to int before multiplying, which
+                // we don't want)
+                //noinspection lossy-conversions
                 this_align_x *= align_downsample;
+                //noinspection lossy-conversions
                 this_align_y *= align_downsample;
                 for(Bitmap alignment_bitmap : alignment_bitmaps) {
                     alignment_bitmap.recycle();

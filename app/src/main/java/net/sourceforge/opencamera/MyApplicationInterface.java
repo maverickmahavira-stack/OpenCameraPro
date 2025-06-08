@@ -3273,7 +3273,9 @@ public class MyApplicationInterface extends BasicApplicationInterface {
 				Log.d(TAG, "width: " + width);*/
             if( paint.getTextAlign() == Paint.Align.CENTER )
                 width /= 2.0f;
+            //noinspection lossy-conversions
             text_bounds.left -= width;
+            //noinspection lossy-conversions
             text_bounds.right -= width;
         }
 		/*if( MyDebug.LOG )

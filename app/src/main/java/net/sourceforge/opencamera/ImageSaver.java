@@ -2578,7 +2578,13 @@ public class ImageSaver extends Thread {
             matrix.postScale(scale, scale);
             w0 *= scale;
             h0 *= scale;
+            // warning "Possibly lossy implicit cast in compound assignment" suppressed:
+            // it's intentional that we multiply int by float, and implicitly cast back to int
+            // (the suggested solution is to first cast the float to int before multiplying, which
+            // we don't want)
+            //noinspection lossy-conversions
             w1 *= scale;
+            //noinspection lossy-conversions
             h1 *= scale;
             if( MyDebug.LOG ) {
                 Log.d(TAG, "after scaling: w0 = " + w0 + " , h0 = " + h0);

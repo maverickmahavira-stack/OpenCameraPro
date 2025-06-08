@@ -7683,6 +7683,11 @@ public class CameraController2 extends CameraController {
                         double this_scale = scale;
                         for(int j=i;j<n_half_images-1;j++)
                             this_scale *= scale;
+                        // warning "Possibly lossy implicit cast in compound assignment" suppressed:
+                        // it's intentional that we divide long by double, and implicitly cast back to long
+                        // (the suggested solution is to first cast the double to long before dividing, which
+                        // we don't want)
+                        //noinspection lossy-conversions
                         exposure_time /= this_scale;
                         if( exposure_time < min_exposure_time )
                             exposure_time = min_exposure_time;
@@ -7711,6 +7716,11 @@ public class CameraController2 extends CameraController {
                         double this_scale = scale;
                         for(int j=0;j<i;j++)
                             this_scale *= scale;
+                        // warning "Possibly lossy implicit cast in compound assignment" suppressed:
+                        // it's intentional that we multiply long by double, and implicitly cast back to long
+                        // (the suggested solution is to first cast the double to long before multiplying, which
+                        // we don't want)
+                        //noinspection lossy-conversions
                         exposure_time *= this_scale;
                         if( exposure_time > max_exposure_time )
                             exposure_time = max_exposure_time;
