@@ -2367,7 +2367,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 }
 
                 if( preview_opened != null ) {
-                    preview_opened.run();;
+                    preview_opened.run();
                 }
             }
         });
