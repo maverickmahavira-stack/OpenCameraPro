@@ -98,7 +98,7 @@ public class DeviceScanner extends AppCompatActivity {
         ListView list = findViewById(R.id.list);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                onListItemClick((ListView)parent, v, position, id);
+                onListItemClick(position);
             }
         });
     }
@@ -380,7 +380,7 @@ public class DeviceScanner extends AppCompatActivity {
     }
 
     //@Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(int position) {
         final BluetoothDevice device = leDeviceListAdapter.getDevice(position);
         if( device == null )
             return;
