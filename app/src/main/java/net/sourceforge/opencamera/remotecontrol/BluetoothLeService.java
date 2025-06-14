@@ -255,7 +255,7 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
-    private void broadcastUpdate(String action, final BluetoothGattCharacteristic characteristic) {
+    private void broadcastUpdate(String ignoredAction, final BluetoothGattCharacteristic characteristic) {
         UUID uuid = characteristic.getUuid();
         final int format_uint8 = BluetoothGattCharacteristic.FORMAT_UINT8;
         final int format_uint16 = BluetoothGattCharacteristic.FORMAT_UINT16;
