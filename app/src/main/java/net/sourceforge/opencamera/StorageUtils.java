@@ -920,16 +920,16 @@ public class StorageUtils {
         final boolean video;
         final Uri uri;
         final long date;
-        final int orientation; // for mediastore==true, video==false only
+        //final int orientation; // for mediastore==true, video==false only
         final String filename; // this should correspond to DISPLAY_NAME (so available with scoped storage) - so this includes file extension, but not full path
 
-        Media(boolean mediastore, long id, boolean video, Uri uri, long date, int orientation, String filename) {
+        Media(boolean mediastore, long id, boolean video, Uri uri, long date/*, int orientation*/, String filename) {
             this.mediastore = mediastore;
             this.id = id;
             this.video = video;
             this.uri = uri;
             this.date = date;
-            this.orientation = orientation;
+            //this.orientation = orientation;
             this.filename = filename;
         }
 
@@ -1003,11 +1003,12 @@ public class StorageUtils {
         final int column_name_c = 3; // filename (without path), including extension
         final int column_orientation_c = 4; // for images only*/
         final int column_name_c = 2; // filename (without path), including extension
-        final int column_orientation_c = 3; // for mediastore images only
+        //final int column_orientation_c = 3; // for mediastore images only
         String [] projection;
         switch( uri_type ) {
             case MEDIASTORE_IMAGES:
-                projection = new String[] {ImageColumns._ID, ImageColumns.DATE_TAKEN, ImageColumns.DISPLAY_NAME, ImageColumns.ORIENTATION};
+                //projection = new String[] {ImageColumns._ID, ImageColumns.DATE_TAKEN, ImageColumns.DISPLAY_NAME, ImageColumns.ORIENTATION};
+                projection = new String[] {ImageColumns._ID, ImageColumns.DATE_TAKEN, ImageColumns.DISPLAY_NAME};
                 break;
             case MEDIASTORE_VIDEOS:
                 projection = new String[] {VideoColumns._ID, VideoColumns.DATE_TAKEN, VideoColumns.DISPLAY_NAME};
@@ -1246,7 +1247,7 @@ public class StorageUtils {
 
                 long id = cursor.getLong(column_id_c);
                 long date = cursor.getLong(column_date_taken_c);
-                int orientation = (uri_type == UriType.MEDIASTORE_IMAGES) ? cursor.getInt(column_orientation_c) : 0;
+                //int orientation = (uri_type == UriType.MEDIASTORE_IMAGES) ? cursor.getInt(column_orientation_c) : 0;
                 Uri uri = ContentUris.withAppendedId(baseUri, id);
                 String filename = cursor.getString(column_name_c);
                 if( MyDebug.LOG )
@@ -1266,7 +1267,7 @@ public class StorageUtils {
                 if( MyDebug.LOG )
                     Log.d(TAG, "video: " + video);
 
-                media = new Media(true, id, video, uri, date, orientation, filename);
+                media = new Media(true, id, video, uri, date/*, orientation*/, filename);
 
                 if( MyDebug.LOG ) {
                     // debug
@@ -1456,7 +1457,7 @@ public class StorageUtils {
                         }
                     }
 
-                    media = new Media(false,0, latest_is_video, latest_uri, latest_date, 0, latest_filename);
+                    media = new Media(false,0, latest_is_video, latest_uri, latest_date/*, 0*/, latest_filename);
                 }
 
                 /*if( MyDebug.LOG ) {
