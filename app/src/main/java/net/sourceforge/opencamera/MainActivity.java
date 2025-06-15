@@ -2676,6 +2676,8 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 dialog.dismiss(); // need to explicitly dismiss for setSingleChoiceItems
             }
         });
+        if( MyDebug.LOG )
+            Log.d(TAG, "clickedSwitchMultiCamera: time after setting items: " + (System.currentTimeMillis() - debug_time));
         /*alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface arg0) {
@@ -2686,6 +2688,8 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         //setWindowFlagsForSettings(false); // set set_lock_protect to false - no need to protect this dialog with lock screen (fine to run above lock screen if that option is set)
         //showAlert(alertDialog.create());
         AlertDialog dialog = alertDialog.create();
+        if( MyDebug.LOG )
+            Log.d(TAG, "clickedSwitchMultiCamera: time after dialog create: " + (System.currentTimeMillis() - debug_time));
         if( preview.hasPhysicalCameras() ) {
             TextView footer = new TextView(this);
             footer.setText(R.string.physical_cameras_info);
@@ -2693,10 +2697,14 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             final int padding = (int) (5 * scale + 0.5f); // convert dps to pixels
             footer.setPadding(padding, padding, padding, padding);
             dialog.getListView().addFooterView(footer, null, false);
+            if( MyDebug.LOG )
+                Log.d(TAG, "clickedSwitchMultiCamera: time after adding footer: " + (System.currentTimeMillis() - debug_time));
         }
         if( dialog.getWindow() != null ) {
             dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
         }
+        if( MyDebug.LOG )
+            Log.d(TAG, "clickedSwitchMultiCamera: time before showing dialog: " + (System.currentTimeMillis() - debug_time));
         dialog.show();
         if( MyDebug.LOG )
             Log.d(TAG, "clickedSwitchMultiCamera: total time: " + (System.currentTimeMillis() - debug_time));
