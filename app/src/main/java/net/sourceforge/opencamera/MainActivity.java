@@ -1720,6 +1720,12 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         this.app_is_paused = true;
 
         mainUI.destroyPopup(); // important as user could change/reset settings from Android settings when pausing
+        if( this.switch_multi_camera_dialog != null ) {
+            // to be safe - again, camera ID could reset
+            if( MyDebug.LOG )
+                Log.d(TAG, "clear switch_multi_camera_dialog");
+            this.switch_multi_camera_dialog = null;
+        }
         unregisterDisplayListener();
         mSensorManager.unregisterListener(accelerometerListener);
         magneticSensor.unregisterMagneticListener(mSensorManager);
@@ -2440,6 +2446,21 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         switchMultiCameraButton.setEnabled(false);
         applicationInterface.reset(true);
         this.getApplicationInterface().getDrawPreview().setDimPreview(true);
+        if( this.switch_multi_camera_dialog != null ) {
+            // only clear if switching to a different camera ID (switching between lenses is fine)
+            int curr_camera_id = getActualCameraId();
+            if( MyDebug.LOG )
+                Log.d(TAG, "curr_camera_id: " + curr_camera_id);
+            if( cameraId != curr_camera_id ) {
+                if( MyDebug.LOG )
+                    Log.d(TAG, "clear switch_multi_camera_dialog");
+                this.switch_multi_camera_dialog = null;
+            }
+            else {
+                if( MyDebug.LOG )
+                    Log.d(TAG, "keep switch_multi_camera_dialog");
+            }
+        }
         this.preview.setCamera(cameraId, cameraIdSPhysical);
         switchCameraButton.setEnabled(true);
         switchMultiCameraButton.setEnabled(true);
@@ -2496,26 +2517,23 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         return logical_camera_ids;
     }
 
-    /** User can long-click on switch multi cam icon to bring up a menu to switch to any camera.
-     *  Update: from v1.53 onwards with support for exposing physical lens, we always call this with
-     *  a regular click on the switch multi cam icon.
-     */
-    public void clickedSwitchMultiCamera(View view) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "clickedSwitchMultiCamera");
+    private AlertDialog switch_multi_camera_dialog;
 
+    private AlertDialog createSwitchMultiCameraDialog() {
+        if( MyDebug.LOG )
+            Log.d(TAG, "createSwitchMultiCameraDialog");
         long debug_time = 0;
         if( MyDebug.LOG ) {
             debug_time = System.currentTimeMillis();
         }
-        //showPreview(false);
+
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle(R.string.choose_camera);
 
         int curr_camera_id = getActualCameraId();
         List<Integer> logical_camera_ids = getSameFacingLogicalCameras(curr_camera_id);
         if( MyDebug.LOG )
-            Log.d(TAG, "clickedSwitchMultiCamera: time after logical_camera_ids: " + (System.currentTimeMillis() - debug_time));
+            Log.d(TAG, "createSwitchMultiCameraDialog: time after logical_camera_ids: " + (System.currentTimeMillis() - debug_time));
 
         int n_logical_cameras = logical_camera_ids.size();
         int n_cameras = n_logical_cameras;
@@ -2532,10 +2550,10 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         for(int i=0;i<n_logical_cameras;i++) {
             int logical_camera_id = logical_camera_ids.get(i);
             if( MyDebug.LOG )
-                Log.d(TAG, "clickedSwitchMultiCamera: time before getDescription: " + (System.currentTimeMillis() - debug_time));
+                Log.d(TAG, "createSwitchMultiCameraDialog: time before getDescription: " + (System.currentTimeMillis() - debug_time));
             String camera_name = logical_camera_id + ": " + preview.getCameraControllerManager().getDescription(this, logical_camera_id);
             if( MyDebug.LOG )
-                Log.d(TAG, "clickedSwitchMultiCamera: time after getDescription: " + (System.currentTimeMillis() - debug_time));
+                Log.d(TAG, "createSwitchMultiCameraDialog: time after getDescription: " + (System.currentTimeMillis() - debug_time));
             if( logical_camera_id == curr_camera_id ) {
                 // this is the current logical camera
                 if( preview.hasPhysicalCameras() ) {
@@ -2581,10 +2599,10 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                     ArrayList<PhysicalCamera> physical_cameras = new ArrayList<>();
                     for(String physical_id : physical_camera_ids) {
                         if( MyDebug.LOG )
-                            Log.d(TAG, "clickedSwitchMultiCamera: time before getDescription: " + (System.currentTimeMillis() - debug_time));
+                            Log.d(TAG, "createSwitchMultiCameraDialog: time before getDescription: " + (System.currentTimeMillis() - debug_time));
                         physical_cameras.add(new PhysicalCamera(physical_id));
                         if( MyDebug.LOG )
-                            Log.d(TAG, "clickedSwitchMultiCamera: time after getDescription: " + (System.currentTimeMillis() - debug_time));
+                            Log.d(TAG, "createSwitchMultiCameraDialog: time after getDescription: " + (System.currentTimeMillis() - debug_time));
                     }
                     {
                         Collections.sort(physical_cameras, new Comparator<>() {
@@ -2644,7 +2662,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             //index++;
         }*/
         if( MyDebug.LOG )
-            Log.d(TAG, "clickedSwitchMultiCamera: time after building menu: " + (System.currentTimeMillis() - debug_time));
+            Log.d(TAG, "createSwitchMultiCameraDialog: time after building menu: " + (System.currentTimeMillis() - debug_time));
 
         //alertDialog.setItems(items, new DialogInterface.OnClickListener() {
         alertDialog.setSingleChoiceItems(items, selected, new DialogInterface.OnClickListener() {
@@ -2677,7 +2695,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             }
         });
         if( MyDebug.LOG )
-            Log.d(TAG, "clickedSwitchMultiCamera: time after setting items: " + (System.currentTimeMillis() - debug_time));
+            Log.d(TAG, "createSwitchMultiCameraDialog: time after setting items: " + (System.currentTimeMillis() - debug_time));
         /*alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface arg0) {
@@ -2689,7 +2707,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         //showAlert(alertDialog.create());
         AlertDialog dialog = alertDialog.create();
         if( MyDebug.LOG )
-            Log.d(TAG, "clickedSwitchMultiCamera: time after dialog create: " + (System.currentTimeMillis() - debug_time));
+            Log.d(TAG, "createSwitchMultiCameraDialog: time after dialog create: " + (System.currentTimeMillis() - debug_time));
         if( preview.hasPhysicalCameras() ) {
             TextView footer = new TextView(this);
             footer.setText(R.string.physical_cameras_info);
@@ -2698,11 +2716,32 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             footer.setPadding(padding, padding, padding, padding);
             dialog.getListView().addFooterView(footer, null, false);
             if( MyDebug.LOG )
-                Log.d(TAG, "clickedSwitchMultiCamera: time after adding footer: " + (System.currentTimeMillis() - debug_time));
+                Log.d(TAG, "createSwitchMultiCameraDialog: time after adding footer: " + (System.currentTimeMillis() - debug_time));
         }
         if( dialog.getWindow() != null ) {
             dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
         }
+        return dialog;
+    }
+
+    /** User can long-click on switch multi cam icon to bring up a menu to switch to any camera.
+     *  Update: from v1.53 onwards with support for exposing physical lens, we always call this with
+     *  a regular click on the switch multi cam icon.
+     */
+    public void clickedSwitchMultiCamera(View view) {
+        if( MyDebug.LOG )
+            Log.d(TAG, "clickedSwitchMultiCamera");
+
+        long debug_time = 0;
+        if( MyDebug.LOG ) {
+            debug_time = System.currentTimeMillis();
+        }
+        //showPreview(false);
+        //AlertDialog dialog = createSwitchMultiCameraDialog();
+        if( switch_multi_camera_dialog == null ) {
+            switch_multi_camera_dialog = createSwitchMultiCameraDialog();
+        }
+        AlertDialog dialog = switch_multi_camera_dialog;
         if( MyDebug.LOG )
             Log.d(TAG, "clickedSwitchMultiCamera: time before showing dialog: " + (System.currentTimeMillis() - debug_time));
         dialog.show();
