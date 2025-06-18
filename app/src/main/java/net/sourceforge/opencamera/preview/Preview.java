@@ -8153,9 +8153,21 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         showToast(clear_toast, message, 32, use_fake_toast);
     }
 
+    public void showToast(final ToastBoxer clear_toast, final String message, final boolean use_fake_toast, boolean dont_clear) {
+        showToast(clear_toast, message, 32, use_fake_toast, dont_clear);
+    }
+
+    /*public void showToast(final ToastBoxer clear_toast, final String message, final boolean use_fake_toast, int duration) {
+        showToast(clear_toast, message, 32, use_fake_toast, duration);
+    }*/
+
     /*public void showToast(final String message, final int offset_y_dp, final boolean use_fake_toast) {
         showToast(null, message, offset_y_dp, use_fake_toast);
     }*/
+
+    public void showToast(final ToastBoxer clear_toast, final String message, final int offset_y_dp, final boolean use_fake_toast) {
+        showToast(clear_toast, message, offset_y_dp, use_fake_toast, false);
+    }
 
     /** Displays a "toast", but has several advantages over calling Android's Toast API directly.
      *  We use a custom view, to rotate the toast to account for the device orientation (since
@@ -8183,8 +8195,10 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
      *                       we want the Android toast look such as for an error message).
      *                       Usages where we want to display info on the Preview should always set
      *                       use_fake_toast==true for a consistent look.
+     * @param dont_clear     If true, then the toast will remain until explicitly cleared via
+     *                       clearActiveFakeToast(). Only supported if use_fake_toast==true.
      */
-    public void showToast(final ToastBoxer clear_toast, final String message, final int offset_y_dp, final boolean use_fake_toast) {
+    public void showToast(final ToastBoxer clear_toast, final String message, final int offset_y_dp, final boolean use_fake_toast, boolean dont_clear) {
         //final boolean use_fake_toast = true;
         //final boolean use_fake_toast = old_use_fake_toast;
         if( !applicationInterface.getShowToastsPref() ) {
@@ -8255,14 +8269,16 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     // but we remove callbacks always just in case
                     fake_toast_handler.removeCallbacksAndMessages(null);
 
-                    fake_toast_handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if( MyDebug.LOG )
-                                Log.d(TAG, "destroy fake toast due to time expired");
-                            clearActiveFakeToast(true);
-                        }
-                    }, 2000); // supposedly matches Toast.LENGTH_SHORT
+                    if( !dont_clear ) {
+                        fake_toast_handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if( MyDebug.LOG )
+                                    Log.d(TAG, "destroy fake toast due to time expired");
+                                clearActiveFakeToast(true);
+                            }
+                        }, 2000); // supposedly matches Toast.LENGTH_SHORT
+                    }
 
                     return;
                 }

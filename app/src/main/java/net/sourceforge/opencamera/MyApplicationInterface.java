@@ -2930,7 +2930,9 @@ public class MyApplicationInterface extends BasicApplicationInterface {
         if( getPhotoMode() == PhotoMode.X_Night ) {
             message = getContext().getResources().getString(R.string.preference_nr_mode_low_light_message) + "\n";
         }
-        main_activity.getPreview().showToast(null, message + progress + "%", true);
+        // call with dont_clear==true, as on some devices (e.g., Galaxy S24+ in X-Night mode), there can be a pause long enough that
+        // the toast would clear, even when not at 100%
+        main_activity.getPreview().showToast(null, message + progress + "%", true, true);
     }
 
     @Override
