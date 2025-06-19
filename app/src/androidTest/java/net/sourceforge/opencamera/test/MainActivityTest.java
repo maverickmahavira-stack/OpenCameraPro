@@ -156,6 +156,22 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         }
     }
 
+    private void waitUntilPreviewStarted() {
+        Log.d(TAG, "wait until preview started");
+        long time_s = System.currentTimeMillis();
+        while( !mPreview.isPreviewStarted() ) {
+            assertTrue( System.currentTimeMillis() - time_s < 20000 );
+        }
+        Log.d(TAG, "preview is started!");
+        this.getInstrumentation().waitForIdleSync();
+        Log.d(TAG, "done idle sync");
+        try {
+            Thread.sleep(100); // sleep a bit just to be safe
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /** Restarts Open Camera.
      *  WARNING: Make sure that any assigned variables related to the activity, e.g., anything
      *  returned by findViewById(), is updated to the new mActivity after calling this method!
@@ -10016,9 +10032,9 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
     }
 
-    /* Tests going to settings.
+    /* Tests going to settings, and back.
      */
-    public void testSettings() {
+    public void testSettings() throws InterruptedException {
         Log.d(TAG, "testSettings");
         setToDefault();
 
@@ -10027,6 +10043,20 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         clickView(settingsButton);
         this.getInstrumentation().waitForIdleSync();
         assertTrue(mActivity.isCameraInBackground());
+
+        Thread.sleep(500);
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                Log.d(TAG, "on back pressed...");
+                mActivity.onBackPressed();
+            }
+        });
+        // need to wait for UI code to finish before leaving
+        this.getInstrumentation().waitForIdleSync();
+        Thread.sleep(500);
+
+        // check preview starts up
+        waitUntilPreviewStarted();
     }
 
     /* Tests going to settings and opening the privacy policy window.
