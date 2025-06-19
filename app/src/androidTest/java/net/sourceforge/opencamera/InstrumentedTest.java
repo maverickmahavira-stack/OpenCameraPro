@@ -6227,7 +6227,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.PORTRAIT;
         MainActivity.test_insets = Insets.of(0, 200, 0, 300);
         MainActivity.test_cutout_insets = Insets.of(0, 200, 0, 0);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             assertEquals(300, activity.getNavigationGap());
             assertEquals(0, activity.getNavigationGapLandscape());
@@ -6237,7 +6237,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.LANDSCAPE;
         MainActivity.test_insets = Insets.of(200, 0, 300, 0);
         MainActivity.test_cutout_insets = Insets.of(200, 0, 0, 0);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             assertEquals(300, activity.getNavigationGap());
             assertEquals(0, activity.getNavigationGapLandscape());
@@ -6247,7 +6247,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.REVERSE_LANDSCAPE;
         MainActivity.test_insets = Insets.of(300, 0, 200, 0);
         MainActivity.test_cutout_insets = Insets.of(0, 0, 200, 0);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             assertEquals(300, activity.getNavigationGap());
             assertEquals(0, activity.getNavigationGapLandscape());
@@ -6258,7 +6258,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.PORTRAIT;
         MainActivity.test_insets = Insets.of(0, 100, 0, 500);
         MainActivity.test_cutout_insets = Insets.of(0, 100, 0, 300);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             assertEquals(200, activity.getNavigationGap()); // should only include the gap for the navigation, not the bottom cutout
             assertEquals(0, activity.getNavigationGapLandscape());
@@ -6268,7 +6268,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.LANDSCAPE;
         MainActivity.test_insets = Insets.of(100, 0, 500, 0);
         MainActivity.test_cutout_insets = Insets.of(100, 0, 300, 0);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             assertEquals(200, activity.getNavigationGap()); // should only include the gap for the navigation, not the bottom cutout
             assertEquals(0, activity.getNavigationGapLandscape());
@@ -6278,7 +6278,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.REVERSE_LANDSCAPE;
         MainActivity.test_insets = Insets.of(500, 0, 100, 0);
         MainActivity.test_cutout_insets = Insets.of(300, 0, 100, 0);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             assertEquals(200, activity.getNavigationGap()); // should only include the gap for the navigation, not the bottom cutout
             assertEquals(0, activity.getNavigationGapLandscape());
@@ -6289,7 +6289,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.PORTRAIT;
         MainActivity.test_insets = Insets.of(50, 100, 50, 100);
         MainActivity.test_cutout_insets = Insets.of(50, 100, 50, 100);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             // navigation gaps should be 0, as shouldn't include cutout
             assertEquals(0, activity.getNavigationGap());
@@ -6301,7 +6301,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.LANDSCAPE;
         MainActivity.test_insets = Insets.of(100, 0, 0, 250);
         MainActivity.test_cutout_insets = Insets.of(100, 0, 0, 0);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             assertEquals(0, activity.getNavigationGap());
             assertEquals(250, activity.getNavigationGapLandscape());
@@ -6329,7 +6329,7 @@ public class InstrumentedTest {
         MainActivity.test_system_orientation = MainActivity.SystemOrientation.REVERSE_LANDSCAPE;
         MainActivity.test_insets = Insets.of(0, 0, 100, 250);
         MainActivity.test_cutout_insets = Insets.of(0, 0, 100, 0);
-        restart(); // resstart to force OnApplyWindowInsetsListener() to be called with new test values
+        restart(); // restart to force OnApplyWindowInsetsListener() to be called with new test values
         mActivityRule.getScenario().onActivity(activity -> {
             assertEquals(0, activity.getNavigationGap());
             assertEquals(0, activity.getNavigationGapLandscape());
