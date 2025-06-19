@@ -6230,13 +6230,15 @@ public class CameraController2 extends CameraController {
      */
     private void launchCameraSession(boolean wait_until_started, CreateCaptureSessionFunction function, Runnable on_failed) throws CameraAccessException {
         if( wait_until_started ) {
-            /*try {
-                Thread.sleep(6000); // test slow to start preview
-                //Thread.sleep(25000); // test slow to start preview
+            if( test_force_slow_preview_start ) {
+                try {
+                    Thread.sleep(6000); // test slow to start preview
+                    //Thread.sleep(25000); // test slow to start preview
+                }
+                catch(InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            catch(InterruptedException e) {
-                throw new RuntimeException(e);
-            }*/
             function.call();
         }
         else {
@@ -6244,13 +6246,15 @@ public class CameraController2 extends CameraController {
                 @Override
                 public void run() {
                     try {
-                        /*try {
-                            Thread.sleep(6000); // test slow to start preview
-                            //Thread.sleep(25000); // test slow to start preview
+                        if( test_force_slow_preview_start ) {
+                            try {
+                                Thread.sleep(6000); // test slow to start preview
+                                //Thread.sleep(25000); // test slow to start preview
+                            }
+                            catch(InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
-                        catch(InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }*/
                         function.call();
                     }
                     catch(CameraAccessException e) {
