@@ -6212,7 +6212,7 @@ public class InstrumentedTest {
     @Category(MainTests.class)
     @Test
     public void testWindowInsets() throws InterruptedException {
-        Log.d(TAG, "testTakePhoto");
+        Log.d(TAG, "testWindowInsets");
         setToDefault();
 
         if( !getActivityValue(MainActivity::getEdgeToEdgeMode) ) {
