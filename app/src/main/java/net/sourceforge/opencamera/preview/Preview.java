@@ -1984,6 +1984,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
             final boolean wait_until_started = true;
             //final boolean wait_until_started = false; // test
+            if( MyDebug.LOG )
+                Log.d(TAG, "wait_until_started: " + wait_until_started);
             setupCamera(take_photo, wait_until_started, new Runnable() {
                 @Override
                 public void run() {
