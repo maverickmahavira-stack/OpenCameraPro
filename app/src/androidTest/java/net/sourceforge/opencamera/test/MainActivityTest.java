@@ -11877,7 +11877,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             assertEquals(popupButton.getVisibility(), View.GONE);
             assertEquals(trashButton.getVisibility(), View.GONE);
             assertEquals(shareButton.getVisibility(), View.GONE);
-            assertEquals(settingsButton.getVisibility(), View.VISIBLE);
+            assertEquals(settingsButton.getVisibility(), View.GONE);
             assertEquals(cancelPanoramaButton.getVisibility(), View.VISIBLE);
 
             Thread.sleep(2000);
