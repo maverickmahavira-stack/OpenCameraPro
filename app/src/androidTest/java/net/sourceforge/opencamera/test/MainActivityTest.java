@@ -12002,12 +12002,13 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     }
 
     /* Test for panorama photo mode, but cancelling by going to settings.
+     * No longer relevant now that we hide the Settings while taking photo.
      */
-    public void testTakePhotoPanoramaCancelBySettings() throws InterruptedException {
+    /*public void testTakePhotoPanoramaCancelBySettings() throws InterruptedException {
         Log.d(TAG, "testTakePhotoPanoramaCancelBySettings");
 
         subTestTakePhotoPanorama(false, true, true);
-    }
+    }*/
 
     /*private Bitmap getBitmapFromAssets(String filename) throws IOException {
         Log.d(TAG, "getBitmapFromAssets: " + filename);

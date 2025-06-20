@@ -92,7 +92,7 @@ public class PhotoTests {
         if( !TestUtils.test_camera2 ) {
             suite.addTest(TestSuite.createTest(MainActivityTest.class, "testTakePhotoPanoramaMax"));
             suite.addTest(TestSuite.createTest(MainActivityTest.class, "testTakePhotoPanoramaCancel"));
-            suite.addTest(TestSuite.createTest(MainActivityTest.class, "testTakePhotoPanoramaCancelBySettings"));
+            //suite.addTest(TestSuite.createTest(MainActivityTest.class, "testTakePhotoPanoramaCancelBySettings"));
         }
         suite.addTest(TestSuite.createTest(MainActivityTest.class, "testCreateSaveFolder1"));
         if( !TestUtils.test_camera2 ) {
