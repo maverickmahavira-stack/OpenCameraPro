@@ -110,6 +110,7 @@ public class CameraController2 extends CameraController {
     private long min_exposure_time;
     private long max_exposure_time;
     private float minimum_focus_distance; // for manual focus
+    //private boolean supports_low_light_boost;
 
     private boolean supports_tonemap_preset_curve;
     private final static int tonemap_log_max_curve_points_c = 64;
@@ -818,6 +819,12 @@ public class CameraController2 extends CameraController {
 
             if( sessionType == SessionType.SESSIONTYPE_EXTENSION ) {
                 // don't set for extensions
+                /*
+                // except for low light boost for night mode, if supported
+                if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && camera_extension == CameraExtensionCharacteristics.EXTENSION_NIGHT && supports_low_light_boost && !is_still ) {
+                    builder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON_LOW_LIGHT_BOOST_BRIGHTNESS_PRIORITY);
+                    return true;
+                }*/
                 return false;
             }
 
@@ -3422,6 +3429,13 @@ public class CameraController2 extends CameraController {
                     }
                 }
             }
+
+            /*if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && supported_flash_modes.contains(CaptureRequest.CONTROL_AE_MODE_ON_LOW_LIGHT_BOOST_BRIGHTNESS_PRIORITY) ) {
+                this.supports_low_light_boost = true;
+                if( MyDebug.LOG ) {
+                    Log.d(TAG, " supports low light boost");
+                }
+            }*/
         }
         else if( (getFacing() == Facing.FACING_FRONT) ) {
             camera_features.supported_flash_values = new ArrayList<>();
