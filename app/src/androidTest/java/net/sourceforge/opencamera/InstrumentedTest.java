@@ -134,6 +134,10 @@ public class InstrumentedTest {
     }
 
     private void waitUntilCameraOpened() {
+        waitUntilCameraOpened(true);
+    }
+
+    private void waitUntilCameraOpened(boolean wait_for_preview) {
         Log.d(TAG, "wait until camera opened");
         long time_s = System.currentTimeMillis();
 
@@ -144,6 +148,29 @@ public class InstrumentedTest {
         }
 
         Log.d(TAG, "camera is open!");
+
+        try {
+            Thread.sleep(100); // sleep a bit just to be safe
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if( wait_for_preview ) {
+            waitUntilPreviewStarted(); // needed for Camera2 API when starting preview on background thread and not waiting for it to start
+        }
+    }
+
+    private void waitUntilPreviewStarted() {
+        Log.d(TAG, "wait until preview started");
+        long time_s = System.currentTimeMillis();
+
+        boolean done = false;
+        while( !done ) {
+            assertTrue( System.currentTimeMillis() - time_s < 20000 );
+            done = getActivityValue(activity -> activity.getPreview().isPreviewStarted());
+        }
+
+        Log.d(TAG, "preview is started!");
 
         try {
             Thread.sleep(100); // sleep a bit just to be safe
@@ -161,9 +188,13 @@ public class InstrumentedTest {
     }
 
     private void restart() {
+        restart(true);
+    }
+
+    private void restart(boolean wait_for_preview) {
         Log.d(TAG, "restart");
         mActivityRule.getScenario().recreate();
-        waitUntilCameraOpened();
+        waitUntilCameraOpened(wait_for_preview);
         Log.d(TAG, "restart done");
     }
 

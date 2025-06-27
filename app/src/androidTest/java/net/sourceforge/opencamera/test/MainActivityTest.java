@@ -141,6 +141,10 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     }
 
     private void waitUntilCameraOpened() {
+        waitUntilCameraOpened(true);
+    }
+
+    private void waitUntilCameraOpened(boolean wait_for_preview) {
         Log.d(TAG, "wait until camera opened");
         long time_s = System.currentTimeMillis();
         while( !mPreview.openCameraAttempted() ) {
@@ -153,6 +157,10 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             Thread.sleep(100); // sleep a bit just to be safe
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+
+        if( wait_for_preview ) {
+            waitUntilPreviewStarted(); // needed for Camera2 API when starting preview on background thread and not waiting for it to start
         }
     }
 
@@ -172,11 +180,15 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         }
     }
 
+    private void restart() {
+        restart(true);
+    }
+
     /** Restarts Open Camera.
      *  WARNING: Make sure that any assigned variables related to the activity, e.g., anything
      *  returned by findViewById(), is updated to the new mActivity after calling this method!
      */
-    private void restart() {
+    private void restart(boolean wait_for_preview) {
         Log.d(TAG, "restart");
         mActivity.finish();
         setActivity(null);
@@ -185,7 +197,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         Log.d(TAG, "mActivity is now: " + mActivity);
         mPreview = mActivity.getPreview();
         Log.d(TAG, "mPreview is now: " + mPreview);
-        waitUntilCameraOpened();
+        waitUntilCameraOpened(wait_for_preview);
         Log.d(TAG, "restart done");
     }
 
@@ -10038,6 +10050,8 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         Log.d(TAG, "testSettings");
         setToDefault();
 
+        restart(false); // so we test going to settings even without waiting for preview to start (for Camera2 API)
+
         assertFalse(mActivity.isCameraInBackground());
         View settingsButton = mActivity.findViewById(net.sourceforge.opencamera.R.id.settings);
         clickView(settingsButton);
@@ -10883,7 +10897,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             Log.d(TAG, "switch camera");
             View switchCameraButton = mActivity.findViewById(net.sourceforge.opencamera.R.id.switch_camera);
             clickView(switchCameraButton);
-            waitUntilCameraOpened();
+            waitUntilCameraOpened(false);
             assertNotNull(mPreview.getCameraControllerManager());
             assertNull(mPreview.getCameraController());
             this.getInstrumentation().waitForIdleSync();
