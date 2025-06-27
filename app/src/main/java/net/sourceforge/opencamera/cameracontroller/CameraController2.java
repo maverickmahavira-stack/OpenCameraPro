@@ -6271,7 +6271,9 @@ public class CameraController2 extends CameraController {
                         }
                         function.call();
                     }
-                    catch(CameraAccessException e) {
+                    catch(CameraAccessException | NullPointerException | IllegalArgumentException e) {
+                        // see notes below in createCaptureSession() for why we also catch NullPointerException and IllegalArgumentException
+                        // need to catch separately when wait_until_started==false due to this running on a background thread
                         Log.e(TAG, "exception create extension session on background thread");
                         e.printStackTrace();
                         //myStateCallback.onConfigureFailed();
