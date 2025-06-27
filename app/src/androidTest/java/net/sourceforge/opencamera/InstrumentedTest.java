@@ -30,6 +30,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import net.sourceforge.opencamera.cameracontroller.CameraController;
 import net.sourceforge.opencamera.preview.Preview;
 import net.sourceforge.opencamera.ui.DrawPreview;
 import net.sourceforge.opencamera.ui.PopupView;
@@ -6850,6 +6851,94 @@ public class InstrumentedTest {
         updateForSettings();
 
         subTestTakePhoto(false, false, true, true, false, false, false, false);
+    }
+
+    /** Tests with flag set to force preview to take 6s to start (tests Camera2 behaviour for this happening on background thread, and
+     *  not).
+     */
+    @Category(PhotoTests.class)
+    @Test
+    public void testTakePhotoSlowPreviewStart() throws InterruptedException {
+        Log.d(TAG, "testTakePhotoSlowPreviewStart");
+
+        setToDefault();
+
+        if( !getActivityValue(activity -> activity.getPreview().usingCamera2API()) ) {
+            Log.d(TAG, "test requires camera2 api");
+            return;
+        }
+        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ) {
+            // matches the use of wait_until_started in Preview.cameraOpened()
+            Log.d(TAG, "test requires Android 14+");
+            return;
+        }
+
+        CameraController.test_force_slow_preview_start = true;
+        long time_s = System.currentTimeMillis();
+        restart(false); // restart to force preview to start with test flag
+        Log.d(TAG, "time to restart: " + (System.currentTimeMillis() - time_s));
+        assertTrue( System.currentTimeMillis() - time_s < 3000 ); // test didn't get stuck on UI thread
+
+        // make sure the application isn't stuck on the UI thread
+        time_s = System.currentTimeMillis();
+        boolean done = false;
+        while( !done ) {
+            assertTrue( System.currentTimeMillis() - time_s < 500 );
+            done = getActivityValue(activity -> activity.getPreview().isPreviewStarting());
+        }
+
+        waitUntilPreviewStarted();
+
+        subTestTakePhoto(false, false, true, true, false, false, false, false);
+    }
+
+    /** Tests with flag set to force preview to take 6s to start (tests Camera2 behaviour for this happening on background thread, and
+     *  not).
+     */
+    @Category(PhotoTests.class)
+    @Test
+    public void testSettingsSlowPreviewStart() throws InterruptedException {
+        Log.d(TAG, "testSettingsSlowPreviewStart");
+
+        setToDefault();
+
+        if( !getActivityValue(activity -> activity.getPreview().usingCamera2API()) ) {
+            Log.d(TAG, "test requires camera2 api");
+            return;
+        }
+        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ) {
+            // matches the use of wait_until_started in Preview.cameraOpened()
+            Log.d(TAG, "test requires Android 14+");
+            return;
+        }
+
+        CameraController.test_force_slow_preview_start = true;
+        long time_s = System.currentTimeMillis();
+        restart(false); // restart to force preview to start with test flag
+        Log.d(TAG, "time to restart: " + (System.currentTimeMillis() - time_s));
+        assertTrue( System.currentTimeMillis() - time_s < 3000 ); // test didn't get stuck on UI thread
+
+        assertFalse(getActivityValue(activity -> activity.getPreview().isPreviewStarted())); // shouldn't have started preview yet
+
+        // go to settings
+        assertFalse(getActivityValue(activity -> activity.isCameraInBackground()));
+        mActivityRule.getScenario().onActivity(activity -> {
+            View settingsButton = activity.findViewById(net.sourceforge.opencamera.R.id.settings);
+            clickView(settingsButton);
+        });
+        assertTrue(getActivityValue(activity -> activity.isCameraInBackground()));
+
+        // leave settings
+        Thread.sleep(500);
+        mActivityRule.getScenario().onActivity(activity -> {
+            Log.d(TAG, "on back pressed...");
+            activity.onBackPressed();
+        });
+        Thread.sleep(500);
+        assertFalse(getActivityValue(activity -> activity.isCameraInBackground()));
+
+        // make sure preview starts up
+        waitUntilPreviewStarted();
     }
 
     private int getNFiles() {
