@@ -1982,7 +1982,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 Log.d(TAG, "openCamera: time after setting preview display: " + (System.currentTimeMillis() - debug_time));
             }
 
-            final boolean wait_until_started = true;
+            //final boolean wait_until_started = true;
+            final boolean wait_until_started = !( using_android_l && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE );
             //final boolean wait_until_started = false; // test
             if( MyDebug.LOG )
                 Log.d(TAG, "wait_until_started: " + wait_until_started);
