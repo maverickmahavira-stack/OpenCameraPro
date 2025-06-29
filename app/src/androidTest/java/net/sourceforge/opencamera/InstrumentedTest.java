@@ -411,11 +411,6 @@ public class InstrumentedTest {
     public void testDROZero() throws IOException, InterruptedException {
         Log.d(TAG, "testDROZero");
 
-        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ) {
-            Log.d(TAG, "renderscript requires Android Lollipop or better");
-            return;
-        }
-
         setToDefault();
 
         mActivityRule.getScenario().onActivity(activity -> { // for simplicity, run the entire test on the UI thread

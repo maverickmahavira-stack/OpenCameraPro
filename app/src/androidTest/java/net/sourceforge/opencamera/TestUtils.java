@@ -407,11 +407,6 @@ public class TestUtils {
     public static HistogramDetails subTestHDR(MainActivity activity, List<Bitmap> inputs, String output_name, boolean test_dro, int iso, long exposure_time, HDRProcessor.TonemappingAlgorithm tonemapping_algorithm/*, HDRTestCallback test_callback*/) {
         Log.d(TAG, "subTestHDR");
 
-        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ) {
-            Log.d(TAG, "renderscript requires Android Lollipop or better");
-            return null;
-        }
-
         try {
             Thread.sleep(1000); // wait for camera to open
         }
@@ -518,11 +513,6 @@ public class TestUtils {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static HistogramDetails subTestAvg(MainActivity activity, List<String> inputs, String output_name, int iso, long exposure_time, float zoom_factor, TestAvgCallback cb) {
         Log.d(TAG, "subTestAvg");
-
-        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ) {
-            Log.d(TAG, "renderscript requires Android Lollipop or better");
-            return null;
-        }
 
         try {
             Thread.sleep(1000); // wait for camera to open

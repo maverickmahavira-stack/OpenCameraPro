@@ -13991,11 +13991,6 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     public void testDROZero() throws IOException, InterruptedException {
         Log.d(TAG, "testDROZero");
 
-        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ) {
-            Log.d(TAG, "renderscript requires Android Lollipop or better");
-            return;
-        }
-
         setToDefault();
 
         Bitmap bitmap = getBitmapFromFile(TestUtils.hdr_images_path + "testHDR3/input1.jpg");
