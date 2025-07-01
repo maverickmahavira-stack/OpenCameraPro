@@ -3060,6 +3060,11 @@ public class MainUI {
         alertDialog.setTitle(title_id);
         if( info_id != 0 )
             alertDialog.setMessage(info_id);
+        else {
+            // Setting an empty string here is still needed to allow setting a message later after it's been created.
+            // Needed for MagneticSensor's dialog
+            alertDialog.setMessage("");
+        }
         alertDialog.setPositiveButton(android.R.string.ok, null);
         alertDialog.setNegativeButton(R.string.dont_show_again, new DialogInterface.OnClickListener() {
             @Override
