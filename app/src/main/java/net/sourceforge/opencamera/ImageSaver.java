@@ -1503,8 +1503,6 @@ public class ImageSaver extends Thread {
             {
                 try {
                     long time_s = System.currentTimeMillis();
-                    // initialise allocation from first two bitmaps
-                    //int inSampleSize = hdrProcessor.getAvgSampleSize(request.jpeg_images.size());
                     int inSampleSize = hdrProcessor.getAvgSampleSize(request.iso, request.exposure_time);
                     //final boolean use_smp = false;
                     final boolean use_smp = true;

@@ -892,11 +892,6 @@ public class JavaImageFunctions {
                             L = diff_r*diff_r + diff_g*diff_g + diff_b*diff_b;
                         }
 
-                        // diff based on compute_diff (separate pass on scaled down alignment bitmaps)
-                        //int align_x = x/scale_align_size;
-                        //int align_y = y/scale_align_size;
-                        //float L = rsGetElementAt_float(allocation_diffs, align_x, align_y);
-
                         // debug mode: only works if limited to 2 images being merged
                         /*L = sqrt(L);
                         L = fmin(L, 255.0f);
@@ -1617,22 +1612,6 @@ public class JavaImageFunctions {
                     break;
                 }
             }
-
-            /*
-            // test
-            if( x+offset_x0 < 0 || y+offset_y0 < 0 || x+offset_x0 >= rsAllocationGetDimX(bitmap0) || y+offset_y0 >= rsAllocationGetDimY(bitmap0) ) {
-                out.r = 255;
-                out.g = 0;
-                out.b = 255;
-                out.a = 255;
-            }
-            else if( x+offset_x2 < 0 || y+offset_y2 < 0 || x+offset_x2 >= rsAllocationGetDimX(bitmap2) || y+offset_y2 >= rsAllocationGetDimY(bitmap2) ) {
-                out.r = 255;
-                out.g = 255;
-                out.b = 0;
-                out.a = 255;
-            }
-            */
             //return out;
         }
 

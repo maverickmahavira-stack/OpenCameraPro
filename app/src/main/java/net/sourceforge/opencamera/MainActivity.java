@@ -6304,13 +6304,11 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
     public boolean supportsDRO() {
         if( applicationInterface.isRawOnly(MyApplicationInterface.PhotoMode.DRO) )
             return false; // if not saving JPEGs, no point having DRO mode, as it won't affect the RAW images
-        // require at least Android 5, for the Renderscript support in HDRProcessor
         return true;
     }
 
     public boolean supportsHDR() {
         // we also require the device have sufficient memory to do the processing
-        // also require at least Android 5, for the Renderscript support in HDRProcessor
         return large_heap_memory >= 128 && preview.supportsExpoBracketing();
     }
 
@@ -6340,7 +6338,6 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         if( applicationInterface.isImageCaptureIntent() )
             return false;
         // require 256MB just to be safe, due to the large number of images that may be created
-        // also require at least Android 5, for Renderscript
         // remember to update the FAQ "Why isn't Panorama supported on my device?" if this changes
         return large_heap_memory >= 256 && applicationInterface.getGyroSensor().hasSensors();
         //return false; // currently blocked for release
@@ -6354,8 +6351,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
     }
 
     public boolean supportsNoiseReduction() {
-        // require at least Android 5, for the Renderscript support in HDRProcessor, but we require
-        // Android 7 to limit to more modern devices (for performance reasons)
+        // we require Android 7 to limit to more modern devices (for performance reasons)
         return( Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && preview.usingCamera2API() && large_heap_memory >= 512 && preview.supportsBurst() && preview.supportsExposureTime() );
         //return false; // currently blocked for release
     }
@@ -6383,7 +6379,6 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
 
     public boolean supportsPreviewBitmaps() {
         // In practice we only use TextureView on Android 5+ (with Camera2 API enabled) anyway, but have put an explicit check here -
-        // even if in future we allow TextureView pre-Android 5, we still need Android 5+ for Renderscript.
         return preview.getView() instanceof TextureView && large_heap_memory >= 128;
     }
 

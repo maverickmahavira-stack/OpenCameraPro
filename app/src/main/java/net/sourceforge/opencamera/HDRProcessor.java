@@ -523,12 +523,6 @@ public class HDRProcessor {
     }
 
     /** Core implementation of HDR algorithm.
-     *  Requires Android 4.4 (API level 19, Kitkat), due to using Renderscript without the support libraries.
-     *  And we now need Android 5.0 (API level 21, Lollipop) for forEach_Dot with LaunchOptions.
-     *  Using the support libraries (set via project.properties renderscript.support.mode) would bloat the APK
-     *  by around 1799KB! We don't care about pre-Android 4.4 (HDR requires CameraController2 which requires
-     *  Android 5.0 anyway; even if we later added support for CameraController1, we can simply say HDR requires
-     *  Android 5.0).
      */
     private void processHDRCore(List<Bitmap> bitmaps, boolean release_bitmaps, Bitmap output_bitmap, boolean assume_sorted, SortCallback sort_cb, float hdr_alpha, int n_tiles, boolean ce_preserve_blacks, TonemappingAlgorithm tonemapping_algorithm) {
         if( MyDebug.LOG )
@@ -1387,8 +1381,6 @@ public class HDRProcessor {
 
         AvgData avg_data = processAvgCore(null, bitmap_avg, bitmap_new, width, height, avg_factor, iso, exposure_time, zoom_factor, time_s);
 
-        //allocation_avg.copyTo(bitmap_avg);
-
         if( MyDebug.LOG )
             Log.d(TAG, "### time for processAvg: " + (System.currentTimeMillis() - time_s));
 
@@ -1419,11 +1411,6 @@ public class HDRProcessor {
         }
 
         long time_s = System.currentTimeMillis();
-
-        // create allocations
-        /*Allocation allocation_new = Allocation.createFromBitmap(rs, bitmap_new);
-        if( MyDebug.LOG )
-            Log.d(TAG, "### time after creating allocations from bitmaps: " + (System.currentTimeMillis() - time_s));*/
 
         processAvgCore(avg_data, null, bitmap_new, width, height, avg_factor, iso, exposure_time, zoom_factor, time_s);
 
@@ -1511,7 +1498,7 @@ public class HDRProcessor {
             {
                 // use scaled down and/or cropped bitmaps for alignment
                 if( MyDebug.LOG )
-                    Log.d(TAG, "### time before creating allocations for autoalignment: " + (System.currentTimeMillis() - time_s));
+                    Log.d(TAG, "### time before creating bitmaps for autoalignment: " + (System.currentTimeMillis() - time_s));
                 Matrix align_scale_matrix = new Matrix();
                 align_scale_matrix.postScale(1.0f/scale_align_size, 1.0f/scale_align_size);
                 full_alignment_width /= scale_align_size;
@@ -1558,7 +1545,7 @@ public class HDRProcessor {
                     align_allocations[1] = allocation_new_align;
                 }
                 if( MyDebug.LOG )
-                    Log.d(TAG, "### time after creating allocations for autoalignment: " + (System.currentTimeMillis() - time_s));
+                    Log.d(TAG, "### time after creating bitmaps for autoalignment: " + (System.currentTimeMillis() - time_s));
             }
 
             // misalignment more likely in "dark" images with more images and/or longer exposures
@@ -2348,7 +2335,7 @@ public class HDRProcessor {
                     pixel_step_size = step_size;
 
                 if( MyDebug.LOG ) {
-                    Log.d(TAG, "call alignMTBScript for image: " + i);
+                    Log.d(TAG, "call align for image: " + i);
                     Log.d(TAG, "    versus base image: " + base_bitmap);
                     Log.d(TAG, "step_size: " + step_size);
                     Log.d(TAG, "pixel_step_size: " + pixel_step_size);
@@ -3524,10 +3511,6 @@ public class HDRProcessor {
             //     testAvg43 (55), testAvg44 (82)
             // tests that are better at 50%: testAvg12 (8), testAvg13 (38), testAvg15 (10), testAvg18 (39), testAvg19 (37)
             // other tests improved by doing contrast enhancement: testAvg32, testAvg40
-            //adjustHistogram(allocation_out, allocation_out, width, height, 0.5f, 4, time_s);
-            //adjustHistogram(allocation_out, allocation_out, width, height, 0.25f, 4, time_s);
-            //adjustHistogram(allocation_out, allocation_out, width, height, 0.25f, 1, time_s);
-            //adjustHistogram(allocation_out, allocation_out, width, height, 0.5f, 1, time_s);
             final int median_lo = 60, median_hi = 35;
             float alpha = (histogramInfo.median_brightness - median_lo) / (float)(median_hi - median_lo);
             alpha = Math.max(alpha, 0.0f);

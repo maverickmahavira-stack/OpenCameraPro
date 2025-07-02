@@ -628,29 +628,13 @@ public class PanoramaProcessor {
         for(int i=0;i<gaussianPyramid.size()-1;i++) {
             if( MyDebug.LOG )
                 Log.d(TAG, "createLaplacianPyramid: i = " + i);
-            //Allocation this_gauss_rs = gaussianPyramid_rs.get(i);
             Bitmap this_gauss = gaussianPyramid.get(i);
-            //Allocation next_gauss_rs = gaussianPyramid_rs.get(i+1);
             Bitmap next_gauss = gaussianPyramid.get(i+1);
-            //Allocation next_gauss_expanded_rs = expandBitmap(script, next_gauss);
             Bitmap next_gauss_expanded = expandBitmap(next_gauss);
 
             if( MyDebug.LOG )
                 Log.d(TAG, "### createLaplacianPyramid: time after expandBitmap for level " + i + ": " + (System.currentTimeMillis() - time_s));
-            /*if( MyDebug.LOG )
-            {
-                // debug
-                saveAllocation(name + "_this_gauss_" + i + ".jpg", this_gauss);
-                saveAllocation(name + "_next_gauss_expanded_" + i + ".jpg", next_gauss_expanded);
-            }*/
-            //Allocation next_gauss_expanded_rs = Allocation.createFromBitmap(rs, next_gauss_expanded);
-            //Allocation difference = subtractBitmapRS(script, this_gauss_rs, next_gauss_expanded_rs);
             float [] difference_rgbf = subtractBitmap(this_gauss, next_gauss_expanded);
-            /*Allocation difference = Allocation.createTyped(rs, Type.createXY(rs, Element.F32_3(rs), this_gauss.getWidth(), this_gauss.getHeight()));
-            HDRProcessor.RGBfToAllocation(difference_rgbf, difference, this_gauss.getWidth(), this_gauss.getHeight());
-            pyramid.add(difference);
-            //pyramid.add(this_gauss);
-            */
             pyramid.addDiff(difference_rgbf, this_gauss.getWidth(), this_gauss.getHeight());
             if( MyDebug.LOG )
                 Log.d(TAG, "### createLaplacianPyramid: time after subtractBitmap for level " + i + ": " + (System.currentTimeMillis() - time_s));
@@ -1074,20 +1058,6 @@ public class PanoramaProcessor {
             saveBitmap(lhs, "lhs.jpg");
             saveBitmap(rhs, "rhs.jpg");
         }*/
-        // debug
-        /*if( MyDebug.LOG )
-        {
-            List<Allocation> lhs_pyramid = createGaussianPyramid(script, lhs, blend_n_levels);
-            List<Allocation> rhs_pyramid = createGaussianPyramid(script, rhs, blend_n_levels);
-            savePyramid("lhs_gauss", lhs_pyramid);
-            savePyramid("rhs_gauss", rhs_pyramid);
-            for(Allocation allocation : lhs_pyramid) {
-                allocation.destroy();
-            }
-            for(Allocation allocation : rhs_pyramid) {
-                allocation.destroy();
-            }
-        }*/
 
         if( lhs.getWidth() != rhs.getWidth() || lhs.getHeight() != rhs.getHeight() ) {
             Log.e(TAG, "lhs/rhs bitmaps of different dimensions");
@@ -1231,49 +1201,10 @@ public class PanoramaProcessor {
             if( MyDebug.LOG )
                 Log.d(TAG, "### blendPyramids: time after createLaplacianPyramid 2nd call: " + (System.currentTimeMillis() - time_s));
 
-            /*{
-                lhs_pyramid_rs = new ArrayList<>();
-                for(int i=0;i<lhs_pyramid.diffs.size();i++) {
-                    float [] difference_rgbf = lhs_pyramid.diffs.get(i);
-                    int width = lhs_pyramid.widths.get(i);
-                    int height = lhs_pyramid.heights.get(i);
-                    Allocation allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.F32_3(rs), width, height));
-                    HDRProcessor.RGBfToAllocation(difference_rgbf, allocation, width, height);
-                    lhs_pyramid_rs.add(allocation);
-                }
-                Allocation allocation = Allocation.createFromBitmap(rs, lhs_pyramid.top_level);
-                lhs_pyramid_rs.add(allocation);
-            }
-            {
-                rhs_pyramid_rs = new ArrayList<>();
-                for(int i=0;i<rhs_pyramid.diffs.size();i++) {
-                    float [] difference_rgbf = rhs_pyramid.diffs.get(i);
-                    int width = rhs_pyramid.widths.get(i);
-                    int height = rhs_pyramid.heights.get(i);
-                    Allocation allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.F32_3(rs), width, height));
-                    HDRProcessor.RGBfToAllocation(difference_rgbf, allocation, width, height);
-                    rhs_pyramid_rs.add(allocation);
-                }
-                Allocation allocation = Allocation.createFromBitmap(rs, rhs_pyramid.top_level);
-                rhs_pyramid_rs.add(allocation);
-            }*/
 
             mergePyramids(lhs_pyramid, rhs_pyramid, best_path, best_path_n_x);
             if( MyDebug.LOG )
                 Log.d(TAG, "### blendPyramids: time after mergePyramids: " + (System.currentTimeMillis() - time_s));
-            /*{
-                lhs_pyramid_rs = new ArrayList<>();
-                for(int i=0;i<lhs_pyramid.diffs.size();i++) {
-                    float [] difference_rgbf = lhs_pyramid.diffs.get(i);
-                    int width = lhs_pyramid.widths.get(i);
-                    int height = lhs_pyramid.heights.get(i);
-                    Allocation allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.F32_3(rs), width, height));
-                    HDRProcessor.RGBfToAllocation(difference_rgbf, allocation, width, height);
-                    lhs_pyramid_rs.add(allocation);
-                }
-                Allocation allocation = Allocation.createFromBitmap(rs, lhs_pyramid.top_level);
-                lhs_pyramid_rs.add(allocation);
-            }*/
 
             merged_bitmap = collapseLaplacianPyramid(lhs_pyramid);
             if( MyDebug.LOG )
