@@ -965,8 +965,7 @@ public class ImageSaver extends Thread {
         if( MyDebug.LOG )
             Log.d(TAG, "addRequest, cost: " + cost);
         if( main_activity.isDestroyed() ) {
-            // If the application is being destroyed as a new photo is being taken, it's not safe to continue, e.g., we'll
-            // crash if needing to use RenderScript.
+            // If the application is being destroyed as a new photo is being taken, it's not safe to continue
             // MainDestroy.onDestroy() does call waitUntilDone(), but this is extra protection in case an image comes in after that.
             Log.e(TAG, "application is destroyed, image lost!");
             return;
@@ -1811,7 +1810,7 @@ public class ImageSaver extends Thread {
                 Collections.reverse(request.gyro_rotation_matrix);
             }
 
-            // need all to be mutable for use_renderscript==false - n.b., in practice setting to -1
+            // need all to be mutable - n.b., in practice setting to -1
             // doesn't cause a problem on some devices e.g. Galaxy S24+ because the bitmaps may be made
             // mutable in rotateForExif, but this can be reproduced on on emulator at least
             List<Bitmap> bitmaps = loadBitmaps(request.jpeg_images, -2, 1);

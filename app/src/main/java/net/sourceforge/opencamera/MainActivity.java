@@ -70,7 +70,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.renderscript.RenderScript;
 import android.speech.tts.TextToSpeech;
 
 import androidx.activity.OnBackPressedCallback;
@@ -1288,23 +1287,11 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         // we don't do this in onPause or onStop, due to risk of ANRs
         // note that even if we did call this earlier in onPause or onStop, we'd still want to wait again here: as it can happen
         // that a new image appears after onPause/onStop is called, in which case we want to wait until images are saved,
-        // otherwise we can have crash if we need Renderscript after calling releaseAllContexts(), or because rs has been set to
-        // null from beneath applicationInterface.onDestroy()
         waitUntilImageQueueEmpty();
 
         preview.onDestroy();
         if( applicationInterface != null ) {
             applicationInterface.onDestroy();
-        }
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity_count == 0 ) {
-            // See note in HDRProcessor.onDestroy() - but from Android M, renderscript contexts are released with releaseAllContexts()
-            // doc for releaseAllContexts() says "If no contexts have been created this function does nothing"
-            // Important to only do so if no other activities are running (see activity_count). Otherwise risk
-            // of crashes if one activity is destroyed when another instance is still using Renderscript. I've
-            // been unable to reproduce this, though such RSInvalidStateException crashes from Google Play.
-            if( MyDebug.LOG )
-                Log.d(TAG, "release renderscript contexts");
-            RenderScript.releaseAllContexts();
         }
         // Need to recycle to avoid out of memory when running tests - probably good practice to do anyway
         for(Map.Entry<Integer, Bitmap> entry : preloaded_bitmap_resources.entrySet()) {

@@ -1,13 +1,11 @@
 package net.sourceforge.opencamera.preview;
 
-import net.sourceforge.opencamera.HDRProcessor;
 import net.sourceforge.opencamera.JavaImageFunctions;
 import net.sourceforge.opencamera.JavaImageProcessing;
 import net.sourceforge.opencamera.cameracontroller.RawImage;
 //import net.sourceforge.opencamera.MainActivity;
 import net.sourceforge.opencamera.MyDebug;
 import net.sourceforge.opencamera.R;
-import net.sourceforge.opencamera.ScriptC_histogram_compute;
 import net.sourceforge.opencamera.TakePhoto;
 import net.sourceforge.opencamera.ToastBoxer;
 import net.sourceforge.opencamera.cameracontroller.CameraController;
@@ -73,11 +71,6 @@ import android.os.Bundle;
 //import android.os.Environment;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RSInvalidStateException;
-import android.renderscript.RenderScript;
-import android.renderscript.Type;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -145,8 +138,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
     private boolean set_textureview_size;
     private int textureview_w, textureview_h;
 
-    private RenderScript rs; // lazily created, so we don't take up resources if application isn't using renderscript
-    private ScriptC_histogram_compute histogramScript; // lazily create for performance
     private boolean want_preview_bitmap; // whether application has requested we generate bitmap for the preview
     private boolean use_preview_bitmap_small, use_preview_bitmap_full; // whether we want downsized and/or full preview bitmaps
     private Bitmap preview_bitmap; // downsided bitmap from preview
@@ -8055,16 +8046,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         }
         freePreviewBitmap(); // in case onDestroy() called directly without onPause()
 
-        if( rs != null ) {
-            try {
-                rs.destroy(); // on Android M onwards this is a NOP - instead we call RenderScript.releaseAllContexts(); in MainActivity.onDestroy()
-            }
-            catch(RSInvalidStateException e) {
-                e.printStackTrace();
-            }
-            rs = null;
-        }
-
         if( camera_open_state == CameraOpenState.CAMERAOPENSTATE_CLOSING ) {
             // If the camera is currently closing on a background thread, then wait until the camera has closed to be safe
             if( MyDebug.LOG ) {
@@ -8403,7 +8384,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         want_preview_bitmap = false;
         use_preview_bitmap_small = false;
         use_preview_bitmap_full = false;
-        histogramScript = null; // to help garbage collection
     }
 
     public boolean isPreviewBitmapEnabled() {
@@ -8750,7 +8730,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
     private static class RefreshPreviewBitmapTask extends AsyncTask<Void, Void, RefreshPreviewBitmapTaskResult> {
         private static final String TAG = "RefreshPreviewBmTask";
         private final WeakReference<Preview> previewReference;
-        private final WeakReference<ScriptC_histogram_compute> histogramScriptReference;
         // we take references to the bitmaps, so the Preview class can set this to null even whilst the background thread is running
         private final WeakReference<Bitmap> preview_bitmapReference;
         private final WeakReference<Bitmap> zebra_stripes_bitmap_bufferReference;
@@ -8771,122 +8750,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             this.update_preshot = update_preshot;
             this.preview_bitmap_full_w = preview_bitmap_full_w;
             this.preview_bitmap_full_h = preview_bitmap_full_h;
-
-            if( HDRProcessor.use_renderscript ) {
-                if( preview.rs == null ) {
-                    // create on the UI thread rather than doInBackground(), to avoid threading issues
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "create renderscript object");
-                    preview.rs = RenderScript.create(preview.getContext());
-                }
-                if( preview.histogramScript == null ) {
-                    // create on the UI thread rather than doInBackground(), to avoid threading issues
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "create histogramScript");
-                    preview.histogramScript = new ScriptC_histogram_compute(preview.rs);
-                }
-                // take a local copy, so preview.histogramScript can be set to null whilst background thread is running
-                this.histogramScriptReference = new WeakReference<>(preview.histogramScript);
-            }
-            else {
-                this.histogramScriptReference = null;
-            }
-        }
-
-        private static int [] computeHistogramRS(Allocation allocation_in, RenderScript rs, ScriptC_histogram_compute histogramScript, HistogramType histogram_type) {
-            long debug_time = 0;
-            if( MyDebug.LOG ) {
-                Log.d(TAG, "computeHistogramRS");
-                debug_time = System.currentTimeMillis();
-            }
-
-            int [] new_histogram;
-
-            if( histogram_type == HistogramType.HISTOGRAM_TYPE_RGB ) {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "rgb histogram");
-                Allocation histogramAllocationR = Allocation.createSized(rs, Element.I32(rs), 256);
-                Allocation histogramAllocationG = Allocation.createSized(rs, Element.I32(rs), 256);
-                Allocation histogramAllocationB = Allocation.createSized(rs, Element.I32(rs), 256);
-
-                if( MyDebug.LOG )
-                    Log.d(TAG, "bind histogram allocations");
-                histogramScript.bind_histogram_r(histogramAllocationR);
-                histogramScript.bind_histogram_g(histogramAllocationG);
-                histogramScript.bind_histogram_b(histogramAllocationB);
-                histogramScript.invoke_init_histogram_rgb();
-                if( MyDebug.LOG )
-                    Log.d(TAG, "call histogramScript");
-                if( MyDebug.LOG )
-                    Log.d(TAG, "time before histogramScript: " + (System.currentTimeMillis() - debug_time));
-                histogramScript.forEach_histogram_compute_rgb(allocation_in);
-                if( MyDebug.LOG )
-                    Log.d(TAG, "time after histogramScript: " + (System.currentTimeMillis() - debug_time));
-
-                new_histogram = new int[256*3];
-                int c=0;
-                int [] temp = new int[256];
-
-                histogramAllocationR.copyTo(temp);
-                for(int i=0;i<256;i++)
-                    new_histogram[c++] = temp[i];
-
-                histogramAllocationG.copyTo(temp);
-                for(int i=0;i<256;i++)
-                    new_histogram[c++] = temp[i];
-
-                histogramAllocationB.copyTo(temp);
-                for(int i=0;i<256;i++)
-                    new_histogram[c++] = temp[i];
-                if( MyDebug.LOG )
-                    Log.d(TAG, "time after copying histogram data: " + (System.currentTimeMillis() - debug_time));
-
-                histogramAllocationR.destroy();
-                histogramAllocationG.destroy();
-                histogramAllocationB.destroy();
-                if( MyDebug.LOG )
-                    Log.d(TAG, "time after destroying allocations: " + (System.currentTimeMillis() - debug_time));
-            }
-            else {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "single channel histogram");
-                Allocation histogramAllocation = Allocation.createSized(rs, Element.I32(rs), 256);
-
-                if( MyDebug.LOG )
-                    Log.d(TAG, "bind histogram allocation");
-                histogramScript.bind_histogram(histogramAllocation);
-                histogramScript.invoke_init_histogram();
-                if( MyDebug.LOG )
-                    Log.d(TAG, "call histogramScript");
-                if( MyDebug.LOG )
-                    Log.d(TAG, "time before histogramScript: " + (System.currentTimeMillis() - debug_time));
-                switch( histogram_type ) {
-                    case HISTOGRAM_TYPE_LUMINANCE:
-                        histogramScript.forEach_histogram_compute_by_luminance(allocation_in);
-                        break;
-                    case HISTOGRAM_TYPE_VALUE:
-                        histogramScript.forEach_histogram_compute_by_value(allocation_in);
-                        break;
-                    case HISTOGRAM_TYPE_INTENSITY:
-                        histogramScript.forEach_histogram_compute_by_intensity(allocation_in);
-                        break;
-                    case HISTOGRAM_TYPE_LIGHTNESS:
-                        histogramScript.forEach_histogram_compute_by_lightness(allocation_in);
-                        break;
-                }
-                if( MyDebug.LOG )
-                    Log.d(TAG, "time after histogramScript: " + (System.currentTimeMillis() - debug_time));
-
-                new_histogram = new int[256];
-                histogramAllocation.copyTo(new_histogram);
-                if( MyDebug.LOG )
-                    Log.d(TAG, "time after copying histogram data: " + (System.currentTimeMillis() - debug_time));
-
-                histogramAllocation.destroy();
-                if( MyDebug.LOG )
-                    Log.d(TAG, "time after destroying allocations: " + (System.currentTimeMillis() - debug_time));
-            }
-            return new_histogram;
         }
 
         @Override
@@ -8902,15 +8765,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 if( MyDebug.LOG )
                     Log.d(TAG, "preview is null");
                 return null;
-            }
-            ScriptC_histogram_compute histogramScript = null;
-            if( HDRProcessor.use_renderscript ) {
-                histogramScript = histogramScriptReference.get();
-                if( histogramScript == null ) {
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "histogramScript is null");
-                    return null;
-                }
             }
             Bitmap preview_bitmap = preview_bitmapReference.get();
             Bitmap zebra_stripes_bitmap_buffer = zebra_stripes_bitmap_bufferReference.get();
@@ -8958,16 +8812,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     }
                 }
 
-                Allocation allocation_in = null;
-                if( preview_bitmap == null ) {
-                }
-                else if( !HDRProcessor.use_renderscript ) {
-                }
-                else {
-                    allocation_in = Allocation.createFromBitmap(preview.rs, preview_bitmap);
-                }
-				/*if( true )
-					throw new RSInvalidStateException("test"); // test*/
                 if( MyDebug.LOG )
                     Log.d(TAG, "time after createFromBitmap: " + (System.currentTimeMillis() - debug_time));
 
@@ -8982,7 +8826,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     if( MyDebug.LOG )
                         Log.d(TAG, "time before computeHistogram: " + (System.currentTimeMillis() - debug_time));
 
-                    if( !HDRProcessor.use_renderscript ) {
+                    {
                         JavaImageFunctions.ComputeHistogramApplyFunction.Type java_type;
                         switch( preview.histogram_type ) {
                             case HISTOGRAM_TYPE_RGB:
@@ -9007,10 +8851,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                         JavaImageProcessing.applyFunction(function, preview_bitmap, null, 0, 0, preview_bitmap.getWidth(), preview_bitmap.getHeight());
                         result.new_histogram = function.getHistogram();
                     }
-                    else
-                    {
-                    result.new_histogram = computeHistogramRS(allocation_in, preview.rs, histogramScript, preview.histogram_type);
-                    }
 
                     if( MyDebug.LOG ) {
                         Log.d(TAG, "time for computeHistogram: " + (System.currentTimeMillis() - debug_time_histogram));
@@ -9029,34 +8869,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
                     int zebra_stripes_width = zebra_stripes_bitmap_buffer.getWidth()/20;
 
-                    if( !HDRProcessor.use_renderscript ) {
-                        JavaImageFunctions.ZebraStripesApplyFunction function = new JavaImageFunctions.ZebraStripesApplyFunction(preview.zebra_stripes_threshold, preview.zebra_stripes_color_foreground, preview.zebra_stripes_color_background, zebra_stripes_width);
-                        JavaImageProcessing.applyFunction(function, preview_bitmap, zebra_stripes_bitmap_buffer, 0, 0, preview_bitmap.getWidth(), preview_bitmap.getHeight());
-                    }
-                    else
-                    {
-                    Allocation output_allocation = Allocation.createFromBitmap(preview.rs, zebra_stripes_bitmap_buffer);
-
-                    histogramScript.set_zebra_stripes_threshold(preview.zebra_stripes_threshold);
-                    histogramScript.set_zebra_stripes_foreground_r(Color.red(preview.zebra_stripes_color_foreground));
-                    histogramScript.set_zebra_stripes_foreground_g(Color.green(preview.zebra_stripes_color_foreground));
-                    histogramScript.set_zebra_stripes_foreground_b(Color.blue(preview.zebra_stripes_color_foreground));
-                    histogramScript.set_zebra_stripes_foreground_a(Color.alpha(preview.zebra_stripes_color_foreground));
-                    histogramScript.set_zebra_stripes_background_r(Color.red(preview.zebra_stripes_color_background));
-                    histogramScript.set_zebra_stripes_background_g(Color.green(preview.zebra_stripes_color_background));
-                    histogramScript.set_zebra_stripes_background_b(Color.blue(preview.zebra_stripes_color_background));
-                    histogramScript.set_zebra_stripes_background_a(Color.alpha(preview.zebra_stripes_color_background));
-                    histogramScript.set_zebra_stripes_width(zebra_stripes_width);
-
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "time before histogramScript generate_zebra_stripes: " + (System.currentTimeMillis() - debug_time));
-                    histogramScript.forEach_generate_zebra_stripes(allocation_in, output_allocation);
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "time after histogramScript generate_zebra_stripes: " + (System.currentTimeMillis() - debug_time));
-
-                    output_allocation.copyTo(zebra_stripes_bitmap_buffer);
-                    output_allocation.destroy();
-                    }
+                    JavaImageFunctions.ZebraStripesApplyFunction function = new JavaImageFunctions.ZebraStripesApplyFunction(preview.zebra_stripes_threshold, preview.zebra_stripes_color_foreground, preview.zebra_stripes_color_background, zebra_stripes_width);
+                    JavaImageProcessing.applyFunction(function, preview_bitmap, zebra_stripes_bitmap_buffer, 0, 0, preview_bitmap.getWidth(), preview_bitmap.getHeight());
 
                     // The original orientation of the bitmap we get from textureView.getBitmap() needs to be rotated to
                     // account for the orientation of camera vs device, but not to account for the current orientation
@@ -9107,40 +8921,11 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                         debug_time_focus_peaking = System.currentTimeMillis();
                     }
 
-                    if( !HDRProcessor.use_renderscript ) {
-                        JavaImageFunctions.FocusPeakingApplyFunction function = new JavaImageFunctions.FocusPeakingApplyFunction(preview_bitmap);
-                        JavaImageProcessing.applyFunction(function, preview_bitmap, focus_peaking_bitmap_buffer_temp, 0, 0, preview_bitmap.getWidth(), preview_bitmap.getHeight());
+                    JavaImageFunctions.FocusPeakingApplyFunction function = new JavaImageFunctions.FocusPeakingApplyFunction(preview_bitmap);
+                    JavaImageProcessing.applyFunction(function, preview_bitmap, focus_peaking_bitmap_buffer_temp, 0, 0, preview_bitmap.getWidth(), preview_bitmap.getHeight());
 
-                        JavaImageFunctions.FocusPeakingFilteredApplyFunction function_filtered = new JavaImageFunctions.FocusPeakingFilteredApplyFunction(focus_peaking_bitmap_buffer_temp);
-                        JavaImageProcessing.applyFunction(function_filtered, focus_peaking_bitmap_buffer_temp, focus_peaking_bitmap_buffer, 0, 0, preview_bitmap.getWidth(), preview_bitmap.getHeight());
-                    }
-                    else
-                    {
-                    Allocation output_allocation = Allocation.createFromBitmap(preview.rs, focus_peaking_bitmap_buffer);
-
-                    histogramScript.set_bitmap(allocation_in);
-
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "time before histogramScript generate_focus_peaking: " + (System.currentTimeMillis() - debug_time));
-                    histogramScript.forEach_generate_focus_peaking(allocation_in, output_allocation);
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "time after histogramScript generate_focus_peaking: " + (System.currentTimeMillis() - debug_time));
-
-                    // median filter
-                    Allocation filtered_allocation = Allocation.createTyped(preview.rs, Type.createXY(preview.rs, Element.RGBA_8888(preview.rs), focus_peaking_bitmap_buffer.getWidth(), focus_peaking_bitmap_buffer.getHeight()));
-                    histogramScript.set_bitmap(output_allocation);
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "time before histogramScript generate_focus_peaking_filtered: " + (System.currentTimeMillis() - debug_time));
-                    histogramScript.forEach_generate_focus_peaking_filtered(output_allocation, filtered_allocation);
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "time after histogramScript generate_focus_peaking_filtered: " + (System.currentTimeMillis() - debug_time));
-                    output_allocation.destroy();
-                    output_allocation = filtered_allocation;
-
-                    output_allocation.copyTo(focus_peaking_bitmap_buffer);
-                    output_allocation.destroy();
-
-                    }
+                    JavaImageFunctions.FocusPeakingFilteredApplyFunction function_filtered = new JavaImageFunctions.FocusPeakingFilteredApplyFunction(focus_peaking_bitmap_buffer_temp);
+                    JavaImageProcessing.applyFunction(function_filtered, focus_peaking_bitmap_buffer_temp, focus_peaking_bitmap_buffer, 0, 0, preview_bitmap.getWidth(), preview_bitmap.getHeight());
 
                     // See comments above for zebra stripes
                     int rotation_degrees = preview.getDisplayRotationDegrees(false);
@@ -9157,19 +8942,10 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                         Log.d(TAG, "time for focus peaking: " + (System.currentTimeMillis() - debug_time_focus_peaking));
                     }
                 }
-
-                if( allocation_in != null ) {
-                    allocation_in.destroy();
-                }
             }
             catch(IllegalStateException e) {
                 if( MyDebug.LOG )
                     Log.e(TAG, "failed to getBitmap");
-                e.printStackTrace();
-            }
-            catch(RSInvalidStateException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "renderscript failure");
                 e.printStackTrace();
             }
 

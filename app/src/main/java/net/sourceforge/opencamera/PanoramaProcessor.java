@@ -21,13 +21,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Environment;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RSInvalidStateException;
-import android.renderscript.RenderScript;
-import android.renderscript.Script;
-//import android.renderscript.ScriptIntrinsicResize;
-import android.renderscript.Type;
 import android.util.Log;
 
 public class PanoramaProcessor {
@@ -35,72 +28,15 @@ public class PanoramaProcessor {
 
     private final Context context;
     private final HDRProcessor hdrProcessor;
-    private RenderScript rs; // lazily created, so we don't take up resources if application isn't using panorama
-
-    // we lazily create and cache scripts that would otherwise have to be repeatedly created in a single
-    // panorama photo
-    // these should be set to null in freeScript(), to help garbage collection
-    private ScriptC_pyramid_blending pyramidBlendingScript = null;
-    private ScriptC_feature_detector featureDetectorScript = null;
 
     public PanoramaProcessor(Context context, HDRProcessor hdrProcessor) {
         this.context = context;
         this.hdrProcessor = hdrProcessor;
     }
 
-    private void freeScripts() {
-        if( MyDebug.LOG )
-            Log.d(TAG, "freeScripts");
-
-        pyramidBlendingScript = null;
-        featureDetectorScript = null;
-    }
     public void onDestroy() {
         if( MyDebug.LOG )
             Log.d(TAG, "onDestroy");
-
-        freeScripts(); // just in case
-
-        if( rs != null ) {
-            // need to destroy context, otherwise this isn't necessarily garbage collected - we had tests failing with out of memory
-            // problems e.g. when running MainTests as a full set with Camera2 API. Although we now reduce the problem by creating
-            // the rs lazily, it's still good to explicitly clear.
-            try {
-                rs.destroy(); // on Android M onwards this is a NOP - instead we call RenderScript.releaseAllContexts(); in MainActivity.onDestroy()
-            }
-            catch(RSInvalidStateException e) {
-                e.printStackTrace();
-            }
-            rs = null;
-        }
-    }
-
-    private void initRenderscript() {
-        if( MyDebug.LOG )
-            Log.d(TAG, "initRenderscript");
-        if( !HDRProcessor.use_renderscript ) {
-            throw new RuntimeException("shouldn't be using renderscript");
-        }
-        if( rs == null ) {
-            // initialise renderscript
-            this.rs = RenderScript.create(context);
-            if( MyDebug.LOG )
-                Log.d(TAG, "create renderscript object");
-        }
-    }
-
-    private Allocation reduceBitmapRS(ScriptC_pyramid_blending script, Allocation allocation) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "reduceBitmapRS");
-        int width = allocation.getType().getX();
-        int height = allocation.getType().getY();
-
-        Allocation reduced_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.RGBA_8888(rs), width/2, height/2));
-
-        script.set_bitmap(allocation);
-        script.forEach_reduce(reduced_allocation, reduced_allocation);
-
-        return reduced_allocation;
     }
 
     private Bitmap reduceBitmap(Bitmap bitmap) {
@@ -187,60 +123,6 @@ public class PanoramaProcessor {
             Log.d(TAG, "### time for reduceBitmap: " + (System.currentTimeMillis() - time_s));
 
         return reduced_bitmap;
-    }
-
-    private Allocation expandBitmapRS(ScriptC_pyramid_blending script, Allocation allocation) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "expandBitmapRS");
-        long time_s = 0;
-        if( MyDebug.LOG )
-            time_s = System.currentTimeMillis();
-
-        int width = allocation.getType().getX();
-        int height = allocation.getType().getY();
-        Allocation result_allocation;
-
-        Allocation expanded_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.RGBA_8888(rs), 2*width, 2*height));
-        if( MyDebug.LOG )
-            Log.d(TAG, "### expandBitmap: time after creating expanded_allocation: " + (System.currentTimeMillis() - time_s));
-
-        script.set_bitmap(allocation);
-        script.forEach_expand(expanded_allocation, expanded_allocation);
-        if( MyDebug.LOG )
-            Log.d(TAG, "### expandBitmap: time after expand: " + (System.currentTimeMillis() - time_s));
-
-        final boolean use_blur_2d = false; // faster to do blur as two 1D passes
-        if( use_blur_2d ) {
-            result_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.RGBA_8888(rs), 2*width, 2*height));
-            if( MyDebug.LOG )
-                Log.d(TAG, "### expandBitmap: time after creating result_allocation: " + (System.currentTimeMillis() - time_s));
-            script.set_bitmap(expanded_allocation);
-            script.forEach_blur(expanded_allocation, result_allocation);
-            if( MyDebug.LOG )
-                Log.d(TAG, "### expandBitmap: time after blur: " + (System.currentTimeMillis() - time_s));
-            expanded_allocation.destroy();
-            //result_allocation = expanded_allocation;
-        }
-        else {
-            Allocation temp_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.RGBA_8888(rs), 2*width, 2*height));
-            if( MyDebug.LOG )
-                Log.d(TAG, "### expandBitmap: time after creating temp_allocation: " + (System.currentTimeMillis() - time_s));
-            script.set_bitmap(expanded_allocation);
-            script.forEach_blur1dX(expanded_allocation, temp_allocation);
-            if( MyDebug.LOG )
-                Log.d(TAG, "### expandBitmap: time after blur1dX: " + (System.currentTimeMillis() - time_s));
-
-            // now re-use expanded_allocation for the result_allocation
-            result_allocation = expanded_allocation;
-            script.set_bitmap(temp_allocation);
-            script.forEach_blur1dY(temp_allocation, result_allocation);
-            if( MyDebug.LOG )
-                Log.d(TAG, "### expandBitmap: time after blur1dY: " + (System.currentTimeMillis() - time_s));
-
-            temp_allocation.destroy();
-        }
-
-        return result_allocation;
     }
 
     private Bitmap expandBitmap(Bitmap bitmap) {
@@ -403,26 +285,7 @@ public class PanoramaProcessor {
         return result_bitmap;
     }
 
-    /** Creates an allocation where each pixel equals the pixel from allocation0 minus the corresponding
-     *  pixel from allocation1.
-     */
-    private Allocation subtractBitmapRS(ScriptC_pyramid_blending script, Allocation allocation0, Allocation allocation1) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "subtractBitmapRS");
-        int width = allocation0.getType().getX();
-        int height = allocation0.getType().getY();
-        if( allocation1.getType().getX() != width || allocation1.getType().getY() != height ) {
-            Log.e(TAG, "allocations of different dimensions");
-            throw new RuntimeException();
-        }
-        Allocation result_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.F32_3(rs), width, height));
-        script.set_bitmap(allocation1);
-        script.forEach_subtract(allocation0, result_allocation);
-
-        return result_allocation;
-    }
-
-    /** Creates a floating point array represending a bitmap where each pixel equals the pixel from
+    /** Creates a floating point array representing a bitmap where each pixel equals the pixel from
      *  bitmap0 minus the corresponding pixel from bitmap1.
      */
     private float [] subtractBitmap(Bitmap bitmap0, Bitmap bitmap1) {
@@ -442,23 +305,6 @@ public class PanoramaProcessor {
         return result_rgbf;
     }
 
-    /** Updates allocation0 such that each pixel equals the pixel from allocation0 plus the
-     *  corresponding pixel from allocation1.
-     *  allocation0 should be of type RGBA_8888, allocation1 should be of type F32_3.
-     */
-    private void addBitmapRS(ScriptC_pyramid_blending script, Allocation allocation0, Allocation allocation1) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "addBitmapRS");
-        int width = allocation0.getType().getX();
-        int height = allocation0.getType().getY();
-        if( allocation1.getType().getX() != width || allocation1.getType().getY() != height ) {
-            Log.e(TAG, "allocations of different dimensions");
-            throw new RuntimeException();
-        }
-        script.set_bitmap(allocation1);
-        script.forEach_add(allocation0, allocation0);
-    }
-
     /** Updates bitmap0 such that each pixel equals the pixel from bitmap0 plus the
      *  corresponding pixel from bitmap1.
      *  bitmap0 should be of type RGBA_8888, bitmap1 should be of type RGBf.
@@ -476,21 +322,6 @@ public class PanoramaProcessor {
         JavaImageProcessing.applyFunction(function, bitmap0, bitmap0, 0, 0, bitmap0.getWidth(), bitmap0.getHeight());
     }
 
-    private List<Allocation> createGaussianPyramidRS(ScriptC_pyramid_blending script, Bitmap bitmap, int n_levels) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "createGaussianPyramidRS");
-        List<Allocation> pyramid = new ArrayList<>();
-
-        Allocation allocation = Allocation.createFromBitmap(rs, bitmap);
-        pyramid.add(allocation);
-        for(int i=0;i<n_levels;i++ ) {
-            allocation = reduceBitmapRS(script, allocation);
-            pyramid.add(allocation);
-        }
-
-        return pyramid;
-    }
-
     private List<Bitmap> createGaussianPyramid(Bitmap bitmap, int n_levels) {
         if( MyDebug.LOG )
             Log.d(TAG, "createGaussianPyramid");
@@ -501,71 +332,6 @@ public class PanoramaProcessor {
             bitmap = reduceBitmap(bitmap);
             pyramid.add(bitmap);
         }
-
-        return pyramid;
-    }
-
-    /** Creates a laplacian pyramid of the supplied bitmap, ordered from bottom to top. The i-th
-     *  entry is equal to [G(i) - G'(i+1)], where G(i) is the i-th level of the gaussian pyramid,
-     *  and G' is created by expanding a level of the gaussian pyramid; except the last entry
-     *  is simply equal to the last (i.e., top) level of the gaussian pyramid.
-     *  The allocations are of type floating point (F32_3), except the last which is of type
-     *  RGBA_8888.
-     */
-    private List<Allocation> createLaplacianPyramidRS(ScriptC_pyramid_blending script, Bitmap bitmap, int n_levels, String name) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "createLaplacianPyramidRS");
-        long time_s = 0;
-        if( MyDebug.LOG )
-            time_s = System.currentTimeMillis();
-
-        List<Allocation> gaussianPyramid = createGaussianPyramidRS(script, bitmap, n_levels);
-        if( MyDebug.LOG )
-            Log.d(TAG, "### createLaplacianPyramid: time after createGaussianPyramid: " + (System.currentTimeMillis() - time_s));
-        /*if( MyDebug.LOG )
-        {
-            // debug
-            savePyramid("gaussian", gaussianPyramid);
-        }*/
-        List<Allocation> pyramid = new ArrayList<>();
-
-        for(int i=0;i<gaussianPyramid.size()-1;i++) {
-            if( MyDebug.LOG )
-                Log.d(TAG, "createLaplacianPyramid: i = " + i);
-            Allocation this_gauss = gaussianPyramid.get(i);
-            Allocation next_gauss = gaussianPyramid.get(i+1);
-            Allocation next_gauss_expanded = expandBitmapRS(script, next_gauss);
-            if( MyDebug.LOG )
-                Log.d(TAG, "### createLaplacianPyramid: time after expandBitmap for level " + i + ": " + (System.currentTimeMillis() - time_s));
-            if( MyDebug.LOG ) {
-                Log.d(TAG, "this_gauss: " + this_gauss.getType().getX() + " , " + this_gauss.getType().getY());
-                Log.d(TAG, "next_gauss: " + next_gauss.getType().getX() + " , " + next_gauss.getType().getY());
-                Log.d(TAG, "next_gauss_expanded: " + next_gauss_expanded.getType().getX() + " , " + next_gauss_expanded.getType().getY());
-            }
-            /*if( MyDebug.LOG )
-            {
-                // debug
-                saveAllocation(name + "_this_gauss_" + i + ".jpg", this_gauss);
-                saveAllocation(name + "_next_gauss_expanded_" + i + ".jpg", next_gauss_expanded);
-            }*/
-            Allocation difference = subtractBitmapRS(script, this_gauss, next_gauss_expanded);
-            if( MyDebug.LOG )
-                Log.d(TAG, "### createLaplacianPyramid: time after subtractBitmap for level " + i + ": " + (System.currentTimeMillis() - time_s));
-            /*if( MyDebug.LOG )
-            {
-                // debug
-                saveAllocation(name + "_difference_" + i + ".jpg", difference);
-            }*/
-            pyramid.add(difference);
-            //pyramid.add(this_gauss);
-
-            this_gauss.destroy();
-            gaussianPyramid.set(i, null); // to help garbage collection
-            next_gauss_expanded.destroy();
-            if( MyDebug.LOG )
-                Log.d(TAG, "### createLaplacianPyramid: time after level " + i + ": " + (System.currentTimeMillis() - time_s));
-        }
-        pyramid.add(gaussianPyramid.get(gaussianPyramid.size()-1));
 
         return pyramid;
     }
@@ -616,13 +382,6 @@ public class PanoramaProcessor {
             savePyramid("gaussian", gaussianPyramid);
         }*/
 
-        /*List<Allocation> gaussianPyramid_rs = new ArrayList<>();
-        for(Bitmap bm : gaussianPyramid) {
-            Allocation allocation = Allocation.createFromBitmap(rs, bm);
-            gaussianPyramid_rs.add(allocation);
-        }*/
-
-        //List<Allocation> pyramid = new ArrayList<>();
         LaplacianPyramid pyramid = new LaplacianPyramid();
 
         for(int i=0;i<gaussianPyramid.size()-1;i++) {
@@ -652,32 +411,6 @@ public class PanoramaProcessor {
         pyramid.setTopLevel(gaussianPyramid.get(gaussianPyramid.size()-1));
 
         return pyramid;
-    }
-
-    private Bitmap collapseLaplacianPyramidRS(ScriptC_pyramid_blending script, List<Allocation> pyramid) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "collapseLaplacianPyramidRS");
-
-        Allocation allocation = pyramid.get(pyramid.size()-1);
-        boolean first = true;
-        for(int i=pyramid.size()-2;i>=0;i--) {
-            Allocation expanded_allocation = expandBitmapRS(script, allocation);
-            if( !first ) {
-                allocation.destroy();
-            }
-            addBitmapRS(script, expanded_allocation, pyramid.get(i));
-            allocation = expanded_allocation;
-            first = false;
-        }
-
-        int width = allocation.getType().getX();
-        int height = allocation.getType().getY();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        allocation.copyTo(bitmap);
-        if( !first ) {
-            allocation.destroy();
-        }
-        return bitmap;
     }
 
     private Bitmap collapseLaplacianPyramid(LaplacianPyramid pyramid) {
@@ -766,110 +499,6 @@ public class PanoramaProcessor {
                 throw new RuntimeException("blend window runs off right hand size");
             }
         }
-    }
-
-    /** Updates every allocation in pyramid0 to be a blend from the left hand of pyramid0 to the
-     *  right hand of pyramid1.
-     *  Note that the width of the blend region will be half of the width of each image.
-     * @param best_path If non-null, the blend region will follow the supplied best path.
-     */
-    private void mergePyramidsRS(ScriptC_pyramid_blending script, List<Allocation> pyramid0, List<Allocation> pyramid1, int [] best_path, int best_path_n_x) {
-        if( MyDebug.LOG )
-            Log.d(TAG, "mergePyramidsRS");
-
-        if( best_path == null ) {
-            best_path = new int[1];
-            best_path_n_x = 3;
-            best_path[0] = 1;
-            //best_path[0] = 2; // test
-        }
-        if( MyDebug.LOG ) {
-            for(int i=0;i<best_path.length;i++)
-                Log.d(TAG, "best_path[" + i + "]: " + best_path[i]);
-        }
-        //Allocation bestPathAllocation = Allocation.createSized(rs, Element.I32(rs), best_path.length);
-        //script.bind_best_path(bestPathAllocation);
-        //bestPathAllocation.copyFrom(best_path);
-
-        int max_height = 0;
-        for(int i=0;i<pyramid0.size();i++) {
-            Allocation allocation0 = pyramid0.get(i);
-            int height = allocation0.getType().getY();
-            max_height = Math.max(max_height, height);
-        }
-
-        Allocation interpolatedbestPathAllocation = Allocation.createSized(rs, Element.I32(rs), max_height);
-        script.bind_interpolated_best_path(interpolatedbestPathAllocation);
-        int [] interpolated_best_path = new int[max_height];
-
-        for(int i=0;i<pyramid0.size();i++) {
-            Allocation allocation0 = pyramid0.get(i);
-            Allocation allocation1 = pyramid1.get(i);
-
-            int width = allocation0.getType().getX();
-            int height = allocation0.getType().getY();
-            if( allocation1.getType().getX() != width || allocation1.getType().getY() != height ) {
-                Log.e(TAG, "allocations of different dimensions");
-                throw new RuntimeException();
-            }
-            else if( allocation0.getType().getElement().getDataType() != allocation1.getType().getElement().getDataType() ) {
-                Log.e(TAG, "allocations of different data types");
-                throw new RuntimeException();
-            }
-
-            script.set_bitmap(allocation1);
-
-            // when using best_path, we have a narrower region to blend across
-            //int blend_window_width = width;
-            int blend_window_width = width/2;
-            //int blend_width = (i==pyramid0.size()-1) ? blend_window_width : 2;
-            int blend_width;
-            if( i==pyramid0.size()-1 ) {
-                blend_width = blend_window_width;
-            }
-            else {
-                blend_width = 2;
-                for(int j=0;j<i;j++) {
-                    blend_width *= 2;
-                }
-                blend_width = Math.min(blend_width, blend_window_width);
-            }
-            /*int blend_width = blend_window_width;
-            for(int j=i;j<pyramid0.size()-1;j++) {
-                blend_width /= 2;
-            }
-            blend_width = Math.max(blend_width, 2);*/
-            //blend_width = 1; // test
-
-            //float best_path_x_width = width / (best_path_n_x+1.0f); // width of each "bucket" for the best paths
-            //blend_width = Math.min(blend_width, (int)(2.0f*best_path_x_width+0.5f));
-            /*if( MyDebug.LOG ) {
-                Log.d(TAG, "i = " + i);
-                Log.d(TAG, "    width: " + width);
-                Log.d(TAG, "    blend_width: " + blend_width);
-                Log.d(TAG, "    height: " + height);
-                //Log.d(TAG, "    best_path_x_width: " + best_path_x_width);
-                Log.d(TAG, "    best_path_y_scale: " + best_path_y_scale);
-            }*/
-
-            // compute interpolated_best_path
-            computeInterpolatedBestPath(interpolated_best_path, width, height, blend_width, best_path, best_path_n_x);
-            interpolatedbestPathAllocation.copyFrom(interpolated_best_path);
-
-            script.invoke_setBlendWidth(blend_width, width);
-            //script.set_best_path_x_width(best_path_x_width);
-            //script.set_best_path_y_scale(best_path.length/(float)height);
-
-            if( allocation0.getType().getElement().getDataType() == Element.DataType.FLOAT_32 ) {
-                script.forEach_merge_f(allocation0, allocation0);
-            }
-            else {
-                script.forEach_merge(allocation0, allocation0);
-            }
-        }
-
-        //bestPathAllocation.destroy();
-        interpolatedbestPathAllocation.destroy();
     }
 
     /** Updates every entry in pyramid0 to be a blend from the left hand of pyramid0 to the
@@ -972,58 +601,6 @@ public class PanoramaProcessor {
         }
     }
 
-    private void saveAllocation(String name, Allocation allocation) {
-        Bitmap bitmap;
-        int width = allocation.getType().getX();
-        int height = allocation.getType().getY();
-        Log.d(TAG, "count: " + allocation.getType().getCount());
-        Log.d(TAG, "byte size: " + allocation.getType().getElement().getBytesSize());
-        if( allocation.getType().getElement().getDataType() == Element.DataType.FLOAT_32 ) {
-            float [] bytes = new float[width*height*4];
-            allocation.copyTo(bytes);
-            int [] pixels = new int[width*height];
-            for(int j=0;j<width*height;j++) {
-                float r = bytes[4*j];
-                float g = bytes[4*j+1];
-                float b = bytes[4*j+2];
-                // each value should be from -255 to +255, we compress to be in the range [0, 255]
-                int ir = (int)(255.0f * ((r/510.0f) + 0.5f) + 0.5f);
-                int ig = (int)(255.0f * ((g/510.0f) + 0.5f) + 0.5f);
-                int ib = (int)(255.0f * ((b/510.0f) + 0.5f) + 0.5f);
-                ir = Math.max(Math.min(ir, 255), 0);
-                ig = Math.max(Math.min(ig, 255), 0);
-                ib = Math.max(Math.min(ib, 255), 0);
-                pixels[j] = Color.argb(255, ir, ig, ib);
-            }
-            bitmap = Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
-        }
-        else if( allocation.getType().getElement().getDataType() == Element.DataType.UNSIGNED_8 ) {
-            byte [] bytes = new byte[width*height];
-            allocation.copyTo(bytes);
-            int [] pixels = new int[width*height];
-            for(int j=0;j<width*height;j++) {
-                int b = bytes[j];
-                if( b < 0 )
-                    b += 255;
-                pixels[j] = Color.argb(255, b, b, b);
-            }
-            bitmap = Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
-        }
-        else {
-            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            allocation.copyTo(bitmap);
-        }
-        saveBitmap(bitmap, name);
-        bitmap.recycle();
-    }
-
-    /*private void savePyramid(String name, List<Allocation> pyramid) {
-        for(int i=0;i<pyramid.size();i++) {
-            Allocation allocation = pyramid.get(i);
-            saveAllocation(name + "_" + i + ".jpg", allocation);
-        }
-    }*/
-
     private final static int blend_n_levels = 4; // number of levels used for pyramid blending
 
     /** Bitmaps passed to blendPyramids must have width and height each a multiple of the value
@@ -1041,16 +618,6 @@ public class PanoramaProcessor {
         long time_s = 0;
         if( MyDebug.LOG )
             time_s = System.currentTimeMillis();
-
-        if( !HDRProcessor.use_renderscript ) {
-        }
-        else {
-            if( pyramidBlendingScript == null ) {
-                pyramidBlendingScript = new ScriptC_pyramid_blending(rs);
-            }
-            if( MyDebug.LOG )
-                Log.d(TAG, "### blendPyramids: time after creating ScriptC_pyramid_blending: " + (System.currentTimeMillis() - time_s));
-        }
 
         // debug
         /*if( MyDebug.LOG )
@@ -1096,29 +663,7 @@ public class PanoramaProcessor {
                 saveBitmap(best_path_rhs, "best_path_rhs.jpg");
             }*/
 
-            JavaImageFunctions.PyramidBlendingComputeErrorFunction compute_error_function = null;
-            Allocation lhs_allocation = null;
-            Allocation rhs_allocation = null;
-            int [] errors = null;
-            Allocation errorsAllocation = null;
-            Script.LaunchOptions launch_options = null;
-            if( !HDRProcessor.use_renderscript ) {
-                compute_error_function = new JavaImageFunctions.PyramidBlendingComputeErrorFunction(best_path_rhs);
-            }
-            else {
-                lhs_allocation = Allocation.createFromBitmap(rs, best_path_lhs);
-                rhs_allocation = Allocation.createFromBitmap(rs, best_path_rhs);
-
-                errors = new int[1];
-                errorsAllocation = Allocation.createSized(rs, Element.I32(rs), 1);
-                pyramidBlendingScript.bind_errors(errorsAllocation);
-
-                launch_options = new Script.LaunchOptions();
-                if( MyDebug.LOG )
-                    Log.d(TAG, "### blendPyramids: time after creating allocations for best path: " + (System.currentTimeMillis() - time_s));
-
-                pyramidBlendingScript.set_bitmap(rhs_allocation);
-            }
+            JavaImageFunctions.PyramidBlendingComputeErrorFunction compute_error_function = new JavaImageFunctions.PyramidBlendingComputeErrorFunction(best_path_rhs);
 
             int window_width = Math.max(2, best_path_lhs.getWidth()/8);
             int start_y = 0, stop_y;
@@ -1127,11 +672,6 @@ public class PanoramaProcessor {
                 int best_error = -1;
 
                 stop_y = ((y+1) * best_path_lhs.getHeight()) / best_path_n_y;
-                if( !HDRProcessor.use_renderscript ) {
-                }
-                else {
-                    launch_options.setY(start_y, stop_y);
-                }
 
                 //int start_x = 0, stop_x;
                 for(int x=0;x<best_path_n_x;x++) {
@@ -1143,18 +683,8 @@ public class PanoramaProcessor {
                     int stop_x = mid_x + window_width/2;
                     //stop_x = ((x+1) * best_path_lhs.getWidth()) / best_path_n_x;
 
-                    int this_error;
-                    if( !HDRProcessor.use_renderscript ) {
-                        JavaImageProcessing.applyFunction(compute_error_function, best_path_lhs, null, start_x, start_y, stop_x, stop_y);
-                        this_error = compute_error_function.getError();
-                    }
-                    else {
-                        launch_options.setX(start_x, stop_x);
-                        pyramidBlendingScript.invoke_init_errors();
-                        pyramidBlendingScript.forEach_compute_error(lhs_allocation, launch_options);
-                        errorsAllocation.copyTo(errors);
-                        this_error = errors[0];
-                    }
+                    JavaImageProcessing.applyFunction(compute_error_function, best_path_lhs, null, start_x, start_y, stop_x, stop_y);
+                    int this_error = compute_error_function.getError();
                     //start_x = stop_x; // set for next iteration
 
                     if( MyDebug.LOG )
@@ -1173,14 +703,6 @@ public class PanoramaProcessor {
                     Log.d(TAG, "best_path [" + y + "]: " + best_path[y]);
             }
 
-            if( !HDRProcessor.use_renderscript ) {
-            }
-            else {
-                lhs_allocation.destroy();
-                rhs_allocation.destroy();
-                errorsAllocation.destroy();
-            }
-
             if( best_path_lhs != lhs ) {
                 best_path_lhs.recycle();
             }
@@ -1193,7 +715,7 @@ public class PanoramaProcessor {
         }
 
         Bitmap merged_bitmap;
-        if( !HDRProcessor.use_renderscript ) {
+        {
             LaplacianPyramid lhs_pyramid = createLaplacianPyramid(lhs, blend_n_levels, "lhs");
             if( MyDebug.LOG )
                 Log.d(TAG, "### blendPyramids: time after createLaplacianPyramid 1st call: " + (System.currentTimeMillis() - time_s));
@@ -1212,47 +734,6 @@ public class PanoramaProcessor {
 
             lhs_pyramid.top_level.recycle();
             rhs_pyramid.top_level.recycle();
-        }
-        else {
-            List<Allocation> lhs_pyramid_rs = createLaplacianPyramidRS(pyramidBlendingScript, lhs, blend_n_levels, "lhs");
-            if( MyDebug.LOG )
-                Log.d(TAG, "### blendPyramids: time after createLaplacianPyramid 1st call: " + (System.currentTimeMillis() - time_s));
-            List<Allocation> rhs_pyramid_rs = createLaplacianPyramidRS(pyramidBlendingScript, rhs, blend_n_levels, "rhs");
-            if( MyDebug.LOG )
-                Log.d(TAG, "### blendPyramids: time after createLaplacianPyramid 2nd call: " + (System.currentTimeMillis() - time_s));
-
-            // debug
-            /*if( MyDebug.LOG )
-            {
-                savePyramid("lhs_laplacian", lhs_pyramid);
-                savePyramid("rhs_laplacian", rhs_pyramid);
-            }*/
-
-                // debug
-            /*if( MyDebug.LOG )
-            {
-                Bitmap lhs_collapsed = collapseLaplacianPyramid(script, lhs_pyramid);
-                saveBitmap(lhs_collapsed, "lhs_collapsed.jpg");
-                Bitmap rhs_collapsed = collapseLaplacianPyramid(script, rhs_pyramid);
-                saveBitmap(rhs_collapsed, "rhs_collapsed.jpg");
-                lhs_collapsed.recycle();
-                rhs_collapsed.recycle();
-            }*/
-
-            mergePyramidsRS(pyramidBlendingScript, lhs_pyramid_rs, rhs_pyramid_rs, best_path, best_path_n_x);
-            if( MyDebug.LOG )
-                Log.d(TAG, "### blendPyramids: time after mergePyramids: " + (System.currentTimeMillis() - time_s));
-
-            merged_bitmap = collapseLaplacianPyramidRS(pyramidBlendingScript, lhs_pyramid_rs);
-            if( MyDebug.LOG )
-                Log.d(TAG, "### blendPyramids: time after collapseLaplacianPyramid: " + (System.currentTimeMillis() - time_s));
-
-            for(Allocation allocation : lhs_pyramid_rs) {
-                allocation.destroy();
-            }
-            for(Allocation allocation : rhs_pyramid_rs) {
-                allocation.destroy();
-            }
         }
 
         // debug
@@ -1445,28 +926,6 @@ public class PanoramaProcessor {
             c.drawBitmap(gs_bitmaps[i], 0, 0, paint);
         }*/
 
-        Allocation [] allocations = null;
-        if( !HDRProcessor.use_renderscript ) {
-        }
-        else {
-            initRenderscript();
-            if( MyDebug.LOG )
-                Log.d(TAG, "### autoAlignmentByFeature: time after initRenderscript: " + (System.currentTimeMillis() - time_s));
-            allocations = new Allocation[bitmaps.size()];
-            for(int i=0;i<bitmaps.size();i++) {
-                allocations[i] = Allocation.createFromBitmap(rs, bitmaps.get(i));
-            }
-            if( MyDebug.LOG )
-                Log.d(TAG, "### autoAlignmentByFeature: time after creating allocations: " + (System.currentTimeMillis() - time_s));
-
-            // create RenderScript
-            if( featureDetectorScript == null ) {
-                featureDetectorScript = new ScriptC_feature_detector(rs);
-            }
-            if( MyDebug.LOG )
-                Log.d(TAG, "### autoAlignmentByFeature: time after create featureDetectorScript: " + (System.currentTimeMillis() - time_s));
-        }
-
         //final int feature_descriptor_radius = 2; // radius of square used to compare features
         final int feature_descriptor_radius = 3; // radius of square used to compare features
         //final int feature_descriptor_radius = 5; // radius of square used to compare features
@@ -1477,12 +936,7 @@ public class PanoramaProcessor {
                 Log.d(TAG, "detect features for image: " + i);
 
             float [] strength_rgbf = null;
-            Allocation gs_allocation;
-            Allocation ix_allocation;
-            Allocation iy_allocation;
-            Allocation strength_allocation = null;
-            Allocation local_max_features_allocation = null;
-            if( !HDRProcessor.use_renderscript ) {
+            {
                 if( MyDebug.LOG )
                     Log.d(TAG, "convert to greyscale");
                 Bitmap gs_bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8);
@@ -1513,113 +967,9 @@ public class PanoramaProcessor {
                 ix_bitmap.recycle();
                 iy_bitmap.recycle();
             }
-            else {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "convert to greyscale");
-                gs_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.U8(rs), width, height));
-                featureDetectorScript.forEach_create_greyscale(allocations[i], gs_allocation);
-
-                if( MyDebug.LOG )
-                    Log.d(TAG, "compute derivatives");
-                ix_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.U8(rs), width, height));
-                iy_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.U8(rs), width, height));
-                featureDetectorScript.set_bitmap(gs_allocation);
-                featureDetectorScript.set_bitmap_Ix(ix_allocation);
-                featureDetectorScript.set_bitmap_Iy(iy_allocation);
-                featureDetectorScript.forEach_compute_derivatives(gs_allocation);
-
-                if( MyDebug.LOG )
-                    Log.d(TAG, "call corner detector script for image: " + i);
-                strength_allocation = Allocation.createTyped(rs, Type.createXY(rs, Element.F32(rs), width, height));
-                featureDetectorScript.set_bitmap(gs_allocation);
-                featureDetectorScript.set_bitmap_Ix(ix_allocation);
-                featureDetectorScript.set_bitmap_Iy(iy_allocation);
-                featureDetectorScript.forEach_corner_detector(gs_allocation, strength_allocation);
-
-                ix_allocation.destroy();
-                //noinspection UnusedAssignment
-                ix_allocation = null;
-                iy_allocation.destroy();
-                //noinspection UnusedAssignment
-                iy_allocation = null;
-
-                // reuse gs_allocation (since it's on the same U8 type that we want)
-                local_max_features_allocation = gs_allocation;
-                //noinspection UnusedAssignment
-                gs_allocation = null;
-            }
-            //Allocation gs_allocation = Allocation.createFromBitmap(rs, gs_bitmaps[i]);
-
-            /*if( MyDebug.LOG ) {
-                // debugging
-                byte [] bytes_x = new byte[width*height];
-                byte [] bytes_y = new byte[width*height];
-                ix_allocation.copyTo(bytes_x);
-                iy_allocation.copyTo(bytes_y);
-                int [] pixels_x = new int[width*height];
-                int [] pixels_y = new int[width*height];
-                for(int j=0;j<width*height;j++) {
-                    int b = bytes_x[j];
-                    if( b < 0 )
-                        b += 255;
-                    pixels_x[j] = Color.argb(255, b, b, b);
-                    b = bytes_y[j];
-                    if( b < 0 )
-                        b += 255;
-                    pixels_y[j] = Color.argb(255, b, b, b);
-                }
-                Bitmap bitmap_x = Bitmap.createBitmap(pixels_x, width, height, Bitmap.Config.ARGB_8888);
-                Bitmap bitmap_y = Bitmap.createBitmap(pixels_y, width, height, Bitmap.Config.ARGB_8888);
-                File file_x = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/ix_bitmap" + debug_index + "_" + i + ".png");
-                File file_y = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/iy_bitmap" + debug_index + "_" + i + ".png");
-                try {
-                    MainActivity mActivity = (MainActivity) context;
-
-                    OutputStream outputStream = new FileOutputStream(file_x);
-                    bitmap_x.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                    outputStream.close();
-                    mActivity.getStorageUtils().broadcastFile(file_x, true, false, true);
-
-                    outputStream = new FileOutputStream(file_y);
-                    bitmap_y.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                    outputStream.close();
-                    mActivity.getStorageUtils().broadcastFile(file_y, true, false, true);
-                }
-                catch(IOException e) {
-                    e.printStackTrace();
-                }
-                bitmap_x.recycle();
-                bitmap_y.recycle();
-            }*/
-
-            /*featureDetectorScript.set_corner_threshold(100000000.0f);
-            featureDetectorScript.set_bitmap(strength_allocation);
-            featureDetectorScript.forEach_local_maximum(strength_allocation, local_max_features_allocation);
-            // collect points
-            byte [] bytes = new byte[width*height];
-            local_max_features_allocation.copyTo(bytes);
-            // find points
-            List<Point> points = new ArrayList<>();
-            for(int y=feature_descriptor_radius;y<height-feature_descriptor_radius;y++) {
-                for(int x=feature_descriptor_radius;x<width-feature_descriptor_radius;x++) {
-                    int j = y*width + x;
-                    // remember, bytes are signed!
-                    if( bytes[j] != 0 ) {
-                        Point point = new Point(x, y);
-                        points.add(point);
-                    }
-                }
-            }
-            points_arrays[i] = points.toArray(new Point[0]);
-            */
 
             if( MyDebug.LOG )
                 Log.d(TAG, "find local maxima for image: " + i);
-            if( !HDRProcessor.use_renderscript ) {
-            }
-            else {
-                featureDetectorScript.set_bitmap(strength_allocation);
-            }
             //final int n_y_chunks = 1;
             final int n_y_chunks = 2;
             //final int n_y_chunks = 3;
@@ -1653,19 +1003,8 @@ public class PanoramaProcessor {
                     if( MyDebug.LOG )
                         Log.d(TAG, "### attempt " + count + " try threshold: " + threshold + " [ " + low_threshold + " : " + high_threshold + " ]");
 
-                    if( !HDRProcessor.use_renderscript ) {
-                        JavaImageFunctions.LocalMaximumFunction function = new JavaImageFunctions.LocalMaximumFunction(strength_rgbf, bytes, width, height, threshold);
-                        JavaImageProcessing.applyFunction(function, null, null, 0, 0, width, height);
-                    }
-                    else {
-                        featureDetectorScript.set_corner_threshold(threshold);
-                        Script.LaunchOptions launch_options = new Script.LaunchOptions();
-                        launch_options.setX(0, width);
-                        launch_options.setY(start_y, stop_y);
-                        featureDetectorScript.forEach_local_maximum(strength_allocation, local_max_features_allocation, launch_options);
-                        // collect points
-                        local_max_features_allocation.copyTo(bytes);
-                    }
+                    JavaImageFunctions.LocalMaximumFunction function = new JavaImageFunctions.LocalMaximumFunction(strength_rgbf, bytes, width, height, threshold);
+                    JavaImageProcessing.applyFunction(function, null, null, 0, 0, width, height);
 
                     // find points
                     List<Point> points = new ArrayList<>();
@@ -1739,18 +1078,6 @@ public class PanoramaProcessor {
 
             if( MyDebug.LOG )
                 Log.d(TAG, "### image: " + i + " has " + points_arrays[i].length + " points");
-
-            if( strength_allocation != null ) {
-                strength_allocation.destroy();
-                //noinspection UnusedAssignment
-                strength_allocation = null;
-            }
-
-            if( local_max_features_allocation != null ) {
-                local_max_features_allocation.destroy();
-                //noinspection UnusedAssignment
-                local_max_features_allocation = null;
-            }
         }
         if( MyDebug.LOG )
             Log.d(TAG, "### autoAlignmentByFeature: time after feature detection: " + (System.currentTimeMillis() - time_s));
@@ -1762,16 +1089,6 @@ public class PanoramaProcessor {
                 Log.d(TAG, "too few points!");
             /*if( true )
                 throw new RuntimeException();*/
-
-            if( allocations != null ) {
-                // free allocations
-                for(int i=0;i<allocations.length;i++) {
-                    if( allocations[i] != null ) {
-                        allocations[i].destroy();
-                        allocations[i] = null;
-                    }
-                }
-            }
 
             return new AutoAlignmentByFeatureResult(0, 0, 0.0f, 1.0f);
         }
@@ -1987,16 +1304,6 @@ public class PanoramaProcessor {
                 Log.d(TAG, "no matches!");
             /*if( true )
                 throw new RuntimeException();*/
-
-            if( allocations != null ) {
-                // free allocations
-                for(int i=0;i<allocations.length;i++) {
-                    if( allocations[i] != null ) {
-                        allocations[i].destroy();
-                        allocations[i] = null;
-                    }
-                }
-            }
 
             return new AutoAlignmentByFeatureResult(0, 0, 0.0f, 1.0f);
         }
@@ -2542,16 +1849,6 @@ public class PanoramaProcessor {
                 e.printStackTrace();
             }
             bitmap.recycle();
-        }
-
-        if( allocations != null ) {
-            // free allocations
-            for(int i=0;i<allocations.length;i++) {
-                if( allocations[i] != null ) {
-                    allocations[i].destroy();
-                    allocations[i] = null;
-                }
-            }
         }
 
         if( MyDebug.LOG )
@@ -3714,29 +3011,13 @@ public class PanoramaProcessor {
             /*if( true )
                 throw new RuntimeException("ratio_brightnesses: " + ratio_brightnesses);*/
 
-            if( !HDRProcessor.use_renderscript ) {
-                hdrProcessor.adjustHistogram(panorama, panorama, panorama.getWidth(), panorama.getHeight(), 0.25f, 1, true, time_s);
-                if( MyDebug.LOG )
-                    Log.d(TAG, "### time after adjustHistogram: " + (System.currentTimeMillis() - time_s));
-            }
-            else {
-                Allocation allocation = Allocation.createFromBitmap(rs, panorama);
-                if( MyDebug.LOG )
-                    Log.d(TAG, "### time after creating allocation_out: " + (System.currentTimeMillis() - time_s));
-                hdrProcessor.adjustHistogramRS(allocation, allocation, panorama.getWidth(), panorama.getHeight(), 0.25f, 1, true, time_s);
-                if( MyDebug.LOG )
-                    Log.d(TAG, "### time after adjustHistogram: " + (System.currentTimeMillis() - time_s));
-                allocation.copyTo(panorama);
-                allocation.destroy();
-                if( MyDebug.LOG )
-                    Log.d(TAG, "### time after copying to bitmap: " + (System.currentTimeMillis() - time_s));
-            }
+            hdrProcessor.adjustHistogram(panorama, panorama, panorama.getWidth(), panorama.getHeight(), 0.25f, 1, true, time_s);
+            if( MyDebug.LOG )
+                Log.d(TAG, "### time after adjustHistogram: " + (System.currentTimeMillis() - time_s));
         }
 
         if( MyDebug.LOG )
             Log.d(TAG, "panorama complete!");
-
-        freeScripts();
 
         if( MyDebug.LOG )
             Log.d(TAG, "### time taken for panorama: " + (System.currentTimeMillis() - time_s));
