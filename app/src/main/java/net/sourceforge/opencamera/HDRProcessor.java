@@ -385,7 +385,7 @@ public class HDRProcessor {
                 y_samples.add(out_value);
             }
         }
-        if( x_samples.size() == 0 ) {
+        if( x_samples.isEmpty() )  {
             Log.e(TAG, "no samples for response function!");
             // shouldn't happen, but could do with a very large offset - just make up a dummy sample
             double in_value = 255.0;

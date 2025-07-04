@@ -6618,7 +6618,7 @@ public class InstrumentedTest {
                 supported_extension_modes.add("preference_photo_mode_x_beauty");
         });
 
-        if( supported_extension_modes.size() == 0 ) {
+        if( supported_extension_modes.isEmpty() ) {
             Log.d(TAG, "test requires camera extensions");
             return;
         }

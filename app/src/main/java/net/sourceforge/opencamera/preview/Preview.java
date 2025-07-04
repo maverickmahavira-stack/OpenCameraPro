@@ -2204,7 +2204,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             String old_flash_value = camera_controller.getFlashValue();
             // getFlashValue() may return "" if flash not supported!
             // also set flash_torch - otherwise we get bug where torch doesn't turn on when starting up in video mode (and it's not like we want to turn torch off for startup focus, anyway)
-            if( old_flash_value.length() > 0 && !old_flash_value.equals("flash_off") && !old_flash_value.equals("flash_torch") ) {
+            if( !old_flash_value.isEmpty() && !old_flash_value.equals("flash_off") && !old_flash_value.equals("flash_torch") ) {
                 set_flash_value_after_autofocus = old_flash_value;
                 camera_controller.setFlashValue("flash_off");
             }
@@ -2501,7 +2501,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             this.supports_raw = camera_features.supports_raw;
             this.view_angle_x = camera_features.view_angle_x;
             this.view_angle_y = camera_features.view_angle_y;
-            this.supports_video_high_speed = camera_features.video_sizes_high_speed != null && camera_features.video_sizes_high_speed.size() > 0;
+            this.supports_video_high_speed = camera_features.video_sizes_high_speed != null && !camera_features.video_sizes_high_speed.isEmpty();
             this.video_quality_handler.setVideoSizes(camera_features.video_sizes);
             this.video_quality_handler.setVideoSizesHighSpeed(camera_features.video_sizes_high_speed);
             this.supported_preview_sizes = camera_features.preview_sizes;
@@ -3116,7 +3116,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         if( MyDebug.LOG )
             Log.d(TAG, "video_quality_value: " + video_quality_value_s);
         video_quality_handler.setCurrentVideoQualityIndex(-1);
-        if( video_quality_value_s.length() > 0 ) {
+        if( !video_quality_value_s.isEmpty() ) {
             // parse the saved video quality, and make sure it is still valid
             // now find value in valid list
             for(int i=0;i<video_quality_handler.getSupportedVideoQuality().size() && video_quality_handler.getCurrentVideoQualityIndex()==-1;i++) {
@@ -3131,7 +3131,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     Log.e(TAG, "failed to find valid video_quality");
             }
         }
-        if( video_quality_handler.getCurrentVideoQualityIndex() == -1 && video_quality_handler.getSupportedVideoQuality().size() > 0 ) {
+        if( video_quality_handler.getCurrentVideoQualityIndex() == -1 && !video_quality_handler.getSupportedVideoQuality().isEmpty() ) {
             // default to FullHD if available, else pick highest quality
             // (FullHD will give smaller file sizes and generally give better performance than 4K so probably better for most users; also seems to suffer from less problems when using manual ISO in Camera2 API)
             video_quality_handler.setCurrentVideoQualityIndex(0); // start with highest quality
@@ -3255,7 +3255,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             if( supported_flash_values != null && supported_flash_values.size() > 1 ) {
 
                 String flash_value = applicationInterface.getFlashPref();
-                if( flash_value.length() > 0 ) {
+                if( !flash_value.isEmpty() ) {
                     if( MyDebug.LOG )
                         Log.d(TAG, "found existing flash_value: " + flash_value);
                     if( !updateFlash(flash_value, false) ) { // don't need to save, as this is the value that's already saved
@@ -3416,7 +3416,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             camera_controller.setPictureSize(new_size.width, new_size.height);
         }
         // set optimal preview size
-        if( supported_preview_sizes != null && supported_preview_sizes.size() > 0 ) {
+        if( supported_preview_sizes != null && !supported_preview_sizes.isEmpty() ) {
             CameraController.Size best_size = getOptimalPreviewSize(supported_preview_sizes);
             camera_controller.setPreviewSize(best_size.width, best_size.height);
             this.set_preview_size = true;
@@ -3901,7 +3901,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             return "";
         CamcorderProfile profile = getCamcorderProfile(quality);
         String type = getCamcorderProfileDescriptionType(profile);
-        String space = type.length() == 0 ? "" : " ";
+        String space = type.isEmpty() ? "" : " ";
         return profile.videoFrameWidth + "x" + profile.videoFrameHeight + space + type;
     }
 
@@ -3910,7 +3910,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             return "";
         CamcorderProfile profile = getCamcorderProfile(quality);
         String type = getCamcorderProfileDescriptionType(profile);
-        String space = type.length() == 0 ? "" : " ";
+        String space = type.isEmpty() ? "" : " ";
         return type + space + profile.videoFrameWidth + "x" + profile.videoFrameHeight + " " + getAspectRatioMPString(getResources(), profile.videoFrameWidth, profile.videoFrameHeight, true);
     }
 
@@ -4877,7 +4877,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             Log.d(TAG, "setPreviewFps()");
         VideoProfile profile = getVideoProfile();
         List<int []> fps_ranges = camera_controller.getSupportedPreviewFpsRange();
-        if( fps_ranges == null || fps_ranges.size() == 0 ) {
+        if( fps_ranges == null || fps_ranges.isEmpty() ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "fps_ranges not available");
             return;
@@ -5051,7 +5051,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         if( MyDebug.LOG )
             Log.d(TAG, "setFocusPref()");
         String focus_value = applicationInterface.getFocusPref(is_video);
-        if( focus_value.length() > 0 ) {
+        if( !focus_value.isEmpty() ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "found existing focus_value: " + focus_value);
             if( !updateFocus(focus_value, true, false, auto_focus) ) { // don't need to save, as this is the value that's already saved
@@ -5147,19 +5147,19 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 features = getContext().getResources().getString(R.string.error_features_4k);
             }
             if( was_bitrate ) {
-                if( features.length() == 0 )
+                if( features.isEmpty() )
                     features = getContext().getResources().getString(R.string.error_features_bitrate);
                 else
                     features += "/" + getContext().getResources().getString(R.string.error_features_bitrate);
             }
             if( was_fps ) {
-                if( features.length() == 0 )
+                if( features.isEmpty() )
                     features = getContext().getResources().getString(R.string.error_features_frame_rate);
                 else
                     features += "/" + getContext().getResources().getString(R.string.error_features_frame_rate);
             }
             if( was_slow_motion ) {
-                if( features.length() == 0 )
+                if( features.isEmpty() )
                     features = getContext().getResources().getString(R.string.error_features_slow_motion);
                 else
                     features += "/" + getContext().getResources().getString(R.string.error_features_slow_motion);
@@ -5668,7 +5668,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             Log.d(TAG, "flashVideo");
         // getFlashValue() may return "" if flash not supported!
         String flash_value = camera_controller.getFlashValue();
-        if( flash_value.length() == 0 )
+        if( flash_value.isEmpty() )
             return;
         String flash_value_ui = getCurrentFlashValue();
         if( flash_value_ui == null )
@@ -6541,7 +6541,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         if( using_android_l ) {
             String flash_value = camera_controller.getFlashValue();
             // getFlashValue() may return "" if flash not supported!
-            if( flash_value.length() > 0 && ( flash_value.equals("flash_auto") || flash_value.equals("flash_red_eye") ) ) {
+            if( !flash_value.isEmpty() && ( flash_value.equals("flash_auto") || flash_value.equals("flash_red_eye") ) ) {
                 if( MyDebug.LOG )
                     Log.d(TAG, "wait for a bit...");
                 try {
@@ -6934,7 +6934,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     set_flash_value_after_autofocus = "";
                     String old_flash_value = camera_controller.getFlashValue();
                     // getFlashValue() may return "" if flash not supported!
-                    if( startup && old_flash_value.length() > 0 && !old_flash_value.equals("flash_off") && !old_flash_value.equals("flash_torch") ) {
+                    if( startup && !old_flash_value.isEmpty() && !old_flash_value.equals("flash_off") && !old_flash_value.equals("flash_torch") ) {
                         set_flash_value_after_autofocus = old_flash_value;
                         camera_controller.setFlashValue("flash_off");
                     }
@@ -7021,7 +7021,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
     private void ensureFlashCorrect() {
         // ensures flash is in correct mode, in case where we had to turn flash temporarily off for startup autofocus
-        if( set_flash_value_after_autofocus.length() > 0 && camera_controller != null ) {
+        if( !set_flash_value_after_autofocus.isEmpty() && camera_controller != null ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "set flash back to: " + set_flash_value_after_autofocus);
             camera_controller.setFlashValue(set_flash_value_after_autofocus);
@@ -8686,7 +8686,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         private void flush() {
             if( MyDebug.LOG )
                 Log.d(TAG, "RingBuffer.flush()");
-            while( bitmaps.size() > 0 ) {
+            while( !bitmaps.isEmpty() ) {
                 Bitmap bm = bitmaps.remove(0);
                 bm.recycle();
             }
@@ -8701,7 +8701,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         }
 
         public boolean hasBitmaps() {
-            return bitmaps.size() > 0;
+            return !bitmaps.isEmpty();
         }
 
         public int getNBitmaps() {

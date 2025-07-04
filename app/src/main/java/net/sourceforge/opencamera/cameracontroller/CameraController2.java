@@ -1860,7 +1860,7 @@ public class CameraController2 extends CameraController {
                  * we'll end up calling processImage() both in onImageAvailable() and here.
                  */
                 this.capture_results.add(capture_result);
-                if( images.size() > 0 ) {
+                if( !images.isEmpty() ) {
                     if( MyDebug.LOG )
                         Log.d(TAG, "can now process the image");
                     // should call processImage() on UI thread, to be consistent with onImageAvailable()->processImage()
@@ -1900,12 +1900,12 @@ public class CameraController2 extends CameraController {
             Image image;
 
             synchronized( background_camera_lock ) {
-                if( capture_results.size() == 0 ) {
+                if( capture_results.isEmpty() ) {
                     if( MyDebug.LOG )
                         Log.d(TAG, "don't yet have still_capture_result");
                     return;
                 }
-                if( images.size() == 0 ) {
+                if( images.isEmpty() ) {
                     if( MyDebug.LOG )
                         Log.d(TAG, "don't have image?!");
                     return;
@@ -2667,7 +2667,7 @@ public class CameraController2 extends CameraController {
             zoom *= scale_factor_c;
         }
         int max_zoom_ratio = (int)(max_zoom*100);
-        if( zoom_ratios_above_one.size() == 0 || zoom_ratios_above_one.get(zoom_ratios_above_one.size()-1) != max_zoom_ratio ) {
+        if( zoom_ratios_above_one.isEmpty() || zoom_ratios_above_one.get(zoom_ratios_above_one.size()-1) != max_zoom_ratio ) {
             zoom_ratios_above_one.add(max_zoom_ratio);
         }
         int n_steps_above_one = zoom_ratios_above_one.size();

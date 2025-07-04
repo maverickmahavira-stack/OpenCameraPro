@@ -389,6 +389,7 @@ public class FolderChooserDialog extends DialogFragment {
                     .setPositiveButton(android.R.string.ok, new Dialog.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            // Android warning that we should replace with isEmpty(), but that requires Android 15 for CharSequence.isEmpty()
                             if( edit_text.getText().length() == 0 ) {
                                 // do nothing
                             }

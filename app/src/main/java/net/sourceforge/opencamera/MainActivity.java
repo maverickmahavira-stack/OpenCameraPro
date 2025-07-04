@@ -454,11 +454,11 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             }
             boolean multi_same_facing = back_camera_ids.size() >= 2 || front_camera_ids.size() >= 2 || other_camera_ids.size() >= 2;
             int n_facing = 0;
-            if( back_camera_ids.size() > 0 )
+            if( !back_camera_ids.isEmpty() )
                 n_facing++;
-            if( front_camera_ids.size() > 0 )
+            if( !front_camera_ids.isEmpty() )
                 n_facing++;
-            if( other_camera_ids.size() > 0 )
+            if( !other_camera_ids.isEmpty() )
                 n_facing++;
             this.is_multi_cam = multi_same_facing && n_facing >= 2;
             //this.is_multi_cam = false; // test
@@ -1208,7 +1208,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 base_folder = StorageUtils.getBaseFolder().getAbsolutePath();
             // strip '/' as last character - makes it easier to also spot cases where the folder is the
             // DCIM folder, but doesn't have a '/' last character
-            if( base_folder.length() >= 1 && base_folder.charAt(base_folder.length()-1) == '/' )
+            if( !base_folder.isEmpty() && base_folder.charAt(base_folder.length()-1) == '/' )
                 base_folder = base_folder.substring(0, base_folder.length()-1);
             if( MyDebug.LOG )
                 Log.d(TAG, "    compare to base_folder: " + base_folder);
@@ -1216,7 +1216,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             if( folder.startsWith(base_folder) ) {
                 alt_folder = folder.substring(base_folder.length());
                 // also need to strip the first '/' if it exists
-                if( alt_folder.length() >= 1 && alt_folder.charAt(0) == '/' )
+                if( !alt_folder.isEmpty() && alt_folder.charAt(0) == '/' )
                     alt_folder = alt_folder.substring(1);
             }
 
@@ -2326,21 +2326,21 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 // don't use preview.getCameraController(), as it may be null if user quickly switches between cameras
                 switch( preview.getCameraControllerManager().getFacing(cameraId) ) {
                     case FACING_BACK:
-                        if( front_camera_ids.size() > 0 )
+                        if( !front_camera_ids.isEmpty() )
                             cameraId = front_camera_ids.get(0);
-                        else if( other_camera_ids.size() > 0 )
+                        else if( !other_camera_ids.isEmpty() )
                             cameraId = other_camera_ids.get(0);
                         break;
                     case FACING_FRONT:
-                        if( other_camera_ids.size() > 0 )
+                        if( !other_camera_ids.isEmpty() )
                             cameraId = other_camera_ids.get(0);
-                        else if( back_camera_ids.size() > 0 )
+                        else if( !back_camera_ids.isEmpty() )
                             cameraId = back_camera_ids.get(0);
                         break;
                     default:
-                        if( back_camera_ids.size() > 0 )
+                        if( !back_camera_ids.isEmpty() )
                             cameraId = back_camera_ids.get(0);
-                        else if( front_camera_ids.size() > 0 )
+                        else if( !front_camera_ids.isEmpty() )
                             cameraId = front_camera_ids.get(0);
                         break;
                 }
@@ -3187,7 +3187,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         if( MyDebug.LOG )
             Log.d(TAG, "fps_value: " + fps_value);
         List<String> video_quality = this.preview.getSupportedVideoQuality(fps_value);
-        if( video_quality == null || video_quality.size() == 0 ) {
+        if( video_quality == null || video_quality.isEmpty() ) {
             Log.e(TAG, "can't find any supported video sizes for current fps!");
             // fall back to unfiltered list
             video_quality = this.preview.getVideoQualityHander().getSupportedVideoQuality();
@@ -3533,7 +3533,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             }, DrawPreview.dim_effect_time_c+16); // +16 to allow time for a frame update to run
         }
         // don't set block_startup_toast to false yet, as camera might be closing/opening on background thread
-        if( toast_message != null && toast_message.length() > 0 )
+        if( toast_message != null && !toast_message.isEmpty() )
             preview.showToast(null, toast_message, true);
 
         // don't need to reset to saved_focus_value, as we'll have done this when setting up the camera (or will do so when the camera is reopened, if need_reopen)
@@ -5127,7 +5127,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                         // failed - if the user had yet to set a save location, make sure we switch SAF back off
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                         String uri = sharedPreferences.getString(PreferenceKeys.SaveLocationSAFPreferenceKey, "");
-                        if( uri.length() == 0 ) {
+                        if( uri.isEmpty() ) {
                             if( MyDebug.LOG )
                                 Log.d(TAG, "no SAF save location was set");
                             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -5142,7 +5142,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                     // cancelled - if the user had yet to set a save location, make sure we switch SAF back off
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                     String uri = sharedPreferences.getString(PreferenceKeys.SaveLocationSAFPreferenceKey, "");
-                    if( uri.length() == 0 ) {
+                    if( uri.isEmpty() ) {
                         if( MyDebug.LOG )
                             Log.d(TAG, "no SAF save location was set");
                         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -5183,7 +5183,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                         // failed - if the user had yet to set a ghost image
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                         String uri = sharedPreferences.getString(PreferenceKeys.GhostSelectedImageSAFPreferenceKey, "");
-                        if( uri.length() == 0 ) {
+                        if( uri.isEmpty() ) {
                             if( MyDebug.LOG )
                                 Log.d(TAG, "no SAF ghost image was set");
                             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -5198,7 +5198,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                     // cancelled - if the user had yet to set a ghost image, make sure we switch the option back off
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                     String uri = sharedPreferences.getString(PreferenceKeys.GhostSelectedImageSAFPreferenceKey, "");
-                    if( uri.length() == 0 ) {
+                    if( uri.isEmpty() ) {
                         if( MyDebug.LOG )
                             Log.d(TAG, "no SAF ghost image was set");
                         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -5300,18 +5300,18 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
     public static String processUserSaveLocation(String folder) {
         // filter repeated '/', e.g., replace // with /:
         String strip = "//";
-        while( folder.length() >= 1 && folder.contains(strip) ) {
+        while( !folder.isEmpty() && folder.contains(strip) ) {
             folder = folder.replaceAll(strip, "/");
         }
 
-        if( folder.length() >= 1 && folder.charAt(0) == '/' ) {
+        if( !folder.isEmpty() && folder.charAt(0) == '/' ) {
             // strip '/' as first character - as absolute paths not allowed with scoped storage
             // whilst we do block entering a '/' as first character in the InputFilter, users could
             // get around this (e.g., put a '/' as second character, then delete the first character)
             folder = folder.substring(1);
         }
 
-        if( folder.length() >= 1 && folder.charAt(folder.length()-1) == '/' ) {
+        if( !folder.isEmpty() && folder.charAt(folder.length()-1) == '/' ) {
             // strip '/' as last character - MediaStore will ignore it, but seems cleaner to strip it out anyway
             // (we still need to allow '/' as last character in the InputFilter, otherwise users won't be able to type it whilst writing a subfolder)
             folder = folder.substring(0, folder.length()-1);
@@ -5420,7 +5420,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         else {
             // The strings can either be a sub-folder of DCIM, or (pre-scoped-storage) a full path, so normally either can be displayed.
             // But with scoped storage, an empty string is used to mean DCIM, so seems clearer to say that instead of displaying a blank line!
-            if( MainActivity.useScopedStorage() && save_folder.length() == 0 ) {
+            if( MainActivity.useScopedStorage() && save_folder.isEmpty() ) {
                 save_folder = "DCIM";
             }
         }
@@ -6613,7 +6613,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 simple = false;
             }
             String max_duration_value = sharedPreferences.getString(PreferenceKeys.VideoMaxDurationPreferenceKey, "0");
-            if( max_duration_value.length() > 0 && !max_duration_value.equals("0") ) {
+            if( !max_duration_value.isEmpty() && !max_duration_value.equals("0") ) {
                 String [] entries_array = getResources().getStringArray(R.array.preference_video_max_duration_entries);
                 String [] values_array = getResources().getStringArray(R.array.preference_video_max_duration_values);
                 int index = Arrays.asList(values_array).indexOf(max_duration_value);
@@ -6654,7 +6654,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
 
             String photo_mode_string = getPhotoModeString(photo_mode, false);
             if( photo_mode_string != null ) {
-                toast_string += (toast_string.length()==0 ? "" : "\n") + getResources().getString(R.string.photo_mode) + ": " + photo_mode_string;
+                toast_string += (toast_string.isEmpty() ? "" : "\n") + getResources().getString(R.string.photo_mode) + ": " + photo_mode_string;
                 if( photo_mode != MyApplicationInterface.PhotoMode.DRO && photo_mode != MyApplicationInterface.PhotoMode.HDR && photo_mode != MyApplicationInterface.PhotoMode.NoiseReduction )
                     simple = false;
             }
@@ -6671,7 +6671,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
 
             if( applicationInterface.getAutoStabilisePref() ) {
                 // important as users are sometimes confused at the behaviour if they don't realise the option is on
-                toast_string += (toast_string.length()==0 ? "" : "\n") + getResources().getString(R.string.preference_auto_stabilise);
+                toast_string += (toast_string.isEmpty() ? "" : "\n") + getResources().getString(R.string.preference_auto_stabilise);
                 simple = false;
             }
         }

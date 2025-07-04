@@ -1121,7 +1121,7 @@ public class TestUtils {
                 files.addAll( mediaFilesinSaveFolder(activity, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, bucket_id, UriType.MEDIASTORE_VIDEOS) );
             }
 
-            if( files.size() == 0 ) {
+            if( files.isEmpty() ) {
                 return null;
             }
             else {

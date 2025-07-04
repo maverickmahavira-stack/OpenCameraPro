@@ -1449,14 +1449,14 @@ public class ImageSaver extends Thread {
             // throw runtime exception, as this is a programming error
             throw new RuntimeException();
         }
-        else if( request.jpeg_images.size() == 0 ) {
+        else if( request.jpeg_images.isEmpty() ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "saveImageNow called with zero images");
             // throw runtime exception, as this is a programming error
             throw new RuntimeException();
         }
 
-        if( request.preshot_bitmaps != null && request.preshot_bitmaps.size() > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
+        if( request.preshot_bitmaps != null && !request.preshot_bitmaps.isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
             savePreshotBitmaps(request);
         }
 
@@ -2684,7 +2684,7 @@ public class ImageSaver extends Thread {
         }
         //final MyApplicationInterface applicationInterface = main_activity.getApplicationInterface();
         boolean dategeo_stamp = request.preference_stamp.equals("preference_stamp_yes");
-        boolean text_stamp = request.preference_textstamp.length() > 0;
+        boolean text_stamp = !request.preference_textstamp.isEmpty();
         if( dategeo_stamp || text_stamp ) {
             if( bitmap == null ) {
                 if( MyDebug.LOG )
@@ -2762,24 +2762,24 @@ public class ImageSaver extends Thread {
                         Log.d(TAG, "date_stamp: " + date_stamp);
                         Log.d(TAG, "time_stamp: " + time_stamp);
                     }
-                    if( date_stamp.length() > 0 || time_stamp.length() > 0 ) {
+                    if( !date_stamp.isEmpty() || !time_stamp.isEmpty() ) {
                         String datetime_stamp = "";
-                        if( date_stamp.length() > 0 )
+                        if( !date_stamp.isEmpty() )
                             datetime_stamp += date_stamp;
-                        if( time_stamp.length() > 0 ) {
-                            if( datetime_stamp.length() > 0 )
+                        if( !time_stamp.isEmpty() ) {
+                            if( !datetime_stamp.isEmpty() )
                                 datetime_stamp += " ";
                             datetime_stamp += time_stamp;
                         }
                         //applicationInterface.drawTextWithBackground(canvas, p, datetime_stamp, color, Color.BLACK, width - offset_x, ypos, MyApplicationInterface.Alignment.ALIGNMENT_BOTTOM, null, draw_shadowed);
-                        if( stamp_string.length() == 0 )
+                        if( stamp_string.isEmpty() )
                             stamp_string = datetime_stamp;
                         else
                             stamp_string = datetime_stamp + "\n" + stamp_string;
                     }
                     ypos -= diff_y;
                     String gps_stamp = main_activity.getTextFormatter().getGPSString(preference_stamp_gpsformat, request.preference_units_distance, request.store_location, request.location, request.store_geo_direction, request.geo_direction);
-                    if( gps_stamp.length() > 0 ) {
+                    if( !gps_stamp.isEmpty() ) {
                         // don't log gps_stamp, in case of privacy!
 
                         /*Address address = null;
@@ -2828,7 +2828,7 @@ public class ImageSaver extends Thread {
                             // want GPS coords (either in addition to the address, or we don't have an address)
                             // we'll also enter here if store_location is false, but we have geo direction to display
                             //applicationInterface.drawTextWithBackground(canvas, p, gps_stamp, color, Color.BLACK, width - offset_x, ypos, MyApplicationInterface.Alignment.ALIGNMENT_BOTTOM, null, draw_shadowed);
-                            if( stamp_string.length() == 0 )
+                            if( stamp_string.isEmpty() )
                                 stamp_string = gps_stamp;
                             else
                                 stamp_string = gps_stamp + "\n" + stamp_string;
@@ -2869,7 +2869,7 @@ public class ImageSaver extends Thread {
                         Log.d(TAG, "stamp text");
 
                     //applicationInterface.drawTextWithBackground(canvas, p, request.preference_textstamp, color, Color.BLACK, width - offset_x, ypos, MyApplicationInterface.Alignment.ALIGNMENT_BOTTOM, null, draw_shadowed);
-                    if( stamp_string.length() == 0 )
+                    if( stamp_string.isEmpty() )
                         stamp_string = request.preference_textstamp;
                     else
                         stamp_string = request.preference_textstamp + "\n" + stamp_string;
@@ -2878,7 +2878,7 @@ public class ImageSaver extends Thread {
                     ypos -= diff_y;
                 }
 
-                if( stamp_string.length() > 0 ) {
+                if( !stamp_string.isEmpty() ) {
                     // don't log stamp_string, in case of privacy!
 
                     @SuppressLint("InflateParams")
@@ -3939,10 +3939,10 @@ public class ImageSaver extends Thread {
             exif_new.setAttribute(ExifInterface.TAG_Y_CB_CR_POSITIONING, null);
             exif_new.setAttribute(ExifInterface.TAG_Y_CB_CR_SUB_SAMPLING, null);
             exif_new.setAttribute(ExifInterface.TAG_Y_RESOLUTION, null);
-            if( !(request.custom_tag_artist != null && request.custom_tag_artist.length() > 0) ) {
+            if( !(request.custom_tag_artist != null && !request.custom_tag_artist.isEmpty() ) ) {
                 exif_new.setAttribute(ExifInterface.TAG_ARTIST, null);
             }
-            if( !(request.custom_tag_copyright != null && request.custom_tag_copyright.length() > 0) ) {
+            if( !(request.custom_tag_copyright != null && !request.custom_tag_copyright.isEmpty() ) ) {
                 exif_new.setAttribute(ExifInterface.TAG_COPYRIGHT, null);
             }
 
@@ -4505,9 +4505,9 @@ public class ImageSaver extends Thread {
     /** Whether custom exif tags need to be applied to the image file.
      */
     private boolean hasCustomExif(String custom_tag_artist, String custom_tag_copyright) {
-        if( custom_tag_artist != null && custom_tag_artist.length() > 0 )
+        if( custom_tag_artist != null && !custom_tag_artist.isEmpty() )
             return true;
-        if( custom_tag_copyright != null && custom_tag_copyright.length() > 0 )
+        if( custom_tag_copyright != null && !custom_tag_copyright.isEmpty() )
             return true;
         return false;
     }
@@ -4517,13 +4517,13 @@ public class ImageSaver extends Thread {
     private void setCustomExif(ExifInterface exif, String custom_tag_artist, String custom_tag_copyright) {
         if( MyDebug.LOG )
             Log.d(TAG, "setCustomExif");
-        if( custom_tag_artist != null && custom_tag_artist.length() > 0 ) {
+        if( custom_tag_artist != null && !custom_tag_artist.isEmpty() ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "apply TAG_ARTIST: " + custom_tag_artist);
             // fine to ignore request.remove_device_exif, as this is a separate user option
             exif.setAttribute(ExifInterface.TAG_ARTIST, custom_tag_artist);
         }
-        if( custom_tag_copyright != null && custom_tag_copyright.length() > 0 ) {
+        if( custom_tag_copyright != null && !custom_tag_copyright.isEmpty())  {
             if( MyDebug.LOG )
                 Log.d(TAG, "apply TAG_COPYRIGHT: " + custom_tag_copyright);
             // fine to ignore request.remove_device_exif, as this is a separate user option

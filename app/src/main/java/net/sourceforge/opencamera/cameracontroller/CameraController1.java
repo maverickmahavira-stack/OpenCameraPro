@@ -592,7 +592,7 @@ public class CameraController1 extends CameraController {
             }
         }
         List<String> values = null;
-        if( iso_values != null && iso_values.length() > 0 ) {
+        if( iso_values != null && !iso_values.isEmpty() ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "iso_values: " + iso_values);
             String [] isos_array = iso_values.split(",");
@@ -1226,7 +1226,7 @@ public class CameraController1 extends CameraController {
         }
 
         final String flash_mode = convertFlashValueToMode(flash_value);
-        if( flash_mode.length() > 0 && !flash_mode.equals(parameters.getFlashMode()) ) {
+        if( !flash_mode.isEmpty() && !flash_mode.equals(parameters.getFlashMode()) ) {
             if( parameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH) && !flash_mode.equals(Camera.Parameters.FLASH_MODE_OFF) ) {
                 // workaround for bug on Nexus 5 and Nexus 6 where torch doesn't switch off until we set FLASH_MODE_OFF
                 if( MyDebug.LOG )

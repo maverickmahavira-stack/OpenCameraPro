@@ -1299,7 +1299,7 @@ public class PanoramaProcessor {
         if( MyDebug.LOG )
             Log.d(TAG, "### autoAlignmentByFeature: time after choosing best matches: " + (System.currentTimeMillis() - time_s));
 
-        if( actual_matches.size() == 0 ) {
+        if( actual_matches.isEmpty() ) {
             if( MyDebug.LOG )
                 Log.d(TAG, "no matches!");
             /*if( true )

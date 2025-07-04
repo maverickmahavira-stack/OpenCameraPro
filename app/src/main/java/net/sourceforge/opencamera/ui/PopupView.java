@@ -459,7 +459,7 @@ public class PopupView extends LinearLayout {
                 //final List<String> video_sizes = preview.getVideoQualityHander().getSupportedVideoQuality();
                 //video_size_index = preview.getVideoQualityHander().getCurrentVideoQualityIndex();
                 List<String> video_sizes = preview.getSupportedVideoQuality(main_activity.getApplicationInterface().getVideoFPSPref());
-                if( video_sizes.size() == 0 ) {
+                if( video_sizes.isEmpty() ) {
                     Log.e(TAG, "can't find any supported video sizes for current fps!");
                     // fall back to unfiltered list
                     video_sizes = preview.getVideoQualityHander().getSupportedVideoQuality();
@@ -1408,7 +1408,7 @@ public class PopupView extends LinearLayout {
                 String button_string;
                 // hacks for ISO mode ISO_HJR (e.g., on Samsung S5)
                 // also some devices report e.g. "ISO100" etc
-                if( prefix_string.length() == 0 ) {
+                if( prefix_string.isEmpty() ) {
                     button_string = supported_option;
                 }
                 else if( prefix_string.equalsIgnoreCase("ISO") && supported_option.length() >= 4 && supported_option.substring(0, 4).equalsIgnoreCase("ISO_") ) {

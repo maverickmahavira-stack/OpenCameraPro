@@ -123,20 +123,20 @@ public class CameraControllerManager2 extends CameraControllerManager {
                 Log.d(TAG, "getDescription: time after computeViewAngles: " + (System.currentTimeMillis() - debug_time));
             if( view_angle.getWidth() > 90.5f ) {
                 // count as ultra-wide
-                if( description.length() > 0 )
+                if( !description.isEmpty() )
                     description += ", ";
                 description += context.getResources().getString(R.string.ultrawide);
             }
             else if( view_angle.getWidth() < 29.5f ) {
                 // count as telephoto
                 // Galaxy S24+ telephoto is 29x22 degrees
-                if( description.length() > 0 )
+                if( !description.isEmpty() )
                     description += ", ";
                 description += context.getResources().getString(R.string.telephoto);
             }
 
             if( include_angles ) {
-                if( description.length() > 0 )
+                if( !description.isEmpty() )
                     description += ", ";
                 description += ((int)(view_angle.getWidth()+0.5f)) + String.valueOf((char)0x00B0) + " x " + ((int)(view_angle.getHeight()+0.5f)) + (char) 0x00B0;
             }

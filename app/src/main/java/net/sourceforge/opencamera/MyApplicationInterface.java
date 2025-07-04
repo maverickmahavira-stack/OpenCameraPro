@@ -587,7 +587,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
         if( MyDebug.LOG )
             Log.d(TAG, "resolution_value: " + resolution_value);
         Pair<Integer, Integer> result = null;
-        if( resolution_value.length() > 0 ) {
+        if( !resolution_value.isEmpty() ) {
             // parse the saved size, and make sure it is still valid
             int index = resolution_value.indexOf(' ');
             if( index == -1 ) {
@@ -2225,20 +2225,20 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                 }
 
                 String datetime_stamp = "";
-                if( date_stamp.length() > 0 )
+                if( !date_stamp.isEmpty() )
                     datetime_stamp += date_stamp;
-                if( time_stamp.length() > 0 ) {
-                    if( datetime_stamp.length() > 0 )
+                if( !time_stamp.isEmpty() ) {
+                    if( !datetime_stamp.isEmpty() )
                         datetime_stamp += " ";
                     datetime_stamp += time_stamp;
                 }
 
                 // build subtitles
                 StringBuilder subtitles = new StringBuilder();
-                if( datetime_stamp.length() > 0 )
+                if( !datetime_stamp.isEmpty() )
                     subtitles.append(datetime_stamp).append("\n");
 
-                if( gps_stamp.length() > 0 ) {
+                if( !gps_stamp.isEmpty() ) {
                     /*Address address = null;
                     if( store_location && !preference_stamp_geo_address.equals("preference_stamp_geo_address_no") ) {
                         // try to find an address
@@ -2298,7 +2298,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                     }*/
                 }
 
-                if( subtitles.length() == 0 ) {
+                if( subtitles.isEmpty() ) {
                     return;
                 }
                 long video_time_from = video_time - offset_ms;
@@ -2787,7 +2787,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             Log.d(TAG, "onVideoRecordStartError");
         String error_message;
         String features = main_activity.getPreview().getErrorFeatures(profile);
-        if( features.length() > 0 ) {
+        if( !features.isEmpty() ) {
             error_message = getContext().getResources().getString(R.string.sorry) + ", " + features + " " + getContext().getResources().getString(R.string.not_supported);
         }
         else {
@@ -2803,7 +2803,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
         //main_activity.getPreview().showToast(null, R.string.failed_to_record_video);
         String features = main_activity.getPreview().getErrorFeatures(profile);
         String error_message = getContext().getResources().getString(R.string.video_may_be_corrupted);
-        if( features.length() > 0 ) {
+        if( !features.isEmpty() ) {
             error_message += ", " + features + " " + getContext().getResources().getString(R.string.not_supported);
         }
         main_activity.getPreview().showToast(null, error_message);

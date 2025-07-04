@@ -510,7 +510,7 @@ public class DeviceScanner extends AppCompatActivity {
             }
             else {
                 final String deviceName = device.getName();
-                if( deviceName != null && deviceName.length() > 0 )
+                if( deviceName != null && !deviceName.isEmpty() )
                     viewHolder.deviceName.setText(deviceName);
                 else
                     viewHolder.deviceName.setText(R.string.unknown_device);

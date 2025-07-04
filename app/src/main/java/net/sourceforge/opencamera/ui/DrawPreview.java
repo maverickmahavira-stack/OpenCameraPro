@@ -1311,12 +1311,12 @@ public class DrawPreview {
         // Now draw additional info on the lower left corner if needed
         int y_offset = (int) (27 * scale_font + 0.5f);
         p.setTextSize(24 * scale_font + 0.5f); // convert dps to pixels
-        if (OSDLine1 != null && OSDLine1.length() > 0) {
+        if (OSDLine1 != null && !OSDLine1.isEmpty() ) {
             applicationInterface.drawTextWithBackground(canvas, p, OSDLine1,
                     Color.WHITE, Color.BLACK,  location_x, bottom_y - y_offset,
                     MyApplicationInterface.Alignment.ALIGNMENT_BOTTOM, null, MyApplicationInterface.Shadow.SHADOW_OUTLINE);
         }
-        if (OSDLine2 != null && OSDLine2.length() > 0) {
+        if (OSDLine2 != null && !OSDLine2.isEmpty() ) {
             applicationInterface.drawTextWithBackground(canvas, p, OSDLine2,
                     Color.WHITE, Color.BLACK, location_x, bottom_y,
                     MyApplicationInterface.Alignment.ALIGNMENT_BOTTOM, null, MyApplicationInterface.Shadow.SHADOW_OUTLINE);
@@ -1328,19 +1328,19 @@ public class DrawPreview {
                 iso_exposure_string = "";
                 if( camera_controller.captureResultHasIso() ) {
                     int iso = camera_controller.captureResultIso();
-                    if( iso_exposure_string.length() > 0 )
+                    if( !iso_exposure_string.isEmpty() )
                         iso_exposure_string += " ";
                     iso_exposure_string += preview.getISOString(iso);
                 }
                 if( camera_controller.captureResultHasExposureTime() ) {
                     long exposure_time = camera_controller.captureResultExposureTime();
-                    if( iso_exposure_string.length() > 0 )
+                    if( !iso_exposure_string.isEmpty() )
                         iso_exposure_string += " ";
                     iso_exposure_string += preview.getExposureTimeString(exposure_time);
                 }
                 if( preview.isVideoRecording() && camera_controller.captureResultHasFrameDuration() ) {
                     long frame_duration = camera_controller.captureResultFrameDuration();
-                    if( iso_exposure_string.length() > 0 )
+                    if( !iso_exposure_string.isEmpty() )
                         iso_exposure_string += " ";
                     iso_exposure_string += preview.getFrameDurationString(frame_duration);
                 }
@@ -1364,7 +1364,7 @@ public class DrawPreview {
                 last_iso_exposure_time = time_ms;
             }
 
-            if( iso_exposure_string.length() > 0 ) {
+            if( !iso_exposure_string.isEmpty() ) {
                 int text_color = Color.rgb(255, 235, 59); // Yellow 500
                 if( is_scanning ) {
                     // we only change the color if ae scanning is at least a certain time, otherwise we get a lot of flickering of the color

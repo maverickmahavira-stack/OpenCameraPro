@@ -436,7 +436,7 @@ public class StorageUtils {
     // only valid if !isUsingSAF()
     // returns a form for use with RELATIVE_PATH (scoped storage)
     private static String getSaveRelativeFolder(String folder_name) {
-        if( folder_name.length() > 0 && folder_name.lastIndexOf('/') == folder_name.length()-1 ) {
+        if( !folder_name.isEmpty() && folder_name.lastIndexOf('/') == folder_name.length()-1 ) {
             // ignore final '/' character
             folder_name = folder_name.substring(0, folder_name.length()-1);
         }
@@ -458,7 +458,7 @@ public class StorageUtils {
     // only valid if !isUsingSAF()
     private static File getImageFolder(String folder_name) {
         File file;
-        if( folder_name.length() > 0 && folder_name.lastIndexOf('/') == folder_name.length()-1 ) {
+        if( !folder_name.isEmpty() && folder_name.lastIndexOf('/') == folder_name.length()-1 ) {
             // ignore final '/' character
             folder_name = folder_name.substring(0, folder_name.length()-1);
         }
@@ -1028,7 +1028,7 @@ public class StorageUtils {
             {
                 if( bucket_id != null )
                     selection = ImageColumns.BUCKET_ID + " = " + bucket_id;
-                boolean and = selection.length() > 0;
+                boolean and = !selection.isEmpty();
                 if( and )
                     selection += " AND ( ";
                 selection += ImageColumns.MIME_TYPE + "='image/jpeg' OR " +
@@ -1405,7 +1405,7 @@ public class StorageUtils {
                     }
 
                     String this_filename = cursor.getString(column_name_c);
-                    if (this_filename != null && this_filename.length() > 0 && this_filename.charAt(0) == '.') {
+                    if (this_filename != null && !this_filename.isEmpty() && this_filename.charAt(0) == '.') {
                         // skip hidden file
                         continue;
                     }
