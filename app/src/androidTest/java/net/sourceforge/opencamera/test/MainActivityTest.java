@@ -1857,9 +1857,9 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         if( button != null ) {
             assertNotNull(button.getContentDescription());
             String content_description = button.getContentDescription().toString();
-            assertTrue(!content_description.isEmpty());
+            assertFalse(content_description.isEmpty());
             String next_string = mActivity.getResources().getString(next ? net.sourceforge.opencamera.R.string.next : net.sourceforge.opencamera.R.string.previous);
-            assertTrue(!next_string.isEmpty());
+            assertFalse(next_string.isEmpty());
             assertTrue(content_description.startsWith(next_string + " " + title));
         }
         else {
