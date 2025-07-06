@@ -121,7 +121,7 @@ public class TestUtils {
             return getBitmapFromFileCore(activity, filename, inSampleSize);
         }
         catch(FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "FileNotFoundException loading: " + filename, e);
             fail("FileNotFoundException loading: " + filename);
             return null;
         }
@@ -155,7 +155,7 @@ public class TestUtils {
                 is.close();
             }
             catch(IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "failed to close input stream", e);
             }
         }
         else {
@@ -221,7 +221,7 @@ public class TestUtils {
             }
         }
         catch(IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "failed to load bitmap", e);
         }
         finally {
             if( parcelFileDescriptor != null ) {
@@ -229,7 +229,7 @@ public class TestUtils {
                     parcelFileDescriptor.close();
                 }
                 catch(IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "failed to close parcelFileDescriptor", e);
                 }
             }
         }
@@ -262,8 +262,7 @@ public class TestUtils {
             }
         }
         catch(Exception e) {
-            Log.e(TAG, "Exception trying to find uri from filename");
-            e.printStackTrace();
+            Log.e(TAG, "exception trying to find uri from filename", e);
         }
         finally {
             if( cursor != null ) {
@@ -278,7 +277,7 @@ public class TestUtils {
             saveBitmapCore(activity, bitmap, name);
         }
         catch(IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "IOException saving: " + name, e);
             fail("IOException saving: " + name);
         }
     }
@@ -411,7 +410,7 @@ public class TestUtils {
             Thread.sleep(1000); // wait for camera to open
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
 
         Bitmap dro_bitmap_in = null;
@@ -432,7 +431,7 @@ public class TestUtils {
                 //test_callback.doHDR(inputs, tonemapping_algorithm, hdr_alpha);
             }
             catch(HDRProcessorException e) {
-                e.printStackTrace();
+                Log.e(TAG, "processHDR failed", e);
                 throw new RuntimeException();
             }
             Log.d(TAG, "HDR time: " + (System.currentTimeMillis() - time_s));
@@ -451,7 +450,7 @@ public class TestUtils {
                 //test_callback.doHDR(inputs, HDRProcessor.TonemappingAlgorithm.TONEMAPALGORITHM_REINHARD, 0.5f);
             }
             catch(HDRProcessorException e) {
-                e.printStackTrace();
+                Log.e(TAG, "processHDR failed", e);
                 throw new RuntimeException();
             }
             Log.d(TAG, "DRO time: " + (System.currentTimeMillis() - time_s));
@@ -465,7 +464,7 @@ public class TestUtils {
             Thread.sleep(500);
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
 
         return hdrHistogramDetails;
@@ -518,7 +517,7 @@ public class TestUtils {
             Thread.sleep(1000); // wait for camera to open
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
 
         /*Bitmap nr_bitmap = getBitmapFromFile(activity, inputs.get(0));
@@ -538,7 +537,7 @@ public class TestUtils {
             //activity.getApplicationInterface().getHDRProcessor().processAvgMulti(inputs, hdr_strength, 4);
         }
         catch(HDRProcessorException e) {
-            e.printStackTrace();
+            Log.e(TAG, "processAvg failed", e);
             throw new RuntimeException();
         }
         Log.d(TAG, "Avg time: " + (System.currentTimeMillis() - time_s));
@@ -599,7 +598,7 @@ public class TestUtils {
             Log.d(TAG, "    total: " + total_time);
         }
         catch(HDRProcessorException e) {
-            e.printStackTrace();
+            Log.e(TAG, "HDRProcessorException", e);
             throw new RuntimeException();
         }
 
@@ -613,7 +612,7 @@ public class TestUtils {
             Thread.sleep(500);
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
 
         return hdrHistogramDetails;
@@ -679,8 +678,7 @@ public class TestUtils {
                 inputStream = new FileInputStream(gyro_debug_info_filename);
             }
             catch(FileNotFoundException e) {
-                Log.e(TAG, "failed to load gyro debug info file: " + gyro_debug_info_filename);
-                e.printStackTrace();
+                Log.e(TAG, "failed to load gyro debug info file: " + gyro_debug_info_filename, e);
                 throw new RuntimeException();
             }
 
@@ -703,7 +701,7 @@ public class TestUtils {
             panorama = activity.getApplicationInterface().getPanoramaProcessor().panorama(bitmaps, panorama_pics_per_screen, camera_angle_y, crop);
         }
         catch(PanoramaProcessorException e) {
-            e.printStackTrace();
+            Log.e(TAG, "panorama failed", e);
             fail();
         }
 
@@ -712,7 +710,7 @@ public class TestUtils {
             Thread.sleep(500);
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
 
         // check we've cropped correctly:

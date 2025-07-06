@@ -153,7 +153,7 @@ public class InstrumentedTest {
         try {
             Thread.sleep(100); // sleep a bit just to be safe
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
 
         if( wait_for_preview ) {
@@ -176,7 +176,7 @@ public class InstrumentedTest {
         try {
             Thread.sleep(100); // sleep a bit just to be safe
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
     }
 
@@ -235,7 +235,7 @@ public class InstrumentedTest {
             Thread.sleep(DrawPreview.dim_effect_time_c+50); // wait for updateForSettings
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
     }
 
@@ -357,7 +357,7 @@ public class InstrumentedTest {
                 //this.getInstrumentation().waitForIdleSync();
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "InterruptedException from sleep", e);
             }
             iso = getActivityValue(activity -> activity.getPreview().getCameraController().getISO());
             Log.d(TAG, "changed iso to: "+ iso);
@@ -390,7 +390,7 @@ public class InstrumentedTest {
             Thread.sleep(200);
         }
         catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
     }
 
@@ -421,7 +421,7 @@ public class InstrumentedTest {
                 Thread.sleep(1000); // wait for camera to open
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "InterruptedException from sleep", e);
             }
 
             List<Bitmap> inputs = new ArrayList<>();
@@ -430,7 +430,7 @@ public class InstrumentedTest {
                 activity.getApplicationInterface().getHDRProcessor().processHDR(inputs, true, null, true, null, 0.0f, 4, true, HDRProcessor.TonemappingAlgorithm.TONEMAPALGORITHM_REINHARD, HDRProcessor.DROTonemappingAlgorithm.DROALGORITHM_NONE);
             }
             catch(HDRProcessorException e) {
-                e.printStackTrace();
+                Log.e(TAG, "processHDR failed", e);
                 throw new RuntimeException();
             }
 
@@ -465,7 +465,7 @@ public class InstrumentedTest {
                 Thread.sleep(500);
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "InterruptedException from sleep", e);
             }
         });
     }
@@ -5126,7 +5126,7 @@ public class InstrumentedTest {
                 Thread.sleep(1000); // need to wait for debug images to be saved/broadcast?
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "InterruptedException from sleep", e);
             }
         });
     }
@@ -6488,7 +6488,7 @@ public class InstrumentedTest {
                 TestUtils.checkFilesAfterTakePhoto(activity, is_raw, test_wait_capture_result, files);
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "InterruptedException from checkFilesAfterTakePhoto", e);
             }
 
             TestUtils.checkFocusAfterTakePhoto2(activity, touch_to_focus, single_tap_photo, double_tap_photo, test_wait_capture_result, locked_focus, info.can_auto_focus, info.can_focus_area, saved_count);
@@ -6532,7 +6532,7 @@ public class InstrumentedTest {
                 TestUtils.testExif(activity, activity.test_last_saved_image, activity.test_last_saved_imageuri, false, false, false);
             }
             catch(IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "testExif failed", e);
                 fail();
             }
         });
@@ -6563,7 +6563,7 @@ public class InstrumentedTest {
                 TestUtils.testExif(activity, activity.test_last_saved_image, activity.test_last_saved_imageuri, false, false, false);
             }
             catch(IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "testExif failed", e);
                 fail();
             }
         });
@@ -6592,7 +6592,7 @@ public class InstrumentedTest {
                 TestUtils.testExif(activity, activity.test_last_saved_image, activity.test_last_saved_imageuri, false, true, false);
             }
             catch(IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "testExif failed", e);
                 fail();
             }
         });
@@ -6648,7 +6648,7 @@ public class InstrumentedTest {
                         TestUtils.testExif(activity, activity.test_last_saved_image, activity.test_last_saved_imageuri, true, true, false);
                     }
                     catch(IOException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "testExif failed", e);
                         fail();
                     }
                 });
@@ -6689,7 +6689,7 @@ public class InstrumentedTest {
                             TestUtils.testExif(activity, activity.test_last_saved_image, activity.test_last_saved_imageuri, true, true, false);
                         }
                         catch(IOException e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "testExif failed", e);
                             fail();
                         }
                     });
@@ -7203,7 +7203,7 @@ public class InstrumentedTest {
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 mActivityRule.getScenario().onActivity(activity -> {
@@ -7236,7 +7236,7 @@ public class InstrumentedTest {
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 mActivityRule.getScenario().onActivity(activity -> {

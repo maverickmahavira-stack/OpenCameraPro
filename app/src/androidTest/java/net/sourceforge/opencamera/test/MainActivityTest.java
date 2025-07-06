@@ -156,7 +156,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         try {
             Thread.sleep(100); // sleep a bit just to be safe
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
 
         if( wait_for_preview ) {
@@ -176,7 +176,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         try {
             Thread.sleep(100); // sleep a bit just to be safe
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
     }
 
@@ -250,7 +250,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             Thread.sleep(DrawPreview.dim_effect_time_c+50); // wait for updateForSettings
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
         this.getInstrumentation().waitForIdleSync();
 
@@ -388,7 +388,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                 this.getInstrumentation().waitForIdleSync();
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "InterruptedException from sleep", e);
             }
             iso = mPreview.getCameraController().getISO();
             Log.d(TAG, "changed iso to: "+ iso);
@@ -429,7 +429,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             Thread.sleep(200);
         }
         catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
         }
     }
 
@@ -6162,7 +6162,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(2000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
 
@@ -6174,7 +6174,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(2000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
 
@@ -6209,7 +6209,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 assertEquals(takePhotoButton.getContentDescription(), mActivity.getResources().getString(net.sourceforge.opencamera.R.string.stop_video));
@@ -6238,7 +6238,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 assertEquals(pauseVideoButton.getContentDescription(), mActivity.getResources().getString(net.sourceforge.opencamera.R.string.resume_video));
@@ -6266,7 +6266,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 Log.d(TAG, "takePhotoButton description: " + takePhotoButton.getContentDescription());
@@ -6317,7 +6317,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 assertEquals(takePhotoButton.getContentDescription(), mActivity.getResources().getString(net.sourceforge.opencamera.R.string.stop_video));
@@ -6346,7 +6346,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 Log.d(TAG, "takePhotoButton description: " + takePhotoButton.getContentDescription());
@@ -6387,7 +6387,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 assertEquals(takePhotoButton.getContentDescription(), mActivity.getResources().getString(net.sourceforge.opencamera.R.string.stop_video));
@@ -6412,7 +6412,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(3000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 assertEquals(takePhotoButton.getContentDescription(), mActivity.getResources().getString(net.sourceforge.opencamera.R.string.stop_video));
@@ -6557,7 +6557,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(1000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 Log.d(TAG, "done waiting");
@@ -6638,7 +6638,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                         Thread.sleep(10000);
                     }
                     catch(InterruptedException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "InterruptedException from sleep", e);
                         fail();
                     }
                     Log.d(TAG, "check still recording");
@@ -6697,7 +6697,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(1000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
 
@@ -6706,7 +6706,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(1000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 View takePhotoButton = mActivity.findViewById(net.sourceforge.opencamera.R.id.take_photo);
@@ -6720,7 +6720,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(1000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 Log.d(TAG, "done wait for stop");
@@ -6816,7 +6816,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(38000);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
                 Log.d(TAG, "ensure we've really stopped");
@@ -6859,7 +6859,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                         Thread.sleep(100);
                     }
                     catch(InterruptedException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "InterruptedException from sleep", e);
                         fail();
                     }
                 }
@@ -6877,7 +6877,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
                     Thread.sleep(100);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException from sleep", e);
                     fail();
                 }
 
@@ -8120,7 +8120,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             assertEquals(2, n_new_files);
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
             fail();
         }
     }
@@ -8194,7 +8194,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             assertFalse(mPreview.isOnTimer());
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
             fail();
         }
     }
@@ -8503,7 +8503,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
             fail();
         }
 
@@ -8911,7 +8911,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             assertEquals(8, n_new_files);
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "InterruptedException from sleep", e);
             fail();
         }
     }
@@ -14004,7 +14004,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
             mActivity.getApplicationInterface().getHDRProcessor().processHDR(inputs, true, null, true, null, 0.0f, 4, true, HDRProcessor.TonemappingAlgorithm.TONEMAPALGORITHM_REINHARD, HDRProcessor.DROTonemappingAlgorithm.DROALGORITHM_NONE);
         }
         catch(HDRProcessorException e) {
-            e.printStackTrace();
+            Log.e(TAG, "processHDR failed", e);
             throw new RuntimeException();
         }
 
