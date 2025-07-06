@@ -4812,7 +4812,7 @@ public class InstrumentedTest {
             float camera_angle_y = 47.44656f;
             float panorama_pics_per_screen = 2.0f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (47.44656/49.56283);
+            panorama_pics_per_screen *= (float)(47.44656/49.56283);
             String output_name = "testPanorama1_output.jpg";
 
             TestUtils.subTestPanorama(activity, inputs, output_name, null, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 2.0f);
@@ -4853,7 +4853,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/52.26029);
+            panorama_pics_per_screen *= (float)(50.282097/52.26029);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, null, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 2.0f);
         });
@@ -4888,7 +4888,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/52.26029);
+            panorama_pics_per_screen *= (float)(50.282097/52.26029);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, null, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 1.0f);
         });
@@ -4924,7 +4924,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/52.26029);
+            panorama_pics_per_screen *= (float)(50.282097/52.26029);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, null, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 1.0f);
         });
@@ -4957,7 +4957,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/52.26029);
+            panorama_pics_per_screen *= (float)(50.282097/52.26029);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 1.0f);
         });
@@ -4990,7 +4990,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/52.26029);
+            panorama_pics_per_screen *= (float)(50.282097/52.26029);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 0.5f);
         });
@@ -5023,7 +5023,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/52.26029);
+            panorama_pics_per_screen *= (float)(50.282097/52.26029);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 0.5f);
         });
@@ -5057,7 +5057,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/52.26029);
+            panorama_pics_per_screen *= (float)(50.282097/52.26029);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 0.5f);
         });
@@ -5086,7 +5086,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/52.26029);
+            panorama_pics_per_screen *= (float)(50.282097/52.26029);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 0.5f);
         });
@@ -5118,7 +5118,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/50.44399);
+            panorama_pics_per_screen *= (float)(50.282097/50.44399);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 0.5f);
 
@@ -5164,7 +5164,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/50.44399);
+            panorama_pics_per_screen *= (float)(50.282097/50.44399);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 0.5f);
         });
@@ -5196,7 +5196,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/50.44399);
+            panorama_pics_per_screen *= (float)(50.282097/50.44399);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 0.5f);
         });
@@ -5231,7 +5231,7 @@ public class InstrumentedTest {
             float camera_angle_x = 66.708595f;
             float camera_angle_y = 50.282097f;
             // these images were taken with incorrect camera view angles, so we compensate in the test:
-            panorama_pics_per_screen *= (50.282097/50.44399);
+            panorama_pics_per_screen *= (float)(50.282097/50.44399);
 
             TestUtils.subTestPanorama(activity, inputs, output_name, gyro_name, panorama_pics_per_screen, camera_angle_x, camera_angle_y, 0.5f);
         });
