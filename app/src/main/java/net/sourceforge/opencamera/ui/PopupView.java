@@ -618,8 +618,7 @@ public class PopupView extends LinearLayout {
                         n_images = Integer.parseInt(all_burst_mode_values[i]);
                     }
                     catch(NumberFormatException e) {
-                        Log.e(TAG, "failed to parse " + i + "th preference_fast_burst_n_images_values value: " + all_burst_mode_values[i]);
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to parse " + i + "th preference_fast_burst_n_images_values value: " + all_burst_mode_values[i], e);
                         continue;
                     }
                     if( n_images > max_burst_images ) {

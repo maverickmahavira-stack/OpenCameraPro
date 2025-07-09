@@ -407,9 +407,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
                             version_code = pInfo.versionCode;
                         }
                         catch(NameNotFoundException e) {
-                            if( MyDebug.LOG )
-                                Log.d(TAG, "NameNotFoundException exception trying to get version number");
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "NameNotFoundException exception trying to get version number", e);
                         }
                         about_string.append("Open Camera v");
                         about_string.append(version);

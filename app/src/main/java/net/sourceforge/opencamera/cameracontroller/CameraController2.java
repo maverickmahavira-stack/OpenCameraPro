@@ -1557,12 +1557,7 @@ public class CameraController2 extends CameraController {
                             captureSession.capture(slow_burst_capture_requests.get(n_burst_taken), previewCaptureCallback, handler);
                         }
                         catch(CameraAccessException e) {
-                            if( MyDebug.LOG ) {
-                                Log.e(TAG, "failed to take next focus bracket");
-                                Log.e(TAG, "reason: " + e.getReason());
-                                Log.e(TAG, "message: " + e.getMessage());
-                            }
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to take next focus bracket", e);
                             jpeg_todo = false;
                             raw_todo = false;
                             picture_cb = null;
@@ -1723,12 +1718,7 @@ public class CameraController2 extends CameraController {
                             }
                         }
                         catch(CameraAccessException e) {
-                            if( MyDebug.LOG ) {
-                                Log.e(TAG, "failed to take next burst");
-                                Log.e(TAG, "reason: " + e.getReason());
-                                Log.e(TAG, "message: " + e.getMessage());
-                            }
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to take next burst", e);
                             jpeg_todo = false;
                             raw_todo = false;
                             picture_cb = null;
@@ -1747,12 +1737,7 @@ public class CameraController2 extends CameraController {
                                 setRepeatingRequest(previewBuilder.build());
                             }
                             catch(CameraAccessException e) {
-                                if( MyDebug.LOG ) {
-                                    Log.e(TAG, "failed to take set exposure for next expo bracketing burst");
-                                    Log.e(TAG, "reason: " + e.getReason());
-                                    Log.e(TAG, "message: " + e.getMessage());
-                                }
-                                e.printStackTrace();
+                                MyDebug.logStackTrace(TAG, "failed to take set exposure for next expo bracketing burst", e);
                                 jpeg_todo = false;
                                 raw_todo = false;
                                 picture_cb = null;
@@ -1811,12 +1796,7 @@ public class CameraController2 extends CameraController {
                             setRepeatingRequest(previewBuilder.build());
                         }
                         catch(CameraAccessException e) {
-                            if( MyDebug.LOG ) {
-                                Log.e(TAG, "failed to take set focus distance for next focus bracketing burst");
-                                Log.e(TAG, "reason: " + e.getReason());
-                                Log.e(TAG, "message: " + e.getMessage());
-                            }
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to take set focus distance for next focus bracketing burst", e);
                             jpeg_todo = false;
                             raw_todo = false;
                             picture_cb = null;
@@ -2203,12 +2183,7 @@ public class CameraController2 extends CameraController {
                         createPreviewRequest();
                     }
                     catch(CameraAccessException e) {
-                        if( MyDebug.LOG ) {
-                            Log.e(TAG, "failed to get camera characteristics");
-                            Log.e(TAG, "reason: " + e.getReason());
-                            Log.e(TAG, "message: " + e.getMessage());
-                        }
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to get camera characteristics", e);
                         // don't throw CameraControllerException here - instead error is handled by setting callback_done to callback_done, and the fact that camera will still be null
                     }
 
@@ -2300,50 +2275,29 @@ public class CameraController2 extends CameraController {
                 Log.d(TAG, "open camera request complete");
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to open camera: CameraAccessException");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to open camera: CameraAccessException", e);
             throw new CameraControllerException();
         }
         catch(UnsupportedOperationException e) {
             // Google Camera catches UnsupportedOperationException
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to open camera: UnsupportedOperationException");
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to open camera: UnsupportedOperationException", e);
             throw new CameraControllerException();
         }
         catch(SecurityException e) {
             // Google Camera catches SecurityException
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to open camera: SecurityException");
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to open camera: SecurityException", e);
             throw new CameraControllerException();
         }
         catch(IllegalArgumentException e) {
             // have seen this from Google Play
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to open camera: IllegalArgumentException");
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to open camera: IllegalArgumentException", e);
             throw new CameraControllerException();
         }
         catch(ArrayIndexOutOfBoundsException e) {
             // Have seen this from Google Play - even though the Preview should have checked the
             // cameraId is within the valid range! Although potentially this could happen if
             // getCameraIdList() returns an empty list.
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to open camera: ArrayIndexOutOfBoundsException");
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to open camera: ArrayIndexOutOfBoundsException", e);
             throw new CameraControllerException();
         }
 
@@ -2382,9 +2336,7 @@ public class CameraController2 extends CameraController {
                     open_camera_lock.wait();
                 }
                 catch(InterruptedException e) {
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "interrupted while waiting until camera opened");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "interrupted while waiting until camera opened", e);
                 }
             }
         }
@@ -2445,7 +2397,7 @@ public class CameraController2 extends CameraController {
                         extensionSession.close();
                     }
                     catch(CameraAccessException e) {
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to close extensionSession", e);
                     }
                 }
                 extensionSession = null;
@@ -2490,7 +2442,7 @@ public class CameraController2 extends CameraController {
                 executor = null;
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "InterruptedException", e);
             }
         }
         if( MyDebug.LOG )
@@ -2907,8 +2859,7 @@ public class CameraController2 extends CameraController {
                 logical_capabilities = logical_characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
             }
             catch(CameraAccessException e) {
-                Log.e(TAG, "failed to get logical_characteristics for: " + cameraIdS);
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to get logical_characteristics for: " + cameraIdS, e);
                 throw new CameraControllerException();
             }
             if( MyDebug.LOG )
@@ -2994,7 +2945,7 @@ public class CameraController2 extends CameraController {
             // similarly for NullPointerException - note, these aren't from characteristics being null, but from
             // com.android.internal.util.Preconditions.checkArrayElementsNotNull (Preconditions.java:395) - all are from
             // Nexus 7 (2013)s running Android 8.1, but again better to fail gracefully
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to get SCALER_STREAM_CONFIGURATION_MAP", e);
             throw new CameraControllerException();
         }
 
@@ -3918,13 +3869,8 @@ public class CameraController2 extends CameraController {
                     setRepeatingRequest();
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to set scene mode");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
-                } 
+                    MyDebug.logStackTrace(TAG, "failed to set scene mode", e);
+                }
             }
         }
         return supported_values;
@@ -4042,13 +3988,8 @@ public class CameraController2 extends CameraController {
                     setRepeatingRequest();
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to set color effect");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
-                } 
+                    MyDebug.logStackTrace(TAG, "failed to set color effect", e);
+                }
             }
         }
         return supported_values;
@@ -4182,13 +4123,8 @@ public class CameraController2 extends CameraController {
                     setRepeatingRequest();
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to set white balance");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
-                } 
+                    MyDebug.logStackTrace(TAG, "failed to set white balance", e);
+                }
             }
         }
         return supported_values;
@@ -4221,12 +4157,7 @@ public class CameraController2 extends CameraController {
             }
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set white balance temperature");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to set white balance temperature", e);
         }
         return true;
     }
@@ -4308,12 +4239,7 @@ public class CameraController2 extends CameraController {
                         setRepeatingRequest();
                     }
                     catch(CameraAccessException e) {
-                        if( MyDebug.LOG ) {
-                            Log.e(TAG, "failed to set antibanding");
-                            Log.e(TAG, "reason: " + e.getReason());
-                            Log.e(TAG, "message: " + e.getMessage());
-                        }
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to set antibanding", e);
                     }
                 }
             }
@@ -4406,12 +4332,7 @@ public class CameraController2 extends CameraController {
                             setRepeatingRequest();
                         }
                         catch(CameraAccessException e) {
-                            if( MyDebug.LOG ) {
-                                Log.e(TAG, "failed to set edge_mode");
-                                Log.e(TAG, "reason: " + e.getReason());
-                                Log.e(TAG, "message: " + e.getMessage());
-                            }
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to set edge_mode", e);
                         }
                     }
                 }
@@ -4521,12 +4442,7 @@ public class CameraController2 extends CameraController {
                             setRepeatingRequest();
                         }
                         catch(CameraAccessException e) {
-                            if( MyDebug.LOG ) {
-                                Log.e(TAG, "failed to set noise_reduction_mode");
-                                Log.e(TAG, "reason: " + e.getReason());
-                                Log.e(TAG, "message: " + e.getMessage());
-                            }
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to set noise_reduction_mode", e);
                         }
                     }
                 }
@@ -4589,12 +4505,7 @@ public class CameraController2 extends CameraController {
             }
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set ISO");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to set ISO", e);
         }
     }
 
@@ -4621,12 +4532,7 @@ public class CameraController2 extends CameraController {
             }
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set ISO");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to set ISO", e);
         }
         return true;
     }
@@ -4661,13 +4567,8 @@ public class CameraController2 extends CameraController {
             }
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set exposure time");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
-        } 
+            MyDebug.logStackTrace(TAG, "failed to set exposure time", e);
+        }
         return true;
     }
 
@@ -4689,12 +4590,7 @@ public class CameraController2 extends CameraController {
             }
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set aperture");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to set aperture", e);
         }
     }
 
@@ -5177,13 +5073,8 @@ public class CameraController2 extends CameraController {
             setRepeatingRequest();
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set video stabilization");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
-        } 
+            MyDebug.logStackTrace(TAG, "failed to set video stabilization", e);
+        }
     }
 
     @Override
@@ -5228,12 +5119,7 @@ public class CameraController2 extends CameraController {
             setRepeatingRequest();
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set log profile");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to set log profile", e);
         }
     }
 
@@ -5358,13 +5244,8 @@ public class CameraController2 extends CameraController {
             setRepeatingRequest();
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set zoom");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
-        } 
+            MyDebug.logStackTrace(TAG, "failed to set zoom", e);
+        }
     }
 
     @Override
@@ -5389,13 +5270,8 @@ public class CameraController2 extends CameraController {
                 setRepeatingRequest();
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to set exposure compensation");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
-            } 
+                MyDebug.logStackTrace(TAG, "failed to set exposure compensation", e);
+            }
             return true;
         }
         return false;
@@ -5416,12 +5292,7 @@ public class CameraController2 extends CameraController {
             }
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set preview fps range to " + min +"-" + max);
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to set preview fps range to " + min +"-" + max, e);
         }
     }
 
@@ -5445,12 +5316,7 @@ public class CameraController2 extends CameraController {
                 }
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to clear preview fps range");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to clear preview fps range", e);
             }
         }
     }
@@ -5522,13 +5388,8 @@ public class CameraController2 extends CameraController {
             setRepeatingRequest();
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set focus mode");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
-        } 
+            MyDebug.logStackTrace(TAG, "failed to set focus mode", e);
+        }
     }
     
     private String convertFocusModeToValue(int focus_mode) {
@@ -5587,13 +5448,8 @@ public class CameraController2 extends CameraController {
             setRepeatingRequest();
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set focus distance");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
-        } 
+            MyDebug.logStackTrace(TAG, "failed to set focus distance", e);
+        }
         return true;
     }
 
@@ -5697,13 +5553,8 @@ public class CameraController2 extends CameraController {
             }
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set flash mode");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
-        } 
+            MyDebug.logStackTrace(TAG, "failed to set flash mode", e);
+        }
     }
 
     @Override
@@ -5731,13 +5582,8 @@ public class CameraController2 extends CameraController {
             setRepeatingRequest();
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set auto exposure lock");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
-        } 
+            MyDebug.logStackTrace(TAG, "failed to set auto exposure lock", e);
+        }
     }
     
     @Override
@@ -5758,12 +5604,7 @@ public class CameraController2 extends CameraController {
             setRepeatingRequest();
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to set auto white balance lock");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to set auto white balance lock", e);
         }
     }
 
@@ -5926,13 +5767,8 @@ public class CameraController2 extends CameraController {
                 setRepeatingRequest();
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to set focus and/or metering regions");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
-            } 
+                MyDebug.logStackTrace(TAG, "failed to set focus and/or metering regions", e);
+            }
         }
         return has_focus;
     }
@@ -5973,13 +5809,8 @@ public class CameraController2 extends CameraController {
                 setRepeatingRequest();
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to clear focus and metering regions");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
-            } 
+                MyDebug.logStackTrace(TAG, "failed to clear focus and metering regions", e);
+            }
         }
         if( MyDebug.LOG ) {
             Log.d(TAG, "af_regions: " + Arrays.toString(camera_settings.af_regions));
@@ -6136,9 +5967,7 @@ public class CameraController2 extends CameraController {
                     Log.d(TAG, "setRepeatingRequest done");
             }
             catch(IllegalStateException e) {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "captureSession already closed!");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "captureSession already closed!", e);
                 // got this as a Google Play exception (from onCaptureCompleted->processCompleted) - this means the capture session is already closed
             }
         }
@@ -6184,13 +6013,8 @@ public class CameraController2 extends CameraController {
                 Log.d(TAG, "successfully created preview request");
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to create capture request");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
-        } 
+            MyDebug.logStackTrace(TAG, "failed to create capture request", e);
+        }
     }
 
     // should synchronize calls to this method using background_camera_lock
@@ -6274,8 +6098,7 @@ public class CameraController2 extends CameraController {
                     catch(CameraAccessException | NullPointerException | IllegalArgumentException e) {
                         // see notes below in createCaptureSession() for why we also catch NullPointerException and IllegalArgumentException
                         // need to catch separately when wait_until_started==false due to this running on a background thread
-                        Log.e(TAG, "exception create extension session on background thread");
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "exception create extension session on background thread", e);
                         //myStateCallback.onConfigureFailed();
                         if( on_failed != null ) {
                             // if waiting, failure will be indicated via CameraControllerException thrown from this method
@@ -6466,12 +6289,7 @@ public class CameraController2 extends CameraController {
                             success = true;
                         }
                         catch(CameraAccessException e) {
-                            if( MyDebug.LOG ) {
-                                Log.e(TAG, "failed to start preview");
-                                Log.e(TAG, "reason: " + e.getReason());
-                                Log.e(TAG, "message: " + e.getMessage());
-                            }
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to start preview", e);
                             // we indicate that we failed to start the preview by setting captureSession back to null
                             // this will cause a CameraControllerException to be thrown below (if wait_until_started==true),
                             // or via the on_failed callback (if wait_until_started==false)
@@ -6549,12 +6367,7 @@ public class CameraController2 extends CameraController {
                             captureSession.capture(request, previewCaptureCallback, handler);
                         }
                         catch(CameraAccessException e) {
-                            if( MyDebug.LOG ) {
-                                Log.e(TAG, "failed to take picture");
-                                Log.e(TAG, "reason: " + e.getReason());
-                                Log.e(TAG, "message: " + e.getMessage());
-                            }
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to take picture", e);
                             jpeg_todo = false;
                             raw_todo = false;
                             picture_cb = null;
@@ -6749,11 +6562,7 @@ public class CameraController2 extends CameraController {
                     // have had this from some devices on Google Play, from deep within createCaptureSession
                     // note, we put the catch here rather than below, so as to not mask nullpointerexceptions
                     // from my code
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "NullPointerException trying to create capture session");
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "NullPointerException trying to create capture session", e);
                     throw new CameraControllerException();
                 }
             }
@@ -6772,7 +6581,7 @@ public class CameraController2 extends CameraController {
                             background_camera_lock.wait();
                         }
                         catch(InterruptedException e) {
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "InterruptedException from background_camera_lock.wait()", e);
                         }
                     }
                 }
@@ -6801,22 +6610,13 @@ public class CameraController2 extends CameraController {
             }
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "CameraAccessException trying to create capture session");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "CameraAccessException trying to create capture session", e);
             throw new CameraControllerException();
         }
         catch(IllegalArgumentException e) {
             // have had crashes from Google Play, from both createConstrainedHighSpeedCaptureSession and
             // createCaptureSession
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "IllegalArgumentException trying to create capture session");
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "IllegalArgumentException trying to create capture session", e);
             throw new CameraControllerException();
         }
     }
@@ -6845,12 +6645,7 @@ public class CameraController2 extends CameraController {
                     setRepeatingRequest();
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to start preview");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to start preview", e);
                     // do via CameraControllerException instead of preview_error_cb, so caller immediately knows preview has failed
                     throw new CameraControllerException();
                 }
@@ -6898,9 +6693,7 @@ public class CameraController2 extends CameraController {
                     }
                 }
                 catch(IllegalStateException e) {
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "captureSession already closed!");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "captureSession already closed!", e);
                     // got this as a Google Play exception
                     // we still call close() below, as it has no effect if captureSession is already closed
                 }
@@ -6910,12 +6703,7 @@ public class CameraController2 extends CameraController {
                 }
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to stop repeating");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to stop repeating", e);
             }
             // simulate CameraController1 behaviour where face detection is stopped when we stop preview
             if( camera_settings.has_face_detect_mode && close_capture_session ) {
@@ -6960,12 +6748,7 @@ public class CameraController2 extends CameraController {
             setRepeatingRequest();
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to start face detection");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to start face detection", e);
             return false;
         }
         return true;
@@ -7121,7 +6904,7 @@ public class CameraController2 extends CameraController {
                             Thread.sleep(200);
                         }
                         catch(InterruptedException e) {
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "InterruptedException from sleep", e);
                         }
                     }
                 }
@@ -7134,12 +6917,7 @@ public class CameraController2 extends CameraController {
                 capture(afBuilder.build());
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to autofocus");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to autofocus", e);
                 state = STATE_NORMAL;
                 precapture_state_change_time_ms = -1;
                 push_autofocus_cb = autofocus_cb;
@@ -7197,17 +6975,10 @@ public class CameraController2 extends CameraController {
                 capture();
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to cancel autofocus [capture]");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to cancel autofocus [capture]", e);
             }
             catch(IllegalStateException e) {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "failed to cancel autofocus [captureSession already closed!]");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to cancel autofocus [captureSession already closed!]", e);
                 // got this as a Google Play exception - this means the capture session is already closed
             }
             previewBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
@@ -7220,12 +6991,7 @@ public class CameraController2 extends CameraController {
                 setRepeatingRequest();
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to set repeating request after cancelling autofocus");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to set repeating request after cancelling autofocus", e);
             }
         }
     }
@@ -7381,12 +7147,7 @@ public class CameraController2 extends CameraController {
                 }
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to take picture");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to take picture", e);
                 ok = false;
                 jpeg_todo = false;
                 raw_todo = false;
@@ -7395,9 +7156,7 @@ public class CameraController2 extends CameraController {
                 take_picture_error_cb = null;
             }
             catch(IllegalStateException e) {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "captureSession already closed!");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "captureSession already closed!", e);
                 ok = false;
                 jpeg_todo = false;
                 raw_todo = false;
@@ -7434,7 +7193,7 @@ public class CameraController2 extends CameraController {
                         Thread.sleep(1000);
                     }
                     catch(InterruptedException e) {
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "InterruptedException from sleep", e);
                     }
                 }
                 try {
@@ -7472,12 +7231,7 @@ public class CameraController2 extends CameraController {
                     playSound(shutter_click_sound); // play shutter sound asap, otherwise user has the illusion of being slow to take photos
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to take picture");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to take picture", e);
                     //noinspection UnusedAssignment
                     ok = false;
                     jpeg_todo = false;
@@ -7486,9 +7240,7 @@ public class CameraController2 extends CameraController {
                     push_take_picture_error_cb = take_picture_error_cb;
                 }
                 catch(IllegalStateException e) {
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "captureSession already closed!");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "captureSession already closed!", e);
                     //noinspection UnusedAssignment
                     ok = false;
                     jpeg_todo = false;
@@ -7852,12 +7604,7 @@ public class CameraController2 extends CameraController {
                 }
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to take picture expo burst");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to take picture expo burst", e);
                 ok = false;
                 jpeg_todo = false;
                 raw_todo = false;
@@ -7865,9 +7612,7 @@ public class CameraController2 extends CameraController {
                 push_take_picture_error_cb = take_picture_error_cb;
             }
             catch(IllegalStateException e) {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "captureSession already closed!");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "captureSession already closed!", e);
                 ok = false;
                 jpeg_todo = false;
                 raw_todo = false;
@@ -7924,12 +7669,7 @@ public class CameraController2 extends CameraController {
                                 setRepeatingRequest(previewBuilder.build());
                             }
                             catch(CameraAccessException e) {
-                                if( MyDebug.LOG ) {
-                                    Log.e(TAG, "failed to take set exposure for next expo bracketing burst");
-                                    Log.e(TAG, "reason: " + e.getReason());
-                                    Log.e(TAG, "message: " + e.getMessage());
-                                }
-                                e.printStackTrace();
+                                MyDebug.logStackTrace(TAG, "failed to take set exposure for next expo bracketing burst", e);
                                 jpeg_todo = false;
                                 raw_todo = false;
                                 picture_cb = null;
@@ -7948,12 +7688,7 @@ public class CameraController2 extends CameraController {
                     playSound(shutter_click_sound); // play shutter sound asap, otherwise user has the illusion of being slow to take photos
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to take picture expo burst");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to take picture expo burst", e);
                     //noinspection UnusedAssignment
                     ok = false;
                     jpeg_todo = false;
@@ -7962,9 +7697,7 @@ public class CameraController2 extends CameraController {
                     push_take_picture_error_cb = take_picture_error_cb;
                 }
                 catch(IllegalStateException e) {
-                    if( MyDebug.LOG )
-                        Log.d(TAG, "captureSession already closed!");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "captureSession already closed!", e);
                     //noinspection UnusedAssignment
                     ok = false;
                     jpeg_todo = false;
@@ -8188,12 +7921,7 @@ public class CameraController2 extends CameraController {
                 // n.b., don't stop the preview with stop.Repeating when capturing a burst
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to take picture burst");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to take picture burst", e);
                 ok = false;
                 jpeg_todo = false;
                 raw_todo = false;
@@ -8243,12 +7971,7 @@ public class CameraController2 extends CameraController {
                     }
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to take picture burst");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to take picture burst", e);
                     //noinspection UnusedAssignment
                     ok = false;
                     jpeg_todo = false;
@@ -8319,12 +8042,7 @@ public class CameraController2 extends CameraController {
                 captureSession.capture(precaptureBuilder.build(), previewCaptureCallback, handler);
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to precapture");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to precapture", e);
                 jpeg_todo = false;
                 raw_todo = false;
                 picture_cb = null;
@@ -8408,12 +8126,7 @@ public class CameraController2 extends CameraController {
                 setRepeatingRequest(request);
             }
             catch(CameraAccessException e) {
-                if( MyDebug.LOG ) {
-                    Log.e(TAG, "failed to start fake precapture");
-                    Log.e(TAG, "reason: " + e.getReason());
-                    Log.e(TAG, "message: " + e.getMessage());
-                }
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to start fake precapture", e);
                 jpeg_todo = false;
                 raw_todo = false;
                 picture_cb = null;
@@ -8668,12 +8381,7 @@ public class CameraController2 extends CameraController {
             createCaptureSession(true, null, null, video_recorder, want_photo_video_recording);
         }
         catch(CameraAccessException e) {
-            if( MyDebug.LOG ) {
-                Log.e(TAG, "failed to create capture request for video");
-                Log.e(TAG, "reason: " + e.getReason());
-                Log.e(TAG, "message: " + e.getMessage());
-            }
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to create capture request for video", e);
             throw new CameraControllerException();
         }
     }
@@ -9225,12 +8933,7 @@ public class CameraController2 extends CameraController {
                                     capture();
                                 }
                                 catch(CameraAccessException e) {
-                                    if( MyDebug.LOG ) {
-                                        Log.e(TAG, "failed to do capture to turn off torch after autofocus");
-                                        Log.e(TAG, "reason: " + e.getReason());
-                                        Log.e(TAG, "message: " + e.getMessage());
-                                    }
-                                    e.printStackTrace();
+                                    MyDebug.logStackTrace(TAG, "failed to do capture to turn off torch after autofocus", e);
                                 }
 
                                 // now set the actual (should be flash auto or flash on) mode
@@ -9240,12 +8943,7 @@ public class CameraController2 extends CameraController {
                                     setRepeatingRequest();
                                 }
                                 catch(CameraAccessException e) {
-                                    if( MyDebug.LOG ) {
-                                        Log.e(TAG, "failed to set repeating request to turn off torch after autofocus");
-                                        Log.e(TAG, "reason: " + e.getReason());
-                                        Log.e(TAG, "message: " + e.getMessage());
-                                    }
-                                    e.printStackTrace();
+                                    MyDebug.logStackTrace(TAG, "failed to set repeating request to turn off torch after autofocus", e);
                                 }
                             }
                             else {
@@ -9477,12 +9175,7 @@ public class CameraController2 extends CameraController {
                         setRepeatingRequest();
                     }
                     catch(CameraAccessException e) {
-                        if( MyDebug.LOG ) {
-                            Log.e(TAG, "failed to set repeating request after ISO hack");
-                            Log.e(TAG, "reason: " + e.getReason());
-                            Log.e(TAG, "message: " + e.getMessage());
-                        }
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to set repeating request after ISO hack", e);
                     }
                 }*/
             }
@@ -9650,7 +9343,7 @@ public class CameraController2 extends CameraController {
                     Thread.sleep(500);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "InterruptedException from sleep", e);
                 }
             }
 
@@ -9703,12 +9396,7 @@ public class CameraController2 extends CameraController {
                     capture();
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to cancel autofocus after taking photo");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to cancel autofocus after taking photo", e);
                 }
                 if( use_fake_precapture_mode && fake_precapture_torch_performed ) {
                     // now set up the request to switch to the correct flash value
@@ -9720,12 +9408,7 @@ public class CameraController2 extends CameraController {
                     setRepeatingRequest();
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to start preview after taking photo");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to start preview after taking photo", e);
                     preview_error_cb.onError();
                 }
             }
@@ -9740,12 +9423,7 @@ public class CameraController2 extends CameraController {
                     setRepeatingRequest();
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to set focus distance");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to set focus distance", e);
                 }
             }
 
@@ -9806,13 +9484,8 @@ public class CameraController2 extends CameraController {
                         setRepeatingRequest();
                     }
                     catch(CameraAccessException e) {
-                        if( MyDebug.LOG ) {
-                            Log.e(TAG, "failed to set flash [from torch/flash off hack]");
-                            Log.e(TAG, "reason: " + e.getReason());
-                            Log.e(TAG, "message: " + e.getMessage());
-                        }
-                        e.printStackTrace();
-                    } 
+                        MyDebug.logStackTrace(TAG, "failed to set flash [from torch/flash off hack]", e);
+                    }
                 }
             }
             /*if( push_set_ae_lock && push_set_ae_lock_id == request && previewBuilder != null ) {
@@ -9827,13 +9500,8 @@ public class CameraController2 extends CameraController {
                     setRepeatingRequest();
                 }
                 catch(CameraAccessException e) {
-                    if( MyDebug.LOG ) {
-                        Log.e(TAG, "failed to set ae lock [from ae lock hack]");
-                        Log.e(TAG, "reason: " + e.getReason());
-                        Log.e(TAG, "message: " + e.getMessage());
-                    }
-                    e.printStackTrace();
-                } 
+                    MyDebug.logStackTrace(TAG, "failed to set ae lock [from ae lock hack", e);
+                }
             }*/
 
             RequestTagType tag_type = getRequestTagType(request);
@@ -9861,12 +9529,7 @@ public class CameraController2 extends CameraController {
                                     }
                                 }
                                 catch(CameraAccessException e) {
-                                    if( MyDebug.LOG ) {
-                                        Log.e(TAG, "failed to take picture after delay for long manual exposure");
-                                        Log.e(TAG, "reason: " + e.getReason());
-                                        Log.e(TAG, "message: " + e.getMessage());
-                                    }
-                                    e.printStackTrace();
+                                    MyDebug.logStackTrace(TAG, "failed to take picture after delay for long manual exposure", e);
                                     jpeg_todo = false;
                                     raw_todo = false;
                                     picture_cb = null;
@@ -9887,12 +9550,7 @@ public class CameraController2 extends CameraController {
                             }
                         }
                         catch(CameraAccessException e) {
-                            if( MyDebug.LOG ) {
-                                Log.e(TAG, "failed to take picture after delay for long manual exposure");
-                                Log.e(TAG, "reason: " + e.getReason());
-                                Log.e(TAG, "message: " + e.getMessage());
-                            }
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to take picture after delay for long manual exposure", e);
                             jpeg_todo = false;
                             raw_todo = false;
                             picture_cb = null;

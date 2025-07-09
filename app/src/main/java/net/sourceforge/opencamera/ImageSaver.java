@@ -628,9 +628,7 @@ public class ImageSaver extends Thread {
                 }
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
-                if( MyDebug.LOG )
-                    Log.e(TAG, "interrupted while trying to read from ImageSaver queue");
+                MyDebug.logStackTrace(TAG, "interrupted while trying to read from ImageSaver queue", e);
             }
         }
         if( MyDebug.LOG )
@@ -1007,9 +1005,7 @@ public class ImageSaver extends Thread {
                 done = true;
             }
             catch(InterruptedException e) {
-                e.printStackTrace();
-                if( MyDebug.LOG )
-                    Log.e(TAG, "interrupted while trying to add to ImageSaver queue");
+                MyDebug.logStackTrace(TAG, "interrupted while trying to add to ImageSaver queue", e);
             }
         }
         if( cost > 0 ) {
@@ -1070,9 +1066,7 @@ public class ImageSaver extends Thread {
                     wait();
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
-                    if( MyDebug.LOG )
-                        Log.e(TAG, "interrupted while waiting for ImageSaver queue to be empty");
+                    MyDebug.logStackTrace(TAG, "interrupted while waiting for ImageSaver queue to be empty", e);
                 }
                 if( MyDebug.LOG ) {
                     Log.d(TAG, "waitUntilDone: queue is size " + queue.size());
@@ -1167,9 +1161,7 @@ public class ImageSaver extends Thread {
             }
         }
         catch(InterruptedException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "threads interrupted");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "threads interrupted", e);
             ok = false;
         }
         if( MyDebug.LOG )
@@ -1393,7 +1385,7 @@ public class ImageSaver extends Thread {
             }
         }
         catch(Exception e) {
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse xml", e);
             return false;
         }
         finally {
@@ -1401,7 +1393,7 @@ public class ImageSaver extends Thread {
                 inputStream.close();
             }
             catch(IOException e) {
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to close inputStream", e);
             }
         }
         return true;
@@ -1415,8 +1407,7 @@ public class ImageSaver extends Thread {
             hdrProcessor.processHDR(bitmaps, true, null, true, null, hdr_alpha, 4, true, request.preference_hdr_tonemapping_algorithm, HDRProcessor.DROTonemappingAlgorithm.DROALGORITHM_GAINGAMMA); // this will recycle all the bitmaps except bitmaps.get(0), which will contain the hdr image
         }
         catch(HDRProcessorException e) {
-            Log.e(TAG, "HDRProcessorException from processHDR: " + e.getCode());
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "HDRProcessorException from processHDR", e);
             if( e.getCode() == HDRProcessorException.UNEQUAL_SIZES ) {
                 // this can happen on OnePlus 3T with old camera API with front camera, seems to be a bug that resolution changes when exposure compensation is set!
                 Log.e(TAG, "UNEQUAL_SIZES");
@@ -1490,7 +1481,7 @@ public class ImageSaver extends Thread {
                     //hdrProcessor.avgBrighten(nr_bitmap);
                 }
                 catch(HDRProcessorException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "HDRProcessorException from processAvg", e);
                     throw new RuntimeException();
                 }
             }
@@ -1621,7 +1612,7 @@ public class ImageSaver extends Thread {
                     }
                 }
                 catch(HDRProcessorException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "HDRProcessorException", e);
                     throw new RuntimeException();
                 }
             }
@@ -1787,8 +1778,7 @@ public class ImageSaver extends Thread {
                     }
                 }
                 catch(IOException e) {
-                    Log.e(TAG, "failed to write gyro text file");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to write gyro text file", e);
                 }
             }
 
@@ -1839,8 +1829,7 @@ public class ImageSaver extends Thread {
                 panorama = panoramaProcessor.panorama(bitmaps, MyApplicationInterface.getPanoramaPicsPerScreen(), request.camera_view_angle_y, request.panorama_crop);
             }
             catch(PanoramaProcessorException e) {
-                Log.e(TAG, "PanoramaProcessorException from panorama: " + e.getCode());
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "PanoramaProcessorException from panorama", e);
                 if( e.getCode() == PanoramaProcessorException.UNEQUAL_SIZES || e.getCode() == PanoramaProcessorException.FAILED_TO_CROP ) {
                     main_activity.getPreview().showToast(null, R.string.failed_to_process_panorama);
                     Log.e(TAG, "panorama failed: " + e.getCode());
@@ -2319,12 +2308,10 @@ public class ImageSaver extends Thread {
 
             saved_preshots = true; // success!
         }
-        catch(IOException | IllegalStateException exception) {
+        catch(IOException | IllegalStateException e) {
             // ideally want to catch MediaCodec.CodecException, but then entire class would need to target
             // Android L - instead we catch its superclass IllegalStateException
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed saving preshots video: " + exception.getMessage());
-            exception.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed saving preshots video", e);
             // cleanup
             for(int i=0;i<preshot_bitmaps.size();i++) {
                 if( MyDebug.LOG )
@@ -2362,7 +2349,7 @@ public class ImageSaver extends Thread {
                 }
             }
             catch(IOException e) {
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed close resources", e);
             }
         }
 
@@ -2811,8 +2798,7 @@ public class ImageSaver extends Thread {
                                     }
                                 }
                                 catch(Exception e) {
-                                    Log.e(TAG, "failed to read from geocoder");
-                                    e.printStackTrace();
+                                    MyDebug.logStackTrace(TAG, "failed to read from geocoder", e);
                                 }
                             }
                             else {
@@ -3161,16 +3147,12 @@ public class ImageSaver extends Thread {
                 }
                 catch(IllegalArgumentException e) {
                     // can happen for mediastore method if invalid ContentResolver.insert() call
-                    if( MyDebug.LOG )
-                        Log.e(TAG, "IllegalArgumentException inserting to mediastore: " + e.getMessage());
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "IllegalArgumentException inserting to mediastore", e);
                     throw new IOException();
                 }
                 catch(IllegalStateException e) {
                     // have received Google Play crashes from ContentResolver.insert() call for mediastore method
-                    if( MyDebug.LOG )
-                        Log.e(TAG, "IllegalStateException inserting to mediastore: " + e.getMessage());
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "IllegalStateException inserting to mediastore", e);
                     throw new IOException();
                 }
                 if( MyDebug.LOG )
@@ -3244,7 +3226,7 @@ public class ImageSaver extends Thread {
                                         parcelFileDescriptor.close();
                                     }
                                     catch(IOException e) {
-                                        e.printStackTrace();
+                                        MyDebug.logStackTrace(TAG, "fail to close parcelFileDescriptor", e);
                                     }
                                 }
                             }
@@ -3311,23 +3293,17 @@ public class ImageSaver extends Thread {
             }
         }
         catch(FileNotFoundException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "File not found: " + e.getMessage());
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "file not found", e);
             main_activity.getPreview().showToast(null, R.string.failed_to_save_photo);
         }
         catch(IOException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "I/O error writing file: " + e.getMessage());
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "I/O error writing file", e);
             main_activity.getPreview().showToast(null, R.string.failed_to_save_photo);
         }
         catch(SecurityException e) {
             // received security exception from copyFileToUri()->openOutputStream() from Google Play
             // update: no longer have copyFileToUri() (as no longer use temporary files for SAF), but might as well keep this
-            if( MyDebug.LOG )
-                Log.e(TAG, "security exception writing file: " + e.getMessage());
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "security exception writing file", e);
             main_activity.getPreview().showToast(null, R.string.failed_to_save_photo);
         }
 
@@ -3395,8 +3371,7 @@ public class ImageSaver extends Thread {
                     // true here
                     // crashes seem to all be Android 7.1 or earlier, so maybe this is a bug that's been fixed - but catch it anyway
                     // as it's grown popular
-                    Log.e(TAG, "can't create thumbnail bitmap due to IllegalArgumentException?!");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "can't create thumbnail bitmap due to IllegalArgumentException?!", e);
                     thumbnail = null;
                 }
             }
@@ -4095,15 +4070,11 @@ public class ImageSaver extends Thread {
                 }
                 catch(IllegalArgumentException e) {
                     // can happen for mediastore method if invalid ContentResolver.insert() call
-                    if( MyDebug.LOG )
-                        Log.e(TAG, "IllegalArgumentException inserting to mediastore: " + e.getMessage());
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "IllegalArgumentException inserting to mediastore", e);
                     throw new IOException();
                 }
                 catch(IllegalStateException e) {
-                    if( MyDebug.LOG )
-                        Log.e(TAG, "IllegalStateException inserting to mediastore: " + e.getMessage());
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "IllegalStateException inserting to mediastore", e);
                     throw new IOException();
                 }
                 if( MyDebug.LOG )
@@ -4184,15 +4155,11 @@ public class ImageSaver extends Thread {
             }
         }
         catch(FileNotFoundException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "File not found: " + e.getMessage());
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "file not found", e);
             main_activity.getPreview().showToast(null, R.string.failed_to_save_photo_raw);
         }
         catch(IOException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "ioexception writing raw image file");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "ioexception writing raw image file", e);
             main_activity.getPreview().showToast(null, R.string.failed_to_save_photo_raw);
         }
         finally {
@@ -4201,9 +4168,7 @@ public class ImageSaver extends Thread {
                     output.close();
                 }
                 catch(IOException e) {
-                    if( MyDebug.LOG )
-                        Log.e(TAG, "ioexception closing raw output");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "ioexception closing raw output", e);
                 }
             }
             if( raw_image != null ) {
@@ -4284,16 +4249,12 @@ public class ImageSaver extends Thread {
                 }
             }
         }
-        catch(IOException exception) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "exif orientation ioexception");
-            exception.printStackTrace();
+        catch(IOException e) {
+            MyDebug.logStackTrace(TAG, "exif orientation ioexception", e);
         }
-        catch(NoClassDefFoundError exception) {
+        catch(NoClassDefFoundError e) {
             // have had Google Play crashes from new ExifInterface() for Galaxy Ace4 (vivalto3g), Galaxy S Duos3 (vivalto3gvn)
-            if( MyDebug.LOG )
-                Log.e(TAG, "exif orientation NoClassDefFoundError");
-            exception.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exif orientation NoClassDefFoundError", e);
         }
         finally {
             if( inputStream != null ) {
@@ -4301,7 +4262,7 @@ public class ImageSaver extends Thread {
                     inputStream.close();
                 }
                 catch(IOException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to close inputStream", e);
                 }
             }
         }
@@ -4355,8 +4316,7 @@ public class ImageSaver extends Thread {
                     this.pfd.close();
                 }
                 catch(IOException e) {
-                    Log.e(TAG, "failed to close parcelfiledescriptor");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to close parcelfiledescriptor", e);
                 }
             }
         }
@@ -4426,11 +4386,9 @@ public class ImageSaver extends Thread {
                     exif_holder.close();
                 }
             }
-            catch(NoClassDefFoundError exception) {
+            catch(NoClassDefFoundError e) {
                 // have had Google Play crashes from new ExifInterface() elsewhere for Galaxy Ace4 (vivalto3g), Galaxy S Duos3 (vivalto3gvn), so also catch here just in case
-                if( MyDebug.LOG )
-                    Log.e(TAG, "exif orientation NoClassDefFoundError");
-                exception.printStackTrace();
+                MyDebug.logStackTrace(TAG, "exif orientation NoClassDefFoundError", e);
             }
             if( MyDebug.LOG )
                 Log.d(TAG, "*** time to add additional exif info: " + (System.currentTimeMillis() - time_s));

@@ -734,8 +734,7 @@ public class DrawPreview {
                     ghost_selected_image_bitmap = loadBitmap(uri);
                 }
                 catch(IOException e) {
-                    Log.e(TAG, "failed to load ghost_selected_image uri: " + uri);
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to load ghost_selected_image uri: " + uri, e);
                     ghost_selected_image_bitmap = null;
                     // don't set ghost_selected_image_pref to null, as we don't want to repeatedly try loading the invalid uri
                 }
@@ -778,9 +777,7 @@ public class DrawPreview {
             zebra_stripes_threshold = Integer.parseInt(zebra_stripes_value);
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse zebra_stripes_value: " + zebra_stripes_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse zebra_stripes_value: " + zebra_stripes_value, e);
             zebra_stripes_threshold = 0;
         }
         want_zebra_stripes = zebra_stripes_threshold != 0 & main_activity.supportsPreviewBitmaps();
@@ -886,8 +883,7 @@ public class DrawPreview {
             // Although Media.getBitmap() is documented as only throwing FileNotFoundException, IOException
             // (with the former being a subset of IOException anyway), I've had SecurityException from
             // Google Play - best to catch everything just in case.
-            Log.e(TAG, "MediaStore.Images.Media.getBitmap exception");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "MediaStore.Images.Media.getBitmap exception", e);
             throw new IOException();
         }
         if( bitmap == null ) {

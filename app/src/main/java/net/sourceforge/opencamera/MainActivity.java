@@ -635,9 +635,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 version_code = pInfo.versionCode;
             }
             catch(PackageManager.NameNotFoundException e) {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "NameNotFoundException exception trying to get version number");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "NameNotFoundException exception trying to get version number", e);
             }
             if( version_code != -1 ) {
                 int latest_version = sharedPreferences.getInt(PreferenceKeys.LatestVersionPreferenceKey, 0);
@@ -1616,7 +1614,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                         inputStream.close();
                     }
                     catch(IOException e) {
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to close inputStream", e);
                     }
                 }
             }
@@ -4611,8 +4609,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
             thumbnail = rotateForExif(thumbnail, uri);
         }
         catch(IOException e) {
-            Log.e(TAG, "failed to load bitmap for ghost image last");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to load bitmap for ghost image last", e);
         }
         return thumbnail;
     }
@@ -4727,8 +4724,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                                     thumbnail = retriever.getFrameAtTime(-1);
                                 }
                                 catch(Exception e) {
-                                    Log.d(TAG, "failed to load video thumbnail");
-                                    e.printStackTrace();
+                                    MyDebug.logStackTrace(TAG, "failed to load video thumbnail", e);
                                 }
                                 finally {
                                     try {
@@ -4743,7 +4739,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                                         }
                                     }
                                     catch(IOException e) {
-                                        e.printStackTrace();
+                                        MyDebug.logStackTrace(TAG, "failed to close pfd_saf", e);
                                     }
                                 }
                             }
@@ -4761,12 +4757,12 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                                 }
                             }
                         }
-                        catch(Throwable exception) {
+                        catch(Throwable e) {
                             // have had Google Play NoClassDefFoundError crashes from getThumbnail() for Galaxy Ace4 (vivalto3g), Galaxy S Duos3 (vivalto3gvn)
                             // also NegativeArraySizeException - best to catch everything
                             if( MyDebug.LOG )
                                 Log.e(TAG, "thumbnail exception");
-                            exception.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "thumbnail exception", e);
                         }
                     }
                 }
@@ -4993,7 +4989,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                     done = true;
                 }
                 catch(ActivityNotFoundException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to start REVIEW_ACTION intent", e);
                 }
             }
             if( !done ) {
@@ -5004,13 +5000,12 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                     this.startActivity(intent);
                 }
                 catch(ActivityNotFoundException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to start ACTION_VIEW intent", e);
                     preview.showToast(null, R.string.no_gallery_app);
                 }
                 catch(SecurityException e) {
                     // have received this crash from Google Play - don't display a toast, simply do nothing
-                    Log.e(TAG, "SecurityException from ACTION_VIEW startActivity");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "SecurityException from ACTION_VIEW startActivity", e);
                 }
             }
         }
@@ -5045,8 +5040,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         catch(ActivityNotFoundException e) {
             // see https://stackoverflow.com/questions/34021039/action-open-document-not-working-on-miui/34045627
             preview.showToast(null, R.string.open_files_saf_exception_ghost);
-            Log.e(TAG, "ActivityNotFoundException from startActivityForResult");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "ActivityNotFoundException from startActivityForResult", e);
         }
     }
 
@@ -5066,8 +5060,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         catch(ActivityNotFoundException e) {
             // see https://stackoverflow.com/questions/34021039/action-open-document-not-working-on-miui/34045627
             preview.showToast(null, R.string.open_files_saf_exception_generic);
-            Log.e(TAG, "ActivityNotFoundException from startActivityForResult");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "ActivityNotFoundException from startActivityForResult", e);
         }
     }
 
@@ -5121,8 +5114,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                         }
                     }
                     catch(SecurityException e) {
-                        Log.e(TAG, "SecurityException failed to take permission");
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "SecurityException failed to take permission", e);
                         preview.showToast(null, R.string.saf_permission_failed);
                         // failed - if the user had yet to set a save location, make sure we switch SAF back off
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -5177,8 +5169,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                         editor.apply();
                     }
                     catch(SecurityException e) {
-                        Log.e(TAG, "SecurityException failed to take permission");
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "SecurityException failed to take permission", e);
                         preview.showToast(null, R.string.saf_permission_failed_open_image);
                         // failed - if the user had yet to set a ghost image
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -5229,8 +5220,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                         settingsManager.loadSettings(fileUri);
                     }
                     catch(SecurityException e) {
-                        Log.e(TAG, "SecurityException failed to take permission");
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "SecurityException failed to take permission", e);
                         preview.showToast(null, R.string.restore_settings_failed);
                     }
                 }
@@ -5714,7 +5704,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                 }
             }
             catch(Exception e) {
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "onFling failed", e);
             }
             return false;
         }
@@ -6719,7 +6709,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         }
         catch(RuntimeException e) {
             // catch runtime error from camera_controller old API from camera.getParameters()
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to get info from camera controller", e);
         }
         String lock_orientation = applicationInterface.getLockOrientationPref();
         if( !lock_orientation.equals("none") && photo_mode != MyApplicationInterface.PhotoMode.Panorama ) {

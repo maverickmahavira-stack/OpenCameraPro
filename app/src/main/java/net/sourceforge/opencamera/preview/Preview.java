@@ -233,7 +233,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     this.video_pfd_saf.close();
                 }
                 catch(IOException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to close video_pfd_saf", e);
                 }
             }
         }
@@ -1345,9 +1345,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 this.setPreviewPaused(false);
             }
             catch(CameraControllerException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "failed to reconnect to camera");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to reconnect to camera", e);
                 applicationInterface.onFailedReconnectError();
                 closeCamera(false, null);
             }
@@ -1355,9 +1353,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 tryAutoFocus(false, false);
             }
             catch(RuntimeException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "tryAutoFocus() threw exception: " + e.getMessage());
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "tryAutoFocus() threw exception", e);
                 // this happens on Nexus 7 if trying to record video at bitrate 50Mbits or higher - it's fair enough that it fails, but we need to recover without a crash!
                 // not safe to call closeCamera, as any call to getParameters may cause a RuntimeException
                 // update: can no longer reproduce failures on Nexus 7?!
@@ -1911,9 +1907,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             //throw new CameraControllerException(); // uncomment to test camera not opening
         }
         catch(CameraControllerException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "Failed to open camera: " + e.getMessage());
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to open camera", e);
             camera_controller_local = null;
         }
 
@@ -2099,7 +2093,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             initCameraParameters();
         }
         catch(CameraControllerException e) {
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exception from initCameraParameters", e);
             applicationInterface.onCameraError();
             closeCamera(false, null);
             return;
@@ -3545,9 +3539,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             }
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse video quality: " + quality);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse video quality: " + quality, e);
         }
         return camcorder_profile;
     }
@@ -5598,9 +5590,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     Log.d(TAG, "n_repeat: " + n_repeat);
             }
             catch(NumberFormatException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "failed to parse repeat_mode value: " + repeat_mode_value);
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to parse repeat_mode value: " + repeat_mode_value, e);
                 n_repeat = 1;
             }
             remaining_repeat_photos = n_repeat-1;
@@ -5688,7 +5678,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             Thread.sleep(100);
         }
         catch(InterruptedException e) {
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "InterruptedException from sleep", e);
         }
         // turn off torch
         cancelAutoFocus();
@@ -5762,8 +5752,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                             nextVideoFileInfo = info;
                         }
                         catch(IOException e) {
-                            Log.e(TAG, "failed to setNextOutputFile");
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to setNextOutputFile", e);
                             info.close();
                         }
                     }
@@ -5958,9 +5947,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             video_file_info = new VideoFileInfo(method, video_uri, video_filename, video_pfd_saf);
         }
         catch(IOException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "Couldn't create media video file; check storage permissions?");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "couldn't create media video file; check storage permissions?", e);
         }
         finally {
             if( video_file_info == null && video_pfd_saf != null ) {
@@ -5970,7 +5957,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     video_pfd_saf.close();
                 }
                 catch(IOException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to close video_pfd_saf", e);
                 }
             }
         }
@@ -6073,9 +6060,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     }
                     catch(RuntimeException e) {
                         // Google Camera warns this can happen - for example, if 64-bit filesizes not supported
-                        if( MyDebug.LOG )
-                            Log.e(TAG, "failed to set max filesize of: " + max_filesize);
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to set max filesize of: " + max_filesize, e);
                     }
                 }
                 video_restart_on_max_filesize = video_max_filesize.auto_restart; // note, we set this even if max_filesize==0, as it will still apply when hitting device max filesize limit
@@ -6150,8 +6135,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 }
                 catch(RuntimeException e) {
                     // needed for emulator at least - although MediaRecorder not meant to work with emulator, it's good to fail gracefully
-                    Log.e(TAG, "runtime exception starting video recorder");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "runtime exception starting video recorder", e);
                     this.video_recorder = local_video_recorder; // still assign, so failedToStartVideoRecorder() will release the video_recorder
                     // told_app_starting must be true if we're here
                     applicationInterface.stoppingVideo();
@@ -6171,8 +6155,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 						}
 						catch(RuntimeException e) {
 							// needed for emulator at least - although MediaRecorder not meant to work with emulator, it's good to fail gracefully
-							Log.e(TAG, "runtime exception starting video recorder");
-							e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "runtime exception starting video recorder", e);
 							return false;
 						}
 						return true;
@@ -6198,9 +6181,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 				}.execute();*/
             }
             catch(IOException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "failed to save video");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to save video", e);
                 this.video_recorder = local_video_recorder;
                 if( told_app_starting ) {
                     applicationInterface.stoppingVideo();
@@ -6216,9 +6197,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 this.reconnectCamera(true);
             }
             catch(CameraControllerException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "camera exception starting video recorder");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "camera exception starting video recorder", e);
                 this.video_recorder = local_video_recorder; // still assign, so failedToStartVideoRecorder() will release the video_recorder
                 if( told_app_starting ) {
                     applicationInterface.stoppingVideo();
@@ -6226,9 +6205,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 failedToStartVideoRecorder(profile);
             }
             catch(NoFreeStorageException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "nofreestorageexception starting video recorder");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "nofreestorageexception starting video recorder", e);
                 this.video_recorder = local_video_recorder;
                 if( told_app_starting ) {
                     applicationInterface.stoppingVideo();
@@ -6548,7 +6525,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     Thread.sleep(100);
                 }
                 catch(InterruptedException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "InterruptedException from sleep", e);
                 }
             }
         }
@@ -7173,8 +7150,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 });
             }
             catch(CameraControllerException e) {
-                Log.e(TAG, "CameraControllerException trying to startPreview");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "CameraControllerException trying to startPreview", e);
                 // if we update this code, remember to also update the on_failed runnable above
                 preview_started_state = PREVIEW_NOT_STARTED;
                 applicationInterface.onFailedStartPreview();
@@ -8040,8 +8016,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 refreshPreviewBitmapTask.get(); // forces thread to complete
             }
             catch(ExecutionException | InterruptedException e) {
-                Log.e(TAG, "exception while waiting for background_task to finish");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "exception while waiting for background_task to finish", e);
             }
         }
         freePreviewBitmap(); // in case onDestroy() called directly without onPause()
@@ -8057,8 +8032,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     close_camera_task.get(3000, TimeUnit.MILLISECONDS); // set timeout to avoid ANR (camera resource should be freed by the OS when destroyed anyway)
                 }
                 catch(ExecutionException | InterruptedException | TimeoutException e) {
-                    Log.e(TAG, "exception while waiting for close_camera_task to finish");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "exception while waiting for close_camera_task to finish", e);
                 }
                 if( MyDebug.LOG ) {
                     Log.d(TAG, "done waiting for close_camera_task");
@@ -8519,8 +8493,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 preview_bitmap = Bitmap.createBitmap(bitmap_width, bitmap_height, Bitmap.Config.ARGB_8888);
             }
             catch(IllegalArgumentException e) {
-                Log.e(TAG, "failed to create preview_bitmap");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to create preview_bitmap", e);
                 // Note if we failed to create the preview_bitmap, we don't call disablePreviewBitmap() or set want_preview_bitmap to false,
                 // otherwise DrawPreview will keep trying.
             }
@@ -8574,8 +8547,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 // zebra_stripes_bitmap itself is created dynamically when generating the zebra stripes
             }
             catch(IllegalArgumentException e) {
-                Log.e(TAG, "failed to create zebra_stripes_bitmap_buffer");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to create zebra_stripes_bitmap_buffer", e);
             }
         }
     }
@@ -8610,8 +8582,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 // focus_peaking_bitmap itself is created dynamically when generating
             }
             catch(IllegalArgumentException e) {
-                Log.e(TAG, "failed to create focus_peaking_bitmap_buffers");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to create focus_peaking_bitmap_buffers", e);
             }
         }
     }
@@ -8806,9 +8777,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                         // Also see above - it's much faster to create a new bitmap to read into, than to copy a bitmap
                     }
                     catch(IllegalArgumentException e) {
-                        if( MyDebug.LOG )
-                            Log.e(TAG, "failed to create preview_bitmap_full_copy");
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to create preview_bitmap_full_copy", e);
                     }
                 }
 
@@ -8907,7 +8876,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 						mActivity.getStorageUtils().broadcastFile(file, true, false, true);
 					}
 					catch(IOException e) {
-						e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to save image", e);
 					}
 					*/
                 }
@@ -8944,9 +8913,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 }
             }
             catch(IllegalStateException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "failed to getBitmap");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to getBitmap", e);
             }
 
             if( MyDebug.LOG ) {

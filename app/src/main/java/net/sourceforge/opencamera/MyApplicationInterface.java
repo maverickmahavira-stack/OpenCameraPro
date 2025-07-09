@@ -385,16 +385,12 @@ public class MyApplicationInterface extends BasicApplicationInterface {
         }
         catch(IllegalArgumentException e) {
             // can happen for mediastore method if invalid ContentResolver.insert() call
-            if( MyDebug.LOG )
-                Log.e(TAG, "IllegalArgumentException writing video file: " + e.getMessage());
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "IllegalArgumentException writing video file", e);
             throw new IOException();
         }
         catch(IllegalStateException e) {
             // have received Google Play crashes from ContentResolver.insert() call for mediastore method
-            if( MyDebug.LOG )
-                Log.e(TAG, "IllegalStateException writing video file: " + e.getMessage());
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "IllegalStateException writing video file", e);
             throw new IOException();
         }
         if( last_video_file_uri == null ) {
@@ -457,9 +453,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             focus_assist = Integer.parseInt(focus_assist_value);
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse focus_assist_value: " + focus_assist_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse focus_assist_value: " + focus_assist_value, e);
             focus_assist = 0;
         }
         if( focus_assist > 0 && main_activity.getPreview().isVideoRecording() ) {
@@ -943,9 +937,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                 Log.d(TAG, "gamma: " + gamma);
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse gamma value: " + gamma_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse gamma value: " + gamma_value, e);
         }
         return gamma;
     }
@@ -969,9 +961,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             video_max_duration = (long)Integer.parseInt(video_max_duration_value) * 1000;
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse preference_video_max_duration value: " + video_max_duration_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse preference_video_max_duration value: " + video_max_duration_value, e);
             video_max_duration = 0;
         }
         return video_max_duration;
@@ -985,9 +975,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             remaining_restart_video = Integer.parseInt(restart_value);
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse preference_video_restart value: " + restart_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse preference_video_restart value: " + restart_value, e);
             remaining_restart_video = 0;
         }
         return remaining_restart_video;
@@ -1014,9 +1002,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             video_max_filesize = Long.parseLong(video_max_filesize_value);
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse preference_video_max_filesize value: " + video_max_filesize_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse preference_video_max_filesize value: " + video_max_filesize_value, e);
             video_max_filesize = 0;
         }
         //video_max_filesize = 1024*1024; // test
@@ -1205,9 +1191,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             timer_delay = (long)Integer.parseInt(timer_value) * 1000;
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse preference_timer value: " + timer_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse preference_timer value: " + timer_value, e);
             timer_delay = 0;
         }
         return timer_delay;
@@ -1231,9 +1215,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             timer_delay = (long)(timer_delay_s * 1000);
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse repeat interval value: " + timer_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse repeat interval value: " + timer_value, e);
             timer_delay = 0;
         }
         return timer_delay;
@@ -1308,9 +1290,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             ghost_image_alpha = Integer.parseInt(ghost_image_alpha_value);
         }
         catch(NumberFormatException e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "failed to parse ghost_image_alpha_value: " + ghost_image_alpha_value);
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to parse ghost_image_alpha_value: " + ghost_image_alpha_value, e);
             ghost_image_alpha = 50;
         }
         ghost_image_alpha = (int)(ghost_image_alpha*2.55f+0.1f);
@@ -1588,9 +1568,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                 n_images = Integer.parseInt(n_images_value);
             }
             catch(NumberFormatException e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "failed to parse FastBurstNImagesPreferenceKey value: " + n_images_value);
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to parse FastBurstNImagesPreferenceKey value: " + n_images_value, e);
                 n_images = 5;
             }
             return n_images;
@@ -2263,8 +2241,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                                 }
                             }
                             catch(Exception e) {
-                                Log.e(TAG, "failed to read from geocoder");
-                                e.printStackTrace();
+                                MyDebug.logStackTrace(TAG, "failed to read from geocoder", e);
                             }
                         }
                         else {
@@ -2354,15 +2331,11 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                                     }
                                     catch(IllegalArgumentException e) {
                                         // can happen for mediastore method if invalid ContentResolver.insert() call
-                                        if( MyDebug.LOG )
-                                            Log.e(TAG, "IllegalArgumentException from SubtitleVideoTimerTask inserting to mediastore: " + e.getMessage());
-                                        e.printStackTrace();
+                                        MyDebug.logStackTrace(TAG, "IllegalArgumentException from SubtitleVideoTimerTask inserting to mediastore", e);
                                         throw new IOException();
                                     }
                                     catch(IllegalStateException e) {
-                                        if( MyDebug.LOG )
-                                            Log.e(TAG, "IllegalStateException from SubtitleVideoTimerTask inserting to mediastore: " + e.getMessage());
-                                        e.printStackTrace();
+                                        MyDebug.logStackTrace(TAG, "IllegalStateException from SubtitleVideoTimerTask inserting to mediastore", e);
                                         throw new IOException();
                                     }
                                     if( uri == null ) {
@@ -2391,9 +2364,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                     count++;
                 }
                 catch(IOException e) {
-                    if( MyDebug.LOG )
-                        Log.e(TAG, "SubtitleVideoTimerTask failed to create or write");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "SubtitleVideoTimerTask failed to create or write", e);
                 }
                 if( MyDebug.LOG )
                     Log.d(TAG, "SubtitleVideoTimerTask exit");
@@ -2410,7 +2381,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                             writer.close();
                         }
                         catch(IOException e) {
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to close writer", e);
                         }
                         writer = null;
                     }
@@ -2419,7 +2390,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                             pfd_saf.close();
                         }
                         catch(IOException e) {
-                            e.printStackTrace();
+                            MyDebug.logStackTrace(TAG, "failed to close pfd_saf", e);
                         }
                         pfd_saf = null;
                     }
@@ -2552,8 +2523,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             }
             catch(FileNotFoundException | /*IllegalArgumentException |*/ RuntimeException e) {
                 // video file wasn't saved or corrupt video file?
-                Log.d(TAG, "failed to find thumbnail");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to find thumbnail", e);
             }
             finally {
                 try {
@@ -2568,7 +2538,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                     }
                 }
                 catch(IOException e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to close pfd_saf", e);
                 }
             }
             if( thumbnail != null ) {
@@ -3869,9 +3839,7 @@ public class MyApplicationInterface extends BasicApplicationInterface {
             catch(FileNotFoundException e) {
                 // note, Android Studio reports a warning that FileNotFoundException isn't thrown, but it can be
                 // thrown by DocumentsContract.deleteDocument - and we get an error if we try to remove the catch!
-                if( MyDebug.LOG )
-                    Log.e(TAG, "exception when deleting " + image_uri);
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "exception when deleting " + image_uri, e);
             }
         }
         else if( image_type == LastImagesType.MEDIASTORE && image_uri != null ) {

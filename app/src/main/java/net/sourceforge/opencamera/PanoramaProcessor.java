@@ -596,7 +596,7 @@ public class PanoramaProcessor {
             mActivity.getStorageUtils().broadcastFile(file, true, false, true, false, null);
         }
         catch(IOException e) {
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to save file", e);
             throw new RuntimeException();
         }
     }
@@ -1183,8 +1183,7 @@ public class PanoramaProcessor {
                     }
                 }
                 catch(InterruptedException e) {
-                    Log.e(TAG, "ComputeDistancesBetweenMatchesThread threads interrupted");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "ComputeDistancesBetweenMatchesThread threads interrupted", e);
                     Thread.currentThread().interrupt();
                 }
                 if( MyDebug.LOG )
@@ -1846,7 +1845,7 @@ public class PanoramaProcessor {
                 mActivity.getStorageUtils().broadcastFile(file, true, false, true, false, null);
             }
             catch(IOException e) {
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to save file", e);
             }
             bitmap.recycle();
         }

@@ -301,7 +301,7 @@ public class StorageUtils {
                                     }
                                 }
                                 catch(Exception e) {
-                                    e.printStackTrace();
+                                    MyDebug.logStackTrace(TAG, "exception from getMediaUri", e);
                                 }
                             }
                             if( set_last_scanned ) {
@@ -557,8 +557,7 @@ public class StorageUtils {
                     }
                     catch(NumberFormatException e) {
                         // have had crashes from Google Play from Long.parseLong(id)
-                        Log.e(TAG,"failed to parse id: " + id);
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to parse id: " + id, e);
                     }
                 }
             }
@@ -625,11 +624,11 @@ public class StorageUtils {
             }
         }
         catch(IllegalArgumentException e) {
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to get data column", e);
         }
         catch(SecurityException e) {
             // have received crashes from Google Play for this
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to get data column", e);
         }
         finally {
             if (cursor != null)
@@ -660,9 +659,7 @@ public class StorageUtils {
                 }
             }
             catch(Exception e) {
-                if( MyDebug.LOG )
-                    Log.e(TAG, "Exception trying to find filename");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "exception trying to find filename", e);
             }
             finally {
                 if (cursor != null)
@@ -820,30 +817,22 @@ public class StorageUtils {
         }
         catch(IllegalArgumentException e) {
             // DocumentsContract.getTreeDocumentId throws this if URI is invalid
-            if( MyDebug.LOG )
-                Log.e(TAG, "createOutputMediaFileSAF failed with IllegalArgumentException");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "createOutputMediaFileSAF failed with IllegalArgumentException", e);
             throw new IOException();
         }
         catch(IllegalStateException e) {
             // Have reports of this from Google Play for DocumentsContract.createDocument - better to fail gracefully and tell user rather than crash!
-            if( MyDebug.LOG )
-                Log.e(TAG, "createOutputMediaFileSAF failed with IllegalStateException");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "createOutputMediaFileSAF failed with IllegalStateException", e);
             throw new IOException();
         }
         catch(NullPointerException e) {
             // Have reports of this from Google Play for DocumentsContract.createDocument - better to fail gracefully and tell user rather than crash!
-            if( MyDebug.LOG )
-                Log.e(TAG, "createOutputMediaFileSAF failed with NullPointerException");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "createOutputMediaFileSAF failed with NullPointerException", e);
             throw new IOException();
         }
         catch(SecurityException e) {
             // Have reports of this from Google Play - better to fail gracefully and tell user rather than crash!
-            if( MyDebug.LOG )
-                Log.e(TAG, "createOutputMediaFileSAF failed with SecurityException");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "createOutputMediaFileSAF failed with SecurityException", e);
             throw new IOException();
         }
     }
@@ -948,7 +937,7 @@ public class StorageUtils {
                     }
                 }
                 catch(Exception e) {
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "exception from getMediaUri", e);
                 }
                 return null;
             }
@@ -1290,9 +1279,7 @@ public class StorageUtils {
         }
         catch(Exception e) {
             // have had exceptions such as SQLiteException, NullPointerException reported on Google Play from within getContentResolver().query() call
-            if( MyDebug.LOG )
-                Log.e(TAG, "Exception trying to find latest media");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exception trying to find latest media", e);
         }
         finally {
             if( cursor != null ) {
@@ -1480,9 +1467,7 @@ public class StorageUtils {
             }
         }
         catch(Exception e) {
-            if( MyDebug.LOG )
-                Log.e(TAG, "Exception trying to find latest media");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exception trying to find latest media", e);
         }
         finally {
             if( cursor != null ) {
@@ -1634,17 +1619,17 @@ public class StorageUtils {
         }
         catch(IllegalArgumentException e) {
             // IllegalArgumentException can be thrown by DocumentsContract.getTreeDocumentId or getContentResolver().openFileDescriptor
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to get free memory for SAF", e);
         }
         catch(FileNotFoundException e) {
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to get free memory for SAF", e);
         }
         catch(Exception e) {
             // We actually just want to catch ErrnoException here, but that isn't available pre-Android 5, and trying to catch ErrnoException
             // means we crash on pre-Android 5 with java.lang.VerifyError when trying to create the StorageUtils class!
             // One solution might be to move this method to a separate class that's only created on Android 5+, but this is a quick fix for
             // now.
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to get free memory for SAF", e);
         }
         finally {
             try {
@@ -1652,7 +1637,7 @@ public class StorageUtils {
                     pfd.close();
             }
             catch(IOException e) {
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "failed to close pfd", e);
             }
         }
         return -1;

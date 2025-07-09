@@ -236,8 +236,7 @@ public class HDRProcessor {
                     }
                 }
                 catch (IOException e) {
-                    Log.e(TAG, "failed to open csv file");
-                    e.printStackTrace();
+                    MyDebug.logStackTrace(TAG, "failed to open csv file", e);
                 }
                 finally {
                     try {
@@ -245,8 +244,7 @@ public class HDRProcessor {
                             writer.close();
                     }
                     catch (IOException e) {
-                        Log.e(TAG, "failed to close csv file");
-                        e.printStackTrace();
+                        MyDebug.logStackTrace(TAG, "failed to close csv file", e);
                     }
                 }
                 MediaScannerConnection.scanFile(context, new String[] { file.getAbsolutePath() }, null, null);

@@ -34,9 +34,7 @@ public class CameraControllerManager2 extends CameraControllerManager {
             // from some devices, e.g., AssertionError, IllegalArgumentException, RuntimeException, so just catch everything!
             // We don't want users to experience a crash just because of buggy camera2 drivers - instead the user can switch
             // back to old camera API.
-            if( MyDebug.LOG )
-                Log.e(TAG, "exception trying to get camera ids");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exception trying to get camera ids", e);
         }
         return 0;
     }
@@ -62,9 +60,7 @@ public class CameraControllerManager2 extends CameraControllerManager {
             // from some devices, e.g., AssertionError, IllegalArgumentException, RuntimeException, so just catch everything!
             // We don't want users to experience a crash just because of buggy camera2 drivers - instead the user can switch
             // back to old camera API.
-            if( MyDebug.LOG )
-                Log.e(TAG, "exception trying to get camera characteristics");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exception trying to get camera characteristics", e);
         }
         return CameraController.Facing.FACING_UNKNOWN;
     }
@@ -79,9 +75,7 @@ public class CameraControllerManager2 extends CameraControllerManager {
         }
         catch(Throwable e) {
             // see note under isFrontFacing() why we catch anything, not just CameraAccessException
-            if( MyDebug.LOG )
-                Log.e(TAG, "exception trying to get camera characteristics");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exception trying to get camera characteristics", e);
         }
         return description;
     }
@@ -143,9 +137,7 @@ public class CameraControllerManager2 extends CameraControllerManager {
         }
         catch(Throwable e) {
             // see note under isFrontFacing() why we catch anything, not just CameraAccessException
-            if( MyDebug.LOG )
-                Log.e(TAG, "exception trying to get camera characteristics");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exception trying to get camera characteristics", e);
         }
         return description;
     }
@@ -247,9 +239,7 @@ public class CameraControllerManager2 extends CameraControllerManager {
             // from some devices, e.g., AssertionError, IllegalArgumentException, RuntimeException, so just catch everything!
             // We don't want users to experience a crash just because of buggy camera2 drivers - instead the user can switch
             // back to old camera API.
-            if( MyDebug.LOG )
-                Log.e(TAG, "exception trying to get camera characteristics");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "exception trying to get camera characteristics", e);
         }
         return false;
     }

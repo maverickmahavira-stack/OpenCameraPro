@@ -1,5 +1,6 @@
 package net.sourceforge.opencamera.cameracontroller;
 
+import net.sourceforge.opencamera.MyDebug;
 import net.sourceforge.opencamera.R;
 
 import android.content.Context;
@@ -34,8 +35,7 @@ public class CameraControllerManager1 extends CameraControllerManager {
         catch(RuntimeException e) {
             // Had a report of this crashing on Galaxy Nexus - may be device specific issue, see http://stackoverflow.com/questions/22383708/java-lang-runtimeexception-fail-to-get-camera-info
             // but good to catch it anyway
-            Log.e(TAG, "failed to get facing");
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to get facing", e);
         }
         return CameraController.Facing.FACING_UNKNOWN;
     }

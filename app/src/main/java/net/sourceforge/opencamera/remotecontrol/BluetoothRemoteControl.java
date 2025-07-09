@@ -288,8 +288,7 @@ public class BluetoothRemoteControl {
                 main_activity.getMainUI().updateRemoteConnectionIcon();
             }
             catch(IllegalArgumentException e){
-                Log.e(TAG, "Remote Service was not running, that's strange");
-                e.printStackTrace();
+                MyDebug.logStackTrace(TAG, "Remote Service was not running, that's strange", e);
             }
         }
     }

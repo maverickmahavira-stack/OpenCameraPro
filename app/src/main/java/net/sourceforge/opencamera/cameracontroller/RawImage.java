@@ -33,13 +33,13 @@ public class RawImage {
         catch(AssertionError e) {
             // have had AssertionError from OnePlus 5 on Google Play; rethrow as an IOException so it's handled
             // in the same way
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to write SNG image", e);
             throw new IOException();
         }
         catch(IllegalStateException e) {
             // have had IllegalStateException from Galaxy Note 8 on Google Play; rethrow as an IOException so it's handled
             // in the same way
-            e.printStackTrace();
+            MyDebug.logStackTrace(TAG, "failed to write SNG image", e);
             throw new IOException();
         }
     }
