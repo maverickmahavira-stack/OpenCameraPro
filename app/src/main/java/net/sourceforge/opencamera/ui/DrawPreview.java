@@ -98,6 +98,7 @@ public class DrawPreview {
     private boolean show_geo_direction_pref;
     private boolean take_photo_border_pref;
     private boolean preview_size_wysiwyg_pref;
+    private String crop_guide_pref;
     private boolean store_location_pref;
     private boolean show_angle_line_pref;
     private boolean show_pitch_lines_pref;
@@ -680,6 +681,7 @@ public class DrawPreview {
 
         take_photo_border_pref = sharedPreferences.getBoolean(PreferenceKeys.TakePhotoBorderPreferenceKey, true);
         preview_size_wysiwyg_pref = sharedPreferences.getString(PreferenceKeys.PreviewSizePreferenceKey, "preference_preview_size_wysiwyg").equals("preference_preview_size_wysiwyg");
+        crop_guide_pref = sharedPreferences.getString(PreferenceKeys.ShowCropGuidePreferenceKey, "crop_guide_none");
         store_location_pref = sharedPreferences.getBoolean(PreferenceKeys.LocationPreferenceKey, false);
 
         show_angle_line_pref = sharedPreferences.getBoolean(PreferenceKeys.ShowAngleLinePreferenceKey, false);
@@ -1089,10 +1091,9 @@ public class DrawPreview {
         Preview preview = main_activity.getPreview();
         CameraController camera_controller = preview.getCameraController();
         if( preview.isVideo() || preview_size_wysiwyg_pref ) {
-            String preference_crop_guide = sharedPreferences.getString(PreferenceKeys.ShowCropGuidePreferenceKey, "crop_guide_none");
-            if( camera_controller != null && preview.getTargetRatio() > 0.0 && !preference_crop_guide.equals("crop_guide_none") ) {
+            if( camera_controller != null && preview.getTargetRatio() > 0.0 && !crop_guide_pref.equals("crop_guide_none") ) {
                 double crop_ratio = -1.0;
-                switch(preference_crop_guide) {
+                switch(crop_guide_pref) {
                     case "crop_guide_1":
                         crop_ratio = 1.0;
                         break;
