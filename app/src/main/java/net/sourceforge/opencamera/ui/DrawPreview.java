@@ -1126,6 +1126,12 @@ public class DrawPreview {
                     case "crop_guide_2.4":
                         crop_ratio = 2.4;
                         break;
+                    case "crop_guide_2.71":
+                        crop_ratio = 2.70833333; // actually 65:24
+                        break;
+                    case "crop_guide_3":
+                        crop_ratio = 3.0;
+                        break;
                 }
                 if( crop_ratio > 0.0 ) {
                     // we should compare to getCurrentPreviewAspectRatio() not getTargetRatio(), as the actual preview
