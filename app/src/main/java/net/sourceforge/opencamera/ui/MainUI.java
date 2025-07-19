@@ -1668,8 +1668,8 @@ public class MainUI {
         if( isExposureUIOpen() ) {
             closeExposureUI();
         }
-        else if( main_activity.getPreview().getCameraController() != null && main_activity.getPreview().isPreviewStarted() && main_activity.supportsExposureButton() ) {
-            // make sure preview is started - main risk here is if preview is currently opening on
+        else if( main_activity.getPreview().getCameraController() != null && !main_activity.getPreview().isPreviewStarting() && main_activity.supportsExposureButton() ) {
+            // make sure preview is not starting - risk here is if preview is currently opening on
             // background thread - don't want to open exposure UI that would allow being
             // able to change settings that would then require restarting the preview
             setupExposureUI();
@@ -2614,11 +2614,14 @@ public class MainUI {
                 Log.d(TAG, "camera not opened!");
             return;
         }
-        else if( !main_activity.getPreview().isPreviewStarted() ) {
+        else if( main_activity.getPreview().isPreviewStarting() ) {
             if( MyDebug.LOG )
-                Log.d(TAG, "preview not started!");
-            // main risk here is if preview is currently opening on background thread - don't want to open popup menu that would allow being
+                Log.d(TAG, "preview is starting!");
+            // risk if preview is currently opening on background thread - don't want to open popup menu that would allow being
             // able to change settings that would then require restarting the preview
+            // still allow opening popup if preview is not started (but not starting in background) - in practice this means the
+            // preview failed to start, so can be useful to allow opening the popup to change modes (in case failing to start is
+            // due to a specific photo mode or other setting)
             return;
         }
 
