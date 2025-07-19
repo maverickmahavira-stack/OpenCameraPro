@@ -938,6 +938,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
         array.recycle();
     }
 
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -947,6 +948,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
+    @Override
     public void onPause() {
         super.onPause();
     }
