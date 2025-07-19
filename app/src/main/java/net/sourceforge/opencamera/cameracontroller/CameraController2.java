@@ -6916,7 +6916,8 @@ public class CameraController2 extends CameraController {
                 afBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
                 capture(afBuilder.build());
             }
-            catch(CameraAccessException e) {
+            catch(CameraAccessException | IllegalStateException e) {
+                // got IllegalStateException as a Google Play exception - this means the capture session is already closed
                 MyDebug.logStackTrace(TAG, "failed to autofocus", e);
                 state = STATE_NORMAL;
                 precapture_state_change_time_ms = -1;
