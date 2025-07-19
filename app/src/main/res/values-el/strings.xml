@@ -107,7 +107,7 @@
     <string name="preference_volume_keys">Πλήκτρα ρύθμισης ήχου</string>
     <string name="preference_audio_control">Ρυθμίσεις ελέγχου του ήχου</string>
     <string name="preference_audio_noise_control_sensitivity">Ευαισθησία ελέγχου του ήχου</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Επίπεδο θορύβου ευαισθησίας για τον ήχο</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Επίπεδο θορύβου ευαισθησίας για τον ήχο\n%s</string>
     <string name="preference_save_location">Χώρος αποθήκευσης</string>
     <string name="preference_save_location_summary">Φάκελος για αποθήκευση φωτογραφίας/βίντεο</string>
     <string name="preference_using_saf_summary">Αν θέλετε χρησιμοποιήστε την Πρόσβαση αποθήκευσης πλαισίου για την αποθήκευση φωτογραφιών και βίντεο</string>
@@ -141,7 +141,7 @@
     <string name="preference_show_angle_line">Εμφάνιση γωνιαίας γραμμής</string>
     <string name="preference_show_angle_line_summary">Εμφάνιση οριζόντιας επίπεδης γραμμής</string>
     <string name="preference_angle_highlight_color">Χρώμα Γωνίας/Υψόμετρου</string>
-    <string name="preference_angle_highlight_color_summary">Χρώμα επισήμανσης όταν η κάμερα είναι σχεδόν επίπεδη</string>
+    <string name="preference_angle_highlight_color_summary">Χρώμα επισήμανσης όταν η κάμερα είναι σχεδόν επίπεδη\n%s</string>
     <string name="preference_show_geo_direction">Εμφάνιση κατεύθυνσης πυξίδας</string>
     <string name="preference_show_geo_direction_summary">Εμφάνιση κατεύθυνσης πυξίδας στην οθόνη</string>
     <string name="preference_show_time">Εμφάνιση ώρας</string>

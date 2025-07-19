@@ -107,7 +107,7 @@
     <string name="preference_volume_keys">音量键功能</string>
     <string name="preference_audio_control">声控拍照</string>
     <string name="preference_audio_noise_control_sensitivity">麦克风灵敏度</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">使用语音识别时麦克风过滤噪声的阈值</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">使用语音识别时麦克风过滤噪声的阈值\n%s</string>
     <string name="preference_save_location">保存位置</string>
     <string name="preference_save_location_summary">用来保存照片/视频文件的文件夹</string>
     <string name="preference_using_saf_summary">是否使用存储访问架构保存照片和视频</string>
@@ -140,7 +140,7 @@
     <string name="preference_show_angle_line">显示角度线</string>
     <string name="preference_show_angle_line_summary">显示水平基准线</string>
     <string name="preference_angle_highlight_color">角度高亮颜色</string>
-    <string name="preference_angle_highlight_color_summary">当相机几乎是水平时的高亮颜色</string>
+    <string name="preference_angle_highlight_color_summary">当相机几乎是水平时的高亮颜色\n%s</string>
     <string name="preference_show_geo_direction">显示罗盘方向</string>
     <string name="preference_show_geo_direction_summary">在屏幕上显示该设备的罗盘方向</string>
     <string name="preference_show_time">显示时间</string>

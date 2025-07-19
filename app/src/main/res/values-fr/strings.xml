@@ -107,7 +107,7 @@
     <string name="preference_volume_keys">Touches de volumes</string>
     <string name="preference_audio_control">Option contrôle audio</string>
     <string name="preference_audio_noise_control_sensitivity">Sensibilité contrôle audio</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Niveau de la sensibilité sonore pour l\'option contrôle audio (bruit fort)</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Niveau de la sensibilité sonore pour l\'option contrôle audio (bruit fort)\n%s</string>
     <string name="preference_save_location">Dossier de stockage</string>
     <string name="preference_save_location_summary">Dossier où sont stockés les fichiers photo/vidéo</string>
     <string name="preference_using_saf_summary">Utilise le Storage Access Framework pour enregistrer les photos et vidéos</string>
@@ -140,7 +140,7 @@
     <string name="preference_show_angle_line">Montrer la ligne d\'angle</string>
     <string name="preference_show_angle_line_summary">Affiche une ligne de niveau horizontal</string>
     <string name="preference_angle_highlight_color">Couleur de surbrillance de la ligne d\'angle</string>
-    <string name="preference_angle_highlight_color_summary">Met la ligne d\'angle en surbrillance lorsque l\'appareil est presque de niveau</string>
+    <string name="preference_angle_highlight_color_summary">Met la ligne d\'angle en surbrillance lorsque l\'appareil est presque de niveau\n%s</string>
     <string name="preference_show_geo_direction">Afficher la boussole de direction</string>
     <string name="preference_show_geo_direction_summary">Affiche la boussole de direction de l\'appareil à l\'écran</string>
     <string name="preference_show_time">Afficher l\'heure</string>

@@ -108,7 +108,7 @@
     <string name="preference_volume_keys">Teclas de volume</string>
     <string name="preference_audio_control">Opções de controlo por áudio</string>
     <string name="preference_audio_noise_control_sensitivity">Sensibilidade do controlo por áudio</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Definir a sensibilidade do nível de ruído do áudio (ruído alto)</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Definir a sensibilidade do nível de ruído do áudio (ruído alto)\n%s</string>
     <string name="preference_save_location">Local de armazenamento</string>
     <string name="preference_save_location_summary">Pasta para guardar os ficheiros das fotografias/vídeos</string>
     <string name="preference_using_saf_summary">Optar por usar o Storage Access Framework para guardar fotografias e vídeos</string>
@@ -142,7 +142,7 @@
     <string name="preference_show_angle_line">Mostrar linha de ângulo</string>
     <string name="preference_show_angle_line_summary">Exibir linha do nível horizontal</string>
     <string name="preference_angle_highlight_color">Cor de realce do ângulo</string>
-    <string name="preference_angle_highlight_color_summary">Cor de realce para quando a câmera estiver quase nivelada</string>
+    <string name="preference_angle_highlight_color_summary">Cor de realce para quando a câmera estiver quase nivelada\n%s</string>
     <string name="preference_show_geo_direction">Mostrar direção da bússola</string>
     <string name="preference_show_geo_direction_summary">Exibir no ecrã a direção da bússola do dispositivo</string>
     <string name="preference_show_time">Mostrar hora</string>

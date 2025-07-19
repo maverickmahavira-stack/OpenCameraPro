@@ -109,7 +109,7 @@
     <string name="preference_audio_control">音訊控制選項</string>
     <!-- preference_audio_control_summary defined below -->
     <string name="preference_audio_noise_control_sensitivity">音訊控制敏感度</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">音訊（大的聲音）選項的聲音等級敏感度</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">音訊（大的聲音）選項的聲音等級敏感度\n%s</string>
     <string name="preference_save_location">儲存位置</string>
     <string name="preference_save_location_summary">用來儲存照片/影片檔的資料夾</string>
     <string name="preference_using_saf_summary">是否使用 Storage Access Framework 來儲存照片和影片。這個選項應該被啟用來允許儲存到外部 SD 卡。</string>
@@ -143,7 +143,7 @@
     <string name="preference_show_angle_line">顯示角度線</string>
     <string name="preference_show_angle_line_summary">顯示水平線</string>
     <string name="preference_angle_highlight_color">角度標示顏色</string>
-    <string name="preference_angle_highlight_color_summary">相機接近水平時的標示顏色</string>
+    <string name="preference_angle_highlight_color_summary">相機接近水平時的標示顏色\n%s</string>
     <string name="preference_show_geo_direction">顯示羅盤方向</string>
     <string name="preference_show_geo_direction_summary">在螢幕上顯示裝置的羅盤方向</string>
     <string name="preference_show_time">顯示時間</string>

@@ -137,7 +137,7 @@
     <string name="preference_show_angle_line">Açı hattı çizgisini göster</string>
     <string name="preference_show_angle_line_summary">Ufuk çizgisini göster</string>
     <string name="preference_angle_highlight_color">Açı hat rengi</string>
-    <string name="preference_angle_highlight_color_summary">Kamera sıfır seviyesine geldiğinde renklendir</string>
+    <string name="preference_angle_highlight_color_summary">Kamera sıfır seviyesine geldiğinde renklendir\n%s</string>
     <string name="preference_show_geo_direction">Pusula yönünü göster</string>
     <string name="preference_show_geo_direction_summary">Ekran üzerinde cihazın pusula yönünü göster</string>
     <string name="preference_show_time">Zamanı göster</string>

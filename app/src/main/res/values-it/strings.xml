@@ -109,7 +109,7 @@
     <string name="preference_audio_control">Opzioni controllo audio</string>
     <!-- preference_audio_control_summary defined below -->
     <string name="preference_audio_noise_control_sensitivity">Sensibilità controllo audio</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Opzione per sensibilità del livello di rumore per il controllo audio (forte rumore)</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Opzione per sensibilità del livello di rumore per il controllo audio (forte rumore)\n%s</string>
     <string name="preference_save_location">Posizione di salvataggio</string>
     <string name="preference_save_location_summary">Cartella in cui salvare foto e video</string>
     <string name="preference_using_saf_summary">Utilizza Storage Access Framework per il salvataggio di foto e video</string>
@@ -143,7 +143,7 @@
     <string name="preference_show_angle_line">Mostra orizzonte</string>
     <string name="preference_show_angle_line_summary">Mostra la linea dell\'orizzonte sullo schermo</string>
     <string name="preference_angle_highlight_color">Colore per evidenziare angolo/altitudine</string>
-    <string name="preference_angle_highlight_color_summary">Colore per evidenziare quando la camera raggiunge il livello</string>
+    <string name="preference_angle_highlight_color_summary">Colore per evidenziare quando la camera raggiunge il livello\n%s</string>
     <string name="preference_show_geo_direction">Mostra direzione bussola</string>
     <string name="preference_show_geo_direction_summary">Mostra la direzione della bussola sullo schermo</string>
     <string name="preference_show_time">Mostra data/ora</string>

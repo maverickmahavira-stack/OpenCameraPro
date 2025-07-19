@@ -109,7 +109,7 @@
     <string name="preference_audio_control">Aktywacja za pomocą dźwięków</string>
     <!-- preference_audio_control_summary defined below -->
     <string name="preference_audio_noise_control_sensitivity">Czułość sterowania dźwiękiem</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Poziom czułości na głośne dźwięki aktywujące aparat</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Poziom czułości na głośne dźwięki aktywujące aparat\n%s</string>
     <string name="preference_save_location">Lokalizacja zapisu</string>
     <string name="preference_save_location_summary">Katalog, do którego będą zapisywane pliki</string>
     <string name="preference_using_saf_summary">Używa Storage Access Framework do zapisu plików zdjęć i filmów</string>
@@ -143,7 +143,7 @@
     <string name="preference_show_angle_line">Linia poziomu</string>
     <string name="preference_show_angle_line_summary">Wyświetla poziomą linię</string>
     <string name="preference_angle_highlight_color">Kolor wyróżnienia kąta/wysokości</string>
-    <string name="preference_angle_highlight_color_summary">Wybrany kolor pokaże się, gdy kąt nachylenia aparatu będzie bliski poziomu</string>
+    <string name="preference_angle_highlight_color_summary">Wybrany kolor pokaże się, gdy kąt nachylenia aparatu będzie bliski poziomu\n%s</string>
     <string name="preference_show_geo_direction">Kompas</string>
     <string name="preference_show_geo_direction_summary">Wyświetla kompas na ekranie</string>
     <string name="preference_show_time">Czas</string>

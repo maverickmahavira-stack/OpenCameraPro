@@ -137,7 +137,7 @@
     <string name="preference_show_angle_line">Zobrazit úhlovou linku</string>
     <string name="preference_show_angle_line_summary">Zobrazovat vodorovnou vyrovnávací linku</string>
     <string name="preference_angle_highlight_color">Barva zvýraznění úhlu</string>
-    <string name="preference_angle_highlight_color_summary">Barva zvýraznění použita pokud je fotoaparát téměř vyrovnán</string>
+    <string name="preference_angle_highlight_color_summary">Barva zvýraznění použita pokud je fotoaparát téměř vyrovnán\n%s</string>
     <string name="preference_show_geo_direction">Zobrazit směr kompasu</string>
     <string name="preference_show_geo_direction_summary">Zobrazovat světový směr zařízení na obrazovce</string>
     <string name="preference_show_time">Zobrazit čas</string>

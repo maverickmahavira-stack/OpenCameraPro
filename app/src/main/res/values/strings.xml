@@ -109,7 +109,7 @@
     <string name="preference_audio_control">Audio control options</string>
     <!-- preference_audio_control_summary defined below -->
     <string name="preference_audio_noise_control_sensitivity">Audio control sensitivity</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Noise level sensitivity for audio (loud noise) option</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Noise level sensitivity for audio (loud noise) option\n%s</string>
     <string name="preference_save_location">Save location</string>
     <string name="preference_save_location_summary">Folder to save the photo/video files in</string>
     <string name="preference_using_saf" translatable="false">Storage Access Framework</string> <!-- not translated as it's referenced in the privacy policy, and unclear how this term should be translated -->
@@ -146,7 +146,7 @@
     <string name="preference_show_angle_line">Show angle line</string>
     <string name="preference_show_angle_line_summary">Display horizontal level line</string>
     <string name="preference_angle_highlight_color">Angle/altitude highlight color</string>
-    <string name="preference_angle_highlight_color_summary">Highlight color for when camera is nearly level</string>
+    <string name="preference_angle_highlight_color_summary">Highlight color for when camera is nearly level\n%s</string>
     <string name="preference_show_geo_direction">Show compass direction</string>
     <string name="preference_show_geo_direction_summary">Display the compass direction of the device on screen</string>
     <string name="preference_show_time">Show time</string>

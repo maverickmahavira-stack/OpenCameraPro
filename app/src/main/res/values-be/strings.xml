@@ -135,7 +135,7 @@
     <string name="preference_show_angle_line">Паказваць лінію нахілу</string>
     <string name="preference_show_angle_line_summary">Адлюстроўваць лінію нахілу камеры</string>
     <string name="preference_angle_highlight_color">Колер падсвятлення</string>
-    <string name="preference_angle_highlight_color_summary">Абярыце колер падсвятлення </string>
+    <string name="preference_angle_highlight_color_summary">Абярыце колер падсвятлення\n%s</string>
     <string name="preference_show_geo_direction">Паказваць кірунак компаса</string>
     <string name="preference_show_geo_direction_summary">Адлюстроўваць напрамак компаса на экране прылады</string>
     <string name="preference_show_time">Паказваць час</string>

@@ -109,7 +109,7 @@
     <string name="preference_audio_control">Možnosti nadzora zvoka</string>
 	<!-- preference_audio_control_summary defined below -->
     <string name="preference_audio_noise_control_sensitivity">Nadzor občutljivosti zvoka</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Občutljivost ravni za možnost zvoka (glasen zvok)</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Občutljivost ravni za možnost zvoka (glasen zvok)\n%s</string>
     <string name="preference_save_location">Mesto za shranjevanje</string>
     <string name="preference_save_location_summary">Mapa za shranjevanje datotek fotografij/videoposnetkov</string>
     <string name="preference_using_saf_summary">Ali naj se za shranjevanje fotografij in videoposnetkov uporabi ogrodje za dostop do pomnilniške naprave.  Omogočite to, da dovolite shranjevanje na zunanje kartice SD.  Na Androidih 10+ morate to možnost omogočiti, če želite shranjevati v mapo zunaj mape DCIM.</string>
@@ -143,7 +143,7 @@
     <string name="preference_show_angle_line">Prikaži črto kota</string>
     <string name="preference_show_angle_line_summary">Prikaži črto vodoravne ravni</string>
     <string name="preference_angle_highlight_color">Barva poudarjanja kota/višine</string>
-    <string name="preference_angle_highlight_color_summary">Barva poudarjanja, ko je fotoaparat skoraj vodoraven</string>
+    <string name="preference_angle_highlight_color_summary">Barva poudarjanja, ko je fotoaparat skoraj vodoraven\n%s</string>
     <string name="preference_show_geo_direction">Prikaži smer neba</string>
     <string name="preference_show_geo_direction_summary">Na zaslonu prikaži smer neba naprave</string>
     <string name="preference_show_time">Prikaži čas</string>

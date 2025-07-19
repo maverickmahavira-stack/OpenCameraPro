@@ -108,7 +108,7 @@
     <string name="preference_volume_keys">Phím âm lượng</string>
     <string name="preference_audio_control">Chụp bằng tiếng</string>
     <string name="preference_audio_noise_control_sensitivity">Độ nhạy chụp bằng tiếng</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Độ nhạy cho tùy chọn chụp bằng tiếng động lớn</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Độ nhạy cho tùy chọn chụp bằng tiếng động lớn\n%s</string>
     <string name="preference_save_location">Vị trí lưu</string>
     <string name="preference_save_location_summary">Thư mục lưu tệp tin ảnh/video</string>
     <string name="preference_using_saf_summary">Sử dụng Khung Truy cập Lưu trữ để lưu ảnh và video. Nên kích hoạt để có thể lưu vào thẻ nhớ ngoài.</string>
@@ -142,7 +142,7 @@
     <string name="preference_show_angle_line">Hiển thị đường góc</string>
     <string name="preference_show_angle_line_summary">Hiện đường ngang</string>
     <string name="preference_angle_highlight_color">Làm nổi bật góc/độ cao</string>
-    <string name="preference_angle_highlight_color_summary">Tô màu khi máy ảnh ở mức gần</string>
+    <string name="preference_angle_highlight_color_summary">Tô màu khi máy ảnh ở mức gần\n%s</string>
     <string name="preference_show_geo_direction">Hiển thị hướng la bàn</string>
     <string name="preference_show_geo_direction_summary">Hiện hướng la bàn của thiết bị trên màn hình</string>
     <string name="preference_show_time">Hiển thị thời gian</string>

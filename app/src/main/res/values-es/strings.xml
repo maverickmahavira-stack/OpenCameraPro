@@ -108,7 +108,7 @@
     <string name="preference_volume_keys">Teclas de volumen</string>
     <string name="preference_audio_control">Opciones de control de audio</string>
     <string name="preference_audio_noise_control_sensitivity">Sensibilidad de control de audio</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Sensibilidad al nivel de ruido para la opción de audio (ruido fuerte)</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Sensibilidad al nivel de ruido para la opción de audio (ruido fuerte)\n%s</string>
     <string name="preference_save_location">Carpeta de almacenamiento</string>
     <string name="preference_save_location_summary">Carpeta para guardar los archivos de foto/video</string>
     <string name="preference_using_saf_summary">Utilice el Framework de Acceso del Almacenamiento para guardar fotos y videos</string>
@@ -142,7 +142,7 @@
     <string name="preference_show_angle_line">Mostrar la línea del ángulo</string>
     <string name="preference_show_angle_line_summary">Muestra línea de nivel horizontal</string>
     <string name="preference_angle_highlight_color">Color de resaltado de ángulo/altitud</string>
-    <string name="preference_angle_highlight_color_summary">Color de resalte cuando la cámara está casi nivelada</string>
+    <string name="preference_angle_highlight_color_summary">Color de resalte cuando la cámara está casi nivelada\n%s</string>
     <string name="preference_show_geo_direction">Mostrar la dirección de la brújula</string>
     <string name="preference_show_geo_direction_summary">Muestra la dirección de la brújula del dispositivo en la pantalla</string>
     <string name="preference_show_time">Mostrar hora</string>

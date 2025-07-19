@@ -109,7 +109,7 @@
     <string name="preference_audio_control">Настройки управления звуком</string>
     <!-- preference_audio_control_summary defined below -->
     <string name="preference_audio_noise_control_sensitivity">Чувствительность управления звуком</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Чувствительность уровня шума для управления звуком (опция \"громкий шум\")</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Чувствительность уровня шума для управления звуком (опция \"громкий шум\")\n%s</string>
     <string name="preference_save_location">Папка сохранения</string>
     <string name="preference_save_location_summary">Имя папки для сохранения фото и видео (также может быть полный путь)</string>
     <string name="preference_using_saf_summary">Использовать Storage Access Framework для сохранения фото и видео</string>
@@ -143,7 +143,7 @@
     <string name="preference_show_angle_line">Показать линию уровня</string>
     <string name="preference_show_angle_line_summary">Отображение горизонтальной линии уровня</string>
     <string name="preference_angle_highlight_color">Цвет линии уровня</string>
-    <string name="preference_angle_highlight_color_summary">Цвет линии уровня, близкого к горизонтальному</string>
+    <string name="preference_angle_highlight_color_summary">Цвет линии уровня, близкого к горизонтальному\n%s</string>
     <string name="preference_show_geo_direction">Показать направление компаса</string>
     <string name="preference_show_geo_direction_summary">Отображение направления компаса на экране</string>
     <string name="preference_show_time">Показать время</string>
