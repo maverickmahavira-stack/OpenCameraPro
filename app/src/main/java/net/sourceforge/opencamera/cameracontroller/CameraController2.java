@@ -6095,8 +6095,8 @@ public class CameraController2 extends CameraController {
                         }
                         function.call();
                     }
-                    catch(CameraAccessException | NullPointerException | IllegalArgumentException e) {
-                        // see notes below in createCaptureSession() for why we also catch NullPointerException and IllegalArgumentException
+                    catch(CameraAccessException | NullPointerException | IllegalArgumentException | UnsupportedOperationException e) {
+                        // see notes below in createCaptureSession() for why we also catch NullPointerException, IllegalArgumentException, UnsupportedOperationException
                         // need to catch separately when wait_until_started==false due to this running on a background thread
                         MyDebug.logStackTrace(TAG, "exception create extension session on background thread", e);
                         //myStateCallback.onConfigureFailed();
@@ -6475,6 +6475,8 @@ public class CameraController2 extends CameraController {
                                 Log.e(TAG, "camera is no longer open");
                                 return;
                             }
+                            /*if( true )
+                                throw new UnsupportedOperationException(); // test*/
                             camera.createExtensionSession(extensionConfiguration);
                         }
                     }, on_failed);
@@ -6617,6 +6619,11 @@ public class CameraController2 extends CameraController {
             // have had crashes from Google Play, from both createConstrainedHighSpeedCaptureSession and
             // createCaptureSession
             MyDebug.logStackTrace(TAG, "IllegalArgumentException trying to create capture session", e);
+            throw new CameraControllerException();
+        }
+        catch(UnsupportedOperationException e) {
+            // have had crashes from Google Play, from createExtensionSession
+            MyDebug.logStackTrace(TAG, "UnsupportedOperationException trying to create capture session", e);
             throw new CameraControllerException();
         }
     }
