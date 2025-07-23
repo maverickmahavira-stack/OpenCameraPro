@@ -11994,7 +11994,32 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     public void testTakePhotoPanorama() throws InterruptedException {
         Log.d(TAG, "testTakePhotoPanorama");
 
+        boolean has_zoom = mPreview.supportsZoom(); // record before switching to panorama mode, so we check if zoom is available (this will be false once in panorama mode)
+
         subTestTakePhotoPanorama(false, false, false);
+
+        // check zoom seekbar doesn't show
+        View zoomSeekBar = mActivity.findViewById(net.sourceforge.opencamera.R.id.zoom_seekbar);
+        assertEquals(zoomSeekBar.getVisibility(), View.INVISIBLE);
+
+        // switch to video mode, check zoom now shows
+        View switchVideoButton = mActivity.findViewById(net.sourceforge.opencamera.R.id.switch_video);
+        clickView(switchVideoButton);
+        waitUntilCameraOpened();
+        assertTrue(mPreview.isVideo());
+        assertEquals(zoomSeekBar.getVisibility(), has_zoom ? View.VISIBLE : View.INVISIBLE);
+
+        // pause/resume, check still in video mode, and zoom still available
+        pauseAndResume();
+        assertTrue(mPreview.isVideo());
+        zoomSeekBar = mActivity.findViewById(net.sourceforge.opencamera.R.id.zoom_seekbar);
+        assertEquals(zoomSeekBar.getVisibility(), has_zoom ? View.VISIBLE : View.INVISIBLE);
+
+        // restart, check still in video mode, and zoom still available
+        restart();
+        assertTrue(mPreview.isVideo());
+        zoomSeekBar = mActivity.findViewById(net.sourceforge.opencamera.R.id.zoom_seekbar);
+        assertEquals(zoomSeekBar.getVisibility(), has_zoom ? View.VISIBLE : View.INVISIBLE);
     }
 
     /* Test for panorama photo mode, taking max number of panorama shots.

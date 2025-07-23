@@ -277,12 +277,15 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
     // if applicationInterface.allowZoom() returns false, then has_zoom will be false, but camera_controller_supports_zoom
     // supports whether the camera controller supported zoom
+    // similarly for camera_controller_max_zoom_factor, camera_controller_zoom_ratios - needed for initZoom()
     private boolean camera_controller_supports_zoom;
     private boolean has_zoom;
+    private int camera_controller_max_zoom_factor;
     private int max_zoom_factor;
+    private List<Integer> camera_controller_zoom_ratios;
+    private List<Integer> zoom_ratios;
     private final GestureDetector gestureDetector;
     private final ScaleGestureDetector scaleGestureDetector;
-    private List<Integer> zoom_ratios;
     private float minimum_focus_distance;
     private boolean touch_was_multitouch;
     private float touch_orig_x;
@@ -1656,8 +1659,10 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         camera_controller_supports_zoom = false;
         has_zoom = false;
         max_zoom_factor = 0;
-        minimum_focus_distance = 0.0f;
+        camera_controller_max_zoom_factor = 0;
         zoom_ratios = null;
+        camera_controller_zoom_ratios = null;
+        minimum_focus_distance = 0.0f;
         faces_detected = null;
         supports_face_detection = false;
         using_face_detection = false;
@@ -2413,6 +2418,18 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         }
     }
 
+    private void initZoom() {
+        this.has_zoom = camera_controller_supports_zoom && applicationInterface.allowZoom();
+        if( this.has_zoom ) {
+            this.max_zoom_factor = camera_controller_max_zoom_factor;
+            this.zoom_ratios = camera_controller_zoom_ratios;
+        }
+        else {
+            this.max_zoom_factor = 0;
+            this.zoom_ratios = null;
+        }
+    }
+
     private void initCameraParameters() throws CameraControllerException {
         if( MyDebug.LOG )
             Log.d(TAG, "initCameraParameters()");
@@ -2508,15 +2525,9 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             // stored supported_extensions - otherwise starting up in an extension photo mode will still
             // show zoom controls even if zoom not supported)
             this.camera_controller_supports_zoom = camera_features.is_zoom_supported;
-            this.has_zoom = camera_features.is_zoom_supported && applicationInterface.allowZoom();
-            if( this.has_zoom ) {
-                this.max_zoom_factor = camera_features.max_zoom;
-                this.zoom_ratios = camera_features.zoom_ratios;
-            }
-            else {
-                this.max_zoom_factor = 0;
-                this.zoom_ratios = null;
-            }
+            this.camera_controller_max_zoom_factor = camera_features.max_zoom;
+            this.camera_controller_zoom_ratios = camera_features.zoom_ratios;
+            initZoom();
         }
     }
 
@@ -4979,6 +4990,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         }
 
         if( is_video != old_is_video ) {
+            initZoom(); // needed for when in Panorama mode, but we're in video, when starting up, as zoom should still be shown - see testTakePhotoPanorama
             setFocusPref(false); // first restore the saved focus for the new photo/video mode; don't do autofocus, as it'll be cancelled when restarting preview
 			/*if( !is_video ) {
 				// changing from video to photo mode
