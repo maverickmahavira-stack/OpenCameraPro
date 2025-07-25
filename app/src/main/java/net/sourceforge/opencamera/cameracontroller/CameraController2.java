@@ -2756,14 +2756,20 @@ public class CameraController2 extends CameraController {
         else if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ) {
             // use CONTROL_ZOOM_RATIO_RANGE on Android 11+, to support multiple cameras with zoom ratios
             // less than 1
-            Range<Float> zoom_ratio_range = characteristics.get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE);
-            if( zoom_ratio_range != null ) {
-                min_zoom = zoom_ratio_range.getLower();
-                max_zoom = zoom_ratio_range.getUpper();
+            try {
+                Range<Float> zoom_ratio_range = characteristics.get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE);
+                if( zoom_ratio_range != null ) {
+                    min_zoom = zoom_ratio_range.getLower();
+                    max_zoom = zoom_ratio_range.getUpper();
+                }
+                else {
+                    if( MyDebug.LOG )
+                        Log.d(TAG, "zoom_ratio_range not supported");
+                }
             }
-            else {
-                if( MyDebug.LOG )
-                    Log.d(TAG, "zoom_ratio_range not supported");
+            catch(AssertionError e) {
+                // have had this crash from characteristics.get(CameraCharacteristics.CONTROL_ZOOM_RATIO_RANGE) on Google Play for some older Samsung Galaxy A* and Nokia devices
+                MyDebug.logStackTrace(TAG, "failed to CONTROL_ZOOM_RATIO_RANGE", e);
             }
         }
         else {
