@@ -2854,6 +2854,32 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertEquals(0, seekBar.getProgress());
         assertEquals(mPreview.getCurrentExposure(), mActivity.getExposureSeekbarValue(seekBar.getProgress()));
 
+        // test volume keys
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mActivity);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(PreferenceKeys.VolumeKeysPreferenceKey, "volume_exposure");
+        editor.apply();
+        // volume up
+        while( mPreview.getCurrentExposure() < mPreview.getMaximumExposure() ) {
+            Log.d(TAG, "use volume key to increase exposure");
+            int exposure = mPreview.getCurrentExposure();
+            this.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_UP);
+            assertEquals(exposure+1, mPreview.getCurrentExposure());
+        }
+        // one more shouldn't change exposure
+        this.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_UP);
+        assertEquals(mPreview.getMaximumExposure(), mPreview.getCurrentExposure());
+        // volume down
+        while( mPreview.getCurrentExposure() > mPreview.getMinimumExposure() ) {
+            Log.d(TAG, "use volume key to decrease exposure");
+            int exposure = mPreview.getCurrentExposure();
+            this.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_DOWN);
+            assertEquals(exposure-1, mPreview.getCurrentExposure());
+        }
+        // one more shouldn't change exposure
+        this.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_DOWN);
+        assertEquals(mPreview.getMinimumExposure(), mPreview.getCurrentExposure());
+
         // test the exposure button clears and reopens without changing exposure level
         clickView(exposureButton);
         assertEquals(exposureButton.getVisibility(), View.VISIBLE);
