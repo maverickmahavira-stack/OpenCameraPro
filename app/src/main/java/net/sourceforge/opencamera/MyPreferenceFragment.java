@@ -1035,7 +1035,6 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
      *  summary.
      */
     static void setSummary(Preference pref) {
-        //noinspection DuplicateCondition
         if( pref instanceof EditTextPreference ) {
             /* We have a runtime check for using EditTextPreference - we don't want these due to importance of
              * supporting the Google Play emoji policy (see comment in MyEditTextPreference.java) - and this
@@ -1046,8 +1045,24 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
             throw new RuntimeException("detected an EditTextPreference: " + pref.getKey() + " pref: " + pref);
         }
 
-        //noinspection DuplicateCondition
-        if( pref instanceof EditTextPreference || pref instanceof MyEditTextPreference) {
+        if( pref.getKey().equals("preference_save_location") ) {
+            // can't use %s (as only supported for ListPreference), so handle this directly
+            MainActivity main_activity = (MainActivity)pref.getContext();
+            String folder_name;
+            if( main_activity.getStorageUtils().isUsingSAF() ) {
+                folder_name = main_activity.getStorageUtils().getSaveLocationSAF();
+            }
+            else {
+                folder_name = main_activity.getStorageUtils().getSaveLocation();
+            }
+            folder_name = main_activity.getHumanReadableSaveFolder(folder_name);
+            String summary = main_activity.getResources().getString(R.string.preference_save_location_summary);
+            if( !folder_name.isEmpty() ) {
+                summary += "\n" + folder_name;
+            }
+            pref.setSummary(summary);
+        }
+        else if( pref instanceof EditTextPreference || pref instanceof MyEditTextPreference ) {
             // %s only supported for ListPreference
             // we also display the usual summary if no preference value is set
             if( pref.getKey().equals("preference_exif_artist") ||

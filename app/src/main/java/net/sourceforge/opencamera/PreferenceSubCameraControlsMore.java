@@ -127,6 +127,8 @@ public class PreferenceSubCameraControlsMore extends PreferenceSubScreen {
                         else {
                             if( MyDebug.LOG )
                                 Log.d(TAG, "saf is now disabled");
+                            // need to update the summary, as switching back to non-SAF folder
+                            MyPreferenceFragment.setSummary(findPreference("preference_save_location"));
                         }
                     }
                     return false;
@@ -191,6 +193,7 @@ public class PreferenceSubCameraControlsMore extends PreferenceSubScreen {
             });
         }
 
+        // preference_save_location done in onResume
         MyPreferenceFragment.setSummary(findPreference("preference_save_photo_prefix"));
         MyPreferenceFragment.setSummary(findPreference("preference_save_video_prefix"));
 
@@ -198,6 +201,14 @@ public class PreferenceSubCameraControlsMore extends PreferenceSubScreen {
 
         if( MyDebug.LOG )
             Log.d(TAG, "onCreate done");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // we need to call this onResume too, to handle updating the summary when changing location via SAF dialoga
+        MyPreferenceFragment.setSummary(findPreference("preference_save_location"));
     }
 
     /** Programmatically set up dependencies for preference types (e.g., ListPreference) that don't

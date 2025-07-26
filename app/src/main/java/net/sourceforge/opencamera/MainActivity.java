@@ -5399,7 +5399,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
 
     /** Returns a human readable string for the save_folder (as stored in the preferences).
      */
-    private String getHumanReadableSaveFolder(String save_folder) {
+    String getHumanReadableSaveFolder(String save_folder) {
         if( applicationInterface.getStorageUtils().isUsingSAF() ) {
             // try to get human readable form if possible
             String file_name = applicationInterface.getStorageUtils().getFilePathFromDocumentUriSAF(Uri.parse(save_folder), true);
