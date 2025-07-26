@@ -1672,12 +1672,33 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
                     }
                 }
             }
+
+            this.announceCameraForAccessibility(cameraId, cameraIdSPhysical);
         }
 
         push_switched_camera = false; // just in case
 
         if( MyDebug.LOG ) {
             Log.d(TAG, "onResume: total time to resume: " + (System.currentTimeMillis() - debug_time));
+        }
+    }
+
+    /** Give details on the camera for talkback. Should be called when resuming (but not every time the
+     *  camera is reopened), or if switching camera.
+     */
+    private void announceCameraForAccessibility(int cameraId, String cameraIdSPhysical) {
+        String description = cameraIdSPhysical != null ?
+                preview.getCameraControllerManager().getDescription(null, this, cameraIdSPhysical, true, false) :
+                preview.getCameraControllerManager().getDescription(this, cameraId);
+        if( description != null ) {
+            String talkback_string = description;
+            if( cameraIdSPhysical == null )
+                talkback_string += " " + getResources().getString(R.string.camera_id) + " " + cameraId;
+            else
+                talkback_string += " " + getResources().getString(R.string.lens) + " " + cameraIdSPhysical;
+            if( MyDebug.LOG )
+                Log.d(TAG, "talkback_string: " + talkback_string);
+            this.preview.getView().announceForAccessibility(talkback_string);
         }
     }
 
@@ -2451,6 +2472,7 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         switchMultiCameraButton.setEnabled(true);
         // no need to call mainUI.setSwitchCameraContentDescription - this will be called from Preview.cameraSetup when the
         // new camera is opened
+        this.announceCameraForAccessibility(cameraId, cameraIdSPhysical);
     }
 
     /**
