@@ -4420,7 +4420,7 @@ public class ImageSaver extends Thread {
         }
         setCustomExif(exif, custom_tag_artist, custom_tag_copyright);
 
-        if( store_location && ( !exif.hasAttribute(ExifInterface.TAG_GPS_LATITUDE) || !exif.hasAttribute(ExifInterface.TAG_GPS_LATITUDE) ) ) {
+        if( store_location && ( !exif.hasAttribute(ExifInterface.TAG_GPS_LATITUDE) || !exif.hasAttribute(ExifInterface.TAG_GPS_LONGITUDE) ) ) {
             // We need this when using camera extensions (since Camera API doesn't support location for camera extensions).
             // But some devices (e.g., Pixel 6 Pro with Camera2 API) seem to not store location data, so we always check if we need to add it.
             // fine to ignore request.remove_device_exif, as this is a separate user option
