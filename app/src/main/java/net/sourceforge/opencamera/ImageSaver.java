@@ -4420,12 +4420,35 @@ public class ImageSaver extends Thread {
         }
         setCustomExif(exif, custom_tag_artist, custom_tag_copyright);
 
-        if( store_location && ( !exif.hasAttribute(ExifInterface.TAG_GPS_LATITUDE) || !exif.hasAttribute(ExifInterface.TAG_GPS_LONGITUDE) ) ) {
-            // We need this when using camera extensions (since Camera API doesn't support location for camera extensions).
-            // But some devices (e.g., Pixel 6 Pro with Camera2 API) seem to not store location data, so we always check if we need to add it.
+        boolean force_location = false; // whether we need to add location data
+        if( store_location ) {
+            // Normally if geotagging is enabled, location should have already been added via the Camera API.
+            // But we need this when using camera extensions (since Camera API doesn't support location for camera extensions).
+            // And some devices (e.g., Pixel 6 Pro with Camera2 API) seem to not store location data, so we always check if we need to add it.
+            // Similarly Fairphone 5 always has longitude stored as 0.0.
             // fine to ignore request.remove_device_exif, as this is a separate user option
+            if( !exif.hasAttribute(ExifInterface.TAG_GPS_LATITUDE) || !exif.hasAttribute(ExifInterface.TAG_GPS_LONGITUDE) ) {
+                if( MyDebug.LOG )
+                    Log.d(TAG, "force location as not present in exif");
+                force_location = true;
+            }
+            else {
+                double [] lat_long = exif.getLatLong();
+                if( lat_long == null ) {
+                    if( MyDebug.LOG )
+                        Log.d(TAG, "force location as not present in exif");
+                    force_location = true;
+                }
+                else if( lat_long[0] == 0.0 || lat_long[1] == 0.0 ) {
+                    if( MyDebug.LOG )
+                        Log.d(TAG, "force location as longitude or latitude is 0.0");
+                    force_location = true;
+                }
+            }
+        }
+        if( force_location ) {
             if( MyDebug.LOG )
-                Log.d(TAG, "store location"); // don't log location for privacy reasons!
+                Log.d(TAG, "force store location"); // don't log location for privacy reasons!
             exif.setGpsInfo(location);
         }
 
@@ -4563,7 +4586,7 @@ public class ImageSaver extends Thread {
     /** Whether we need to fix up issues with location.
      *  See comments in fixGPSTimestamp(), where some devices with Camera2 need fixes for TAG_GPS_DATESTAMP and TAG_GPS_TIMESTAMP.
      *  Also some devices (e.g. Pixel 6 Pro) have problem that location is not stored in images with Camera2 API, so we need to
-     *  enter modifyExif() to add it if not present.
+     *  enter modifyExif() to add it if not present; similarly Fairphone 5 needs correcting due to storing longitude as 0.0.
      */
     private boolean needGPSExifFix(boolean is_jpeg, boolean using_camera2, boolean store_location) {
         if( is_jpeg && using_camera2 ) {
