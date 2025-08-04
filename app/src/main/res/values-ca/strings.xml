@@ -109,7 +109,7 @@
     <string name="preference_audio_control">Opcions de control d\'àudio</string>
     <!-- preference_audio_control_summary defined below -->
     <string name="preference_audio_noise_control_sensitivity">Sensibilitat de control d\'àudio</string>
-    <string name="preference_audio_noise_control_sensitivity_summary">Sensibilitat al nivell de soroll per a l\'opció d\'àudio (soroll fort)</string>
+    <string name="preference_audio_noise_control_sensitivity_summary">Sensibilitat al nivell de soroll per a l\'opció d\'àudio (soroll fort)\n%s</string>
     <string name="preference_save_location">Ubicació on desar</string>
     <string name="preference_save_location_summary">Carpeta on es desaran les fotos/vídeos</string>
     <string name="preference_using_saf_summary">Defineix si s\'usa o no l\'Storage Access Framework per desar fotos i vídeos. S\'hauria d\'habilitar per permetre desar en targetes SD externes. En Android 10 i posteriors aquesta opció s\'ha d\'habilitar si vols desar en una carpeta fora de DCIM.</string>
@@ -134,8 +134,6 @@
     <string name="preference_immersive_mode">Mode immersiu</string>
     <string name="preference_show_zoom">Mostra el zoom</string>
     <string name="preference_show_zoom_summary">Mostra el nivell de zoom actual de la cámara a la pantalla (en fer zoom)</string>
-    <string name="preference_show_zoom_controls">Mostra el control de zoom -/+</string>
-    <string name="preference_show_zoom_controls_summary">Mostra els botons per al control del zoom -/+</string>
     <string name="preference_show_zoom_slider_controls">Mostra el control lliscant del zoom</string>
     <string name="preference_show_zoom_slider_controls_summary">Mostra el control lliscant per gestionar el zoom</string>
     <string name="preference_show_iso">Mostra l\'ISO</string>
@@ -147,7 +145,7 @@
     <string name="preference_show_angle_line">Mostra la línia de l\'angle</string>
     <string name="preference_show_angle_line_summary">Mostra la línia de nivell horitzontal</string>
     <string name="preference_angle_highlight_color">Color de ressalt de l\'angle/altura</string>
-    <string name="preference_angle_highlight_color_summary">Color de ressalt quan la càmera està gairebé anivellada</string>
+    <string name="preference_angle_highlight_color_summary">Color de ressalt quan la càmera està gairebé anivellada\n%s</string>
     <string name="preference_show_geo_direction">Mostra la direcció de brúixola</string>
     <string name="preference_show_geo_direction_summary">Mostra en pantalla la direcció de brúixola del dispositiu</string>
     <string name="preference_show_time">Mostra l\'hora</string>
