@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <string-array name="focus_mode_icons">
+    <string-array name="focus_mode_icons">
         <item>drawable/focus_mode_auto</item>
         <item>drawable/focus_mode_infinity</item>
         <item>drawable/baseline_filter_vintage_white_48</item>
@@ -226,7 +226,7 @@
         <item>preference_stamp_style_plain</item>
         <item>preference_stamp_style_shadowed</item>
         <item>preference_stamp_style_background</item>
-    </string-array>    
+    </string-array>
     <string-array name="preference_video_restart_entries">
         <item>No repeteixis</item>
         <item>Repeteix 1 cop</item>
