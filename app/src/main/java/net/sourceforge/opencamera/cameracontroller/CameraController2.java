@@ -2942,6 +2942,16 @@ public class CameraController2 extends CameraController {
             Log.d(TAG, "capabilities_10bit?: " + capabilities_10bit);
         }
 
+        /*if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ) {
+            boolean supports_autoframing = false;
+            Boolean bool = characteristics.get(CameraCharacteristics.CONTROL_AUTOFRAMING_AVAILABLE);
+            if( bool != null && bool) {
+                supports_autoframing = true;
+            }
+            if( MyDebug.LOG )
+                Log.d(TAG, "supports_autoframing?: " + supports_autoframing);
+        }*/
+
         StreamConfigurationMap configs;
         try {
             configs = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
@@ -8392,6 +8402,9 @@ public class CameraController2 extends CameraController {
             previewIsVideoMode = true;
             previewBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT, CaptureRequest.CONTROL_CAPTURE_INTENT_VIDEO_RECORD);
             camera_settings.setupBuilder(previewBuilder, false);
+            /*if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ) {
+                previewBuilder.set(CaptureRequest.CONTROL_AUTOFRAMING, CaptureRequest.CONTROL_AUTOFRAMING_ON); // test
+            }*/
             createCaptureSession(true, null, null, video_recorder, want_photo_video_recording);
         }
         catch(CameraAccessException e) {
