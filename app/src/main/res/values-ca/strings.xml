@@ -362,7 +362,7 @@
     <string name="preference_show_geo_direction_lines">Mostra línies de direcció</string>
     <string name="preference_show_geo_direction_lines_summary">Mostra les línies de direcció de la brúixola</string>
     <string name="preference_video_subtitle">Subtítols al vídeo</string>
-    <string name="preference_video_subtitle_summary">Crea un fitxer de subtítols (.SRT) que emmagatzema la data i l\'hora, també la informació del GPS si s\'han habilitat els permisos d\'ubicació/direcció. (En Android 11 i posteriors per poder usar aquesta opció cal habilitar "Més controls de càmera.../Storage Access Framework")\n%s</string>
+    <string name="preference_video_subtitle_summary">Crea un fitxer de subtítols (.SRT) que emmagatzema la data i l\'hora, també la informació del GPS si s\'han habilitat els permisos d\'ubicació/direcció. (En Android 11 i posteriors per poder usar aquesta opció cal habilitar "Més controls de càmera…/Storage Access Framework")\n%s</string>
 
     <string name="duration_unlimited">Il·limitada</string>
     <string name="duration_3s">3 segons</string>
