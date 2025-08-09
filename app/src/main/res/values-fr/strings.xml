@@ -218,8 +218,6 @@
     <string name="preference_category_online">Divers</string>
     <string name="preference_online_help">Aide en ligne</string>
     <string name="preference_online_help_summary">Ouvre le site web de Open Camera dans votre navigateur</string>
-    <string name="preference_donate">Faire un don pour soutenir le développement</string>
-    <string name="preference_donate_summary">Si vous aimez ce logiciel, n\'hésitez pas à faire un don. Vous pouvez le faire via l\'achat de mon «\u00A0application de don\u00A0» - Cliquer sur cette option va ouvrir la page de l\'application de don. Merci\u00A0!</string>
     <string name="preference_use_camera2">Utiliser l\'API Camera2</string>
     <string name="preference_use_camera2_summary">Active l\'API Camera2 - permet d\'utiliser des fonctionnalités supplémentaires, mais reste encore expérimental (peut provoquer un redémarrage)</string>
     <string name="preference_about">À propos</string>

@@ -223,8 +223,6 @@
     <string name="preference_category_online">Varie</string>
     <string name="preference_online_help">Aiuto online</string>
     <string name="preference_online_help_summary">Apre il sito web di Open Camera nel browser</string>
-    <string name="preference_donate">Dona per supportare lo sviluppo</string>
-    <string name="preference_donate_summary">Se questa applicazione ti piace, considera la possibilità di fare una donazione. Puoi farlo comprando la mia \"app donazione\" - cliccando su questa opzione aprirai la pagina per la donazione. Grazie!</string>
     <string name="preference_use_camera2">Usa le API Camera2</string>
     <string name="preference_use_camera2_summary">Abilita caratteristiche extra come la modalità manuale per esposizione, messa a fuoco, bilanciamento del bianco, e RAW (se supportato), ma potrebbe non funzionare correttamente su tutti i modelli (potrebbe causare un riavvio)</string>
     <string name="preference_about">Informazioni</string>
@@ -435,7 +433,6 @@
     <string name="color_effect_whiteboard">Lavagna bianca</string>
 
     <string name="whats_new">Novità:</string>
-    <string name="donate">Donazioni</string>
 
     <!-- for accessibility, these strings for face detection will typically be spoken, e.g., through Google Talkback -->
     <string name="face_detected">volto</string>

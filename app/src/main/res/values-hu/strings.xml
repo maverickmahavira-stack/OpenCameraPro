@@ -222,8 +222,6 @@
     <string name="preference_category_online">Egyéb</string>
     <string name="preference_online_help">Online súgó</string>
     <string name="preference_online_help_summary">Open Camera weboldal megnyitása böngészőben</string>
-    <string name="preference_donate">Támogasd a fejlesztést adománnyal</string>
-    <string name="preference_donate_summary">A tetszik az alkalmazás, fontold meg adomány küldését a fejlesztés támogatására. Ezt a „támogatói alkalmazás” megvásárlásával teheted meg – kattints ide, hogy megnyisd a támogató alkalmazás oldalát. Köszönjük!</string>
     <string name="preference_use_camera2">Camera2 API használata</string>
     <string name="preference_use_camera2_summary">Lehetővé teszi az Camera2 API használatát - extra funkciókat kínál, de nem minden eszközön működik megfelelően (újraindulást eredményez)</string>
     <string name="preference_about">Névjegy</string>

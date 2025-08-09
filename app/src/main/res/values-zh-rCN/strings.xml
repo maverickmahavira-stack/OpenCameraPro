@@ -214,8 +214,6 @@
     
     <string name="preference_category_online">杂项</string>
     <string name="preference_online_help">在线帮助</string>
-    <string name="preference_donate">捐赠以支持开发</string>
-    <string name="preference_donate_summary">如果您喜欢这个程序，可以通过购买我的“捐助 app”向我捐助。点击此选项将打开我的“捐助 app”页面。谢谢！</string>
     <string name="preference_use_camera2">使用 Camera2 API</string>
     <string name="preference_use_camera2_summary">启用 Camera2 API - 提供附加功能，但当前处于实验阶段 (会引起重启)</string>
     <string name="preference_about">关于</string>
@@ -536,7 +534,6 @@
     <string name="color_effect_whiteboard">白板</string>
 
     <string name="whats_new">新功能：</string>
-    <string name="donate">捐赠</string>
 
     <!-- for accessibility, these strings for face detection will typically be spoken, e.g., through Google Talkback -->
     <string name="face_detected">人脸</string>

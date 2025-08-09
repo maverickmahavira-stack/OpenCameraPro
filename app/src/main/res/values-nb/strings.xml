@@ -222,8 +222,6 @@
     <string name="preference_category_online">Diverse</string>
     <string name="preference_online_help">Netthjelp</string>
     <string name="preference_online_help_summary">Gå til Open Camera-nettsiden i nettleseren din.</string>
-    <string name="preference_donate">Doner for å støtte utviklingen.</string>
-    <string name="preference_donate_summary">Hvis du liker denne appen, så tenk gjerne på om du vil gi meg en donasjon for å støtte utviklingen. Du kan gjøre dette ved å kjøpe min "donasjonsapp" — Klikk på denne innstillingen for å gå til siden for min donasjonsapp. Takk!</string>
     <string name="preference_use_camera2">Bruk Camera2-APIen</string>
     <string name="preference_use_camera2_summary">Aktiverer Camera2-API - Den tilbyr ekstra egenskaper, men kan kanskje ikke virke riktig på alle enheter (Vil føre til en omstart).</string>
     <string name="preference_about">Om Open Camera</string>
@@ -431,7 +429,6 @@
     <string name="color_effect_whiteboard">Hvit tavle</string>
 
     <string name="whats_new">Hva er nytt:</string>
-    <string name="donate">Doner</string>
 
     <string name="preference_video_fps_default">Standard</string>
 

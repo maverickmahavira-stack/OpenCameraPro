@@ -222,8 +222,6 @@
     <string name="preference_category_online">Varios</string>
     <string name="preference_online_help">Ayuda en línea</string>
     <string name="preference_online_help_summary">Inicie el sitio web de Open Camera en su navegador</string>
-    <string name="preference_donate">Done para apoyar el proyecto</string>
-    <string name="preference_donate_summary">Si te gusta esta aplicación, por favor considera hacer una donación para apoyar el proyecto. Puedes hacerlo comprando mi "aplicación de donación" - haz clic en esta opción para abrir la página de mi aplicación de donación. ¡Gracias!</string>
     <string name="preference_use_camera2">Utiliza Camera2 API</string>
     <string name="preference_use_camera2_summary">Utiliza la Camara2 - ofrece funcionalidades extra, pero esta en fase experimental (causara un reseteo de la aplicación)</string>
     <string name="preference_about">Acerca de</string>
@@ -433,7 +431,6 @@
     <string name="color_effect_whiteboard">Pizarra blanca</string>
 
     <string name="whats_new">Qué hay de nuevo:</string>
-    <string name="donate">Donar</string>
 
     <!-- for accessibility, these strings for face detection will typically be spoken, e.g., through Google Talkback -->
     <string name="face_detected">cara detectada</string>

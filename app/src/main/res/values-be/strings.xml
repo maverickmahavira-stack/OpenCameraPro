@@ -204,8 +204,6 @@
 
     <string name="preference_category_online">Рознае</string>
     <string name="preference_online_help"> Дапамога ў інтэрнэце</string>
-    <string name="preference_donate">Ахвяруйце на распрацоўку </string>
-    <string name="preference_donate_summary">Калі вам падабаецца гэты дадатак, калі ласка, падтрымайце распрацоўку . Вы можаце зрабіць гэта, купіўшы мой дадатак .Абярыце гэты параметр і адкрыецца старонка для ахвяравання . Дзякую!</string>
     <string name="preference_use_camera2">Выкарыстоўваць Camera2 API</string>
     <string name="preference_use_camera2_summary">Дазваляе выкарыстоўваць Camera2 API</string>
     <string name="preference_about">Інфармацыя</string>

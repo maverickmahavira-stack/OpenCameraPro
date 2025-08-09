@@ -223,8 +223,6 @@
     <string name="preference_category_online">Разное</string>
     <string name="preference_online_help">Помощь в Интернете</string>
     <string name="preference_online_help_summary">Открыть веб-сайт Open Camera в вашем браузере</string>
-    <string name="preference_donate">Пожертвовать</string>
-    <string name="preference_donate_summary">Если вам нравится это приложение, киньте мне копейку. Вы можете сделать это, купив мое приложение. Спасибо!</string>
     <string name="preference_use_camera2">Использовать Camera2 API</string>
     <string name="preference_use_camera2_summary">Разрешает использование Camera2 API - дополнительные, но экспериментальные возможности (требуется перезапуск)</string>
     <string name="preference_about">О программе</string>
@@ -436,7 +434,6 @@
     <string name="color_effect_whiteboard">Белая доска</string>
 
     <string name="whats_new">Что нового:</string>
-    <string name="donate">Пожертвовать</string>
 
     <!-- for accessibility, these strings for face detection will typically be spoken, e.g., through Google Talkback -->
     <string name="face_detected">лицо</string>

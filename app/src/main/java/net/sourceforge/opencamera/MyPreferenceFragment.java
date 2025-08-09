@@ -371,23 +371,6 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
             });
         }
 
-        /*{
-            final Preference pref = findPreference("preference_donate");
-            pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference arg0) {
-                    if( pref.getKey().equals("preference_donate") ) {
-                        if( MyDebug.LOG )
-                            Log.d(TAG, "user clicked to donate");
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.DonateLink));
-                        startActivity(browserIntent);
-                        return false;
-                    }
-                    return false;
-                }
-            });
-        }*/
-
         {
             final Preference pref = findPreference("preference_about");
             pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {

@@ -224,8 +224,6 @@
     <string name="preference_category_online">Różne</string>
     <string name="preference_online_help">Pomoc on-line</string>
     <string name="preference_online_help_summary">Otwiera stronę aplikacji Open Camera w przeglądarce internetowej</string>
-    <string name="preference_donate">Przekaż darowiznę</string>
-    <string name="preference_donate_summary">Jeśli spodobała ci się ta aplikacja rozważ przekazanie darowizny, która wesprze rozwój aplikacji. Możesz to zrobić poprzez zakup specjalnej aplikacji - dotknij tutaj, aby otworzyć stronę. Dzięki!</string>
     <string name="preference_use_camera2">Camera2 API</string>
     <string name="preference_use_camera2_summary">Włącza interfejs Camera2 API, który oferuje wiele dodatkowych funkcji, ale może działać niepoprawnie na niektórych urządzeniach (powoduje restart aplikacji)</string>
     <string name="preference_about">O aplikacji</string>
@@ -438,7 +436,6 @@
     <string name="color_effect_whiteboard">Tablica magnetyczna</string>
 
     <string name="whats_new">Co nowego:</string>
-    <string name="donate">Przekaż darowiznę</string>
 
     <!-- for accessibility, these strings for face detection will typically be spoken, e.g., through Google Talkback -->
     <string name="face_detected">twarz</string>

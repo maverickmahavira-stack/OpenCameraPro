@@ -207,8 +207,6 @@
     
     <string name="preference_category_online">Karışık</string>
     <string name="preference_online_help">Online yardım</string>
-    <string name="preference_donate">Geliştirmeyi desteklemek için bağışta bulunun</string>
-    <string name="preference_donate_summary">Uygulamayı beğendiyseniz, bağış yapmayı düşünebilirsiniz. "donation app" satın alarak bunu yapabilirsiniz - bu seçeneğe tıkladığınızda bağış uygulaması için sayfam açılacaktır. Teşekkürler!</string>
     <string name="preference_use_camera2">Camera2 API sini kullan</string>
     <string name="preference_use_camera2_summary">Etkinleştirir Camera2 API - ekstra özellikler sunar fakat şuan deneyseldir(yeniden başlatacaktır)</string>
     <string name="preference_about">Hakkında</string>

@@ -222,8 +222,6 @@
     <string name="preference_category_online">Xem thêm</string>
     <string name="preference_online_help">Trợ giúp trực tuyến</string>
     <string name="preference_online_help_summary">Truy cập trang chủ Open Camera bằng trình duyệt của bạn</string>
-    <string name="preference_donate">Hỗ trợ phát triển</string>
-    <string name="preference_donate_summary">Nếu bạn thích ứng dụng này, vui lòng cân nhắc việc quyên góp để hỗ trợ phát triển. Bạn có thể quyên góp bằng cách mua ứng dụng quyên góp của tôi - nhấn vào đây để mở trang ứng dụng. Xin cảm ơn!</string>
     <string name="preference_use_camera2">Sử dụng Camera2 API</string>
     <string name="preference_use_camera2_summary">Kích hoạt các tính năng bổ sung như chế độ thủ công với các tùy chọn phơi sáng, lấy nét, cân bằng trắng và lưu ảnh RAW (nếu được hỗ trợ), có thể không hoạt động trên một số thiết bị (ứng dụng sẽ khởi động lại)</string>
     <string name="preference_about">Giới thiệu</string>
@@ -435,7 +433,6 @@
     <string name="color_effect_whiteboard">Bảng trắng</string>
 
     <string name="whats_new">Có gì mới:</string>
-    <string name="donate">Quyên góp</string>
 
     <!-- for accessibility, these strings for face detection will typically be spoken, e.g., through Google Talkback -->
     <string name="face_detected">khuôn mặt</string>

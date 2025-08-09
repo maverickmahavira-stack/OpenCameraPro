@@ -223,8 +223,6 @@
     <string name="preference_category_online">Різне</string>
     <string name="preference_online_help">Онлайн допомога</string>
     <string name="preference_online_help_summary">Відкрити сайт Open Camera в веб браузері</string>
-    <string name="preference_donate">Подякувати</string>
-    <string name="preference_donate_summary">Якщо вам сподобався цей додаток, киньте монетку. Ви можете зробити це, придбавши мій додаток. Дякую!</string>
     <string name="preference_use_camera2">Використовувати Camera2 API</string>
     <string name="preference_use_camera2_summary">Дозволяє використання Camera2 API - додаткові, але експериментальні можливості (потрібно перезавантажити)</string>
     <string name="preference_about">Про додаток</string>
