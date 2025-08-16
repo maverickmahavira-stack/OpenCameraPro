@@ -1855,7 +1855,7 @@ public class PanoramaProcessor {
         return new AutoAlignmentByFeatureResult(offset_x, offset_y, rotation, y_scale);
     }
 
-    private Bitmap blend_panorama_alpha(Bitmap lhs, Bitmap rhs) {
+    /*private Bitmap blend_panorama_alpha(Bitmap lhs, Bitmap rhs) {
         int width = lhs.getWidth();
         int height = lhs.getHeight();
         if( width != rhs.getWidth() ) {
@@ -1889,7 +1889,7 @@ public class PanoramaProcessor {
             blended_canvas.drawBitmap(rhs, rect, rect, p);
         }
         return blended_bitmap;
-    }
+    }*/
 
     /*private static int nextPowerOf2(int value) {
         int power = 1;
