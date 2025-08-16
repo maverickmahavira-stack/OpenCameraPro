@@ -886,7 +886,7 @@
 
     <string name="exposure_compensation_seekbar">Barra de selecció per canviar la compensació de l\'exposició</string>
 
-    <string name="preference_image_format_summary">Tria el format de fitxer per desar les fotos. Això afecta les fotos estàndard (no RAW). Només el format JPEG és compatible amb desar les metadades Exif. UltraHDR no és compatible amb els modes NR, HDR, Pano, X-.Tingues present que PNG no és un format sense pèrdues, sinó que es converteix des de JPEG al 100% de qualitat.\n%s</string>
+    <string name="preference_image_format_summary">Tria el format de fitxer per desar les fotos. Això afecta les fotos estàndard (no RAW). Només el format JPEG és compatible amb desar les metadades Exif. UltraHDR no és compatible amb els modes NR, HDR, Pano, X-.Tingues present que PNG no és un format sense pèrdues, sinó que es converteix des de JPEG al 100%% de qualitat.\n%s</string>
 
     <string name="preference_camera_api">API de la càmera</string>
     <string name="preference_camera_api_summary">Tria l\'API Camera2 per habilitar funcions extra com ara els modes manuals d\'exposició, enfocament, balanç de blancs i també RAW (si és compatible amb el teu dispositiu). Si canvies l\'Api es reiniciarà l\'aplicació.\n%s</string>
