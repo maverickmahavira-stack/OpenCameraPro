@@ -935,7 +935,7 @@ public class PanoramaProcessor {
             if( MyDebug.LOG )
                 Log.d(TAG, "detect features for image: " + i);
 
-            float [] strength_rgbf = null;
+            float [] strength_rgbf;
             {
                 if( MyDebug.LOG )
                     Log.d(TAG, "convert to greyscale");
@@ -2965,7 +2965,8 @@ public class PanoramaProcessor {
             }
 
             // take cylindrical projection into account
-            float theta = (float)((bitmap_width/2)*camera_angle)/(float)bitmap_width;
+            int bitmap_hwidth = bitmap_width/2;
+            float theta = (float)(bitmap_hwidth*camera_angle)/(float)bitmap_width;
             float yscale = (float)Math.cos(theta);
             if( MyDebug.LOG ) {
                 Log.d(TAG, "theta: " + theta);
