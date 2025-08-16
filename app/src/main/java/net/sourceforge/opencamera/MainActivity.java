@@ -6935,10 +6935,6 @@ public class MainActivity extends AppCompatActivity implements PreferenceFragmen
         }
     }
 
-    ToastBoxer getAudioControlToast() {
-        return this.audio_control_toast;
-    }
-
     // for testing:
     public SaveLocationHistory getSaveLocationHistory() {
         return this.save_location_history;
