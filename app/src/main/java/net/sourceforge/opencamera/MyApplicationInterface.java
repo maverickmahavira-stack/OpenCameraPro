@@ -2275,7 +2275,8 @@ public class MyApplicationInterface extends BasicApplicationInterface {
                     }*/
                 }
 
-                if( subtitles.isEmpty() ) {
+                // Android warning that we should replace with isEmpty(), but that requires Android 15 for CharSequence.isEmpty()
+                if( subtitles.length() == 0 ) {
                     return;
                 }
                 long video_time_from = video_time - offset_ms;
