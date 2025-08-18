@@ -1086,26 +1086,13 @@
     <string name="whats_new_text" translatable="false">
         <small>[This dialog is shown when Open Camera is updated. You can disable it under
             Settings/On screen GUI/Show What\'s New dialog.]</small>
-        \n\n<b>v1.54:</b>\n
+        \n\n<b>v1.55:</b>\n
         <ul>
-            <li>New Preview Shots (under Settings/Photo settings). When enabled, a short video is
-                saved alongside photos, containing shots from the moment before the photo was taken
-                (requires Android 8+ and Camera2 API).\n</li>
-            <li>Support for choosing a specific physical lens on supported devices (requires
-                Android 9+ and Camera2 API).\n</li>
-            <li>Support for UltraHDR on supported devices (under
-                Settings/Photo settings/\"Image format\") (requires Android 14+ and Camera2
-                API).\n</li>
-            <li>New Auto source mode for focus bracketing: in this mode, the source focus
-                distance will be automatically set via continuous focus or touch to focus.\n</li>
-            <li>Haptic feedback for adjusting some seekbars. Can be disabled under
-                Settings/More camera controls/\"Allow vibration feedback\".\n</li>
-            <li>New option Settings/More camera controls/\"Use milliseconds in filename\".\n</li>
-            <li>Improved performance for Camera2 API for taking photos with continuous focus mode,
-                by optimising for latency. If this results in out of focus shots, change
-                Settings/Photo settings/\"Optimise focus for\" to Quality.\n</li>
-            <li>Double tapping will now cancel focus and metering area.\n</li>
-            <li>Fixes for manual white balance.\n</li>
+            <li>More crop guides: 65:24 and 3:1.\n</li>
+            <li>Shutter button now changes to a red square when recording video.\n</li>
+            <li>Removed -/+ controls for zoom and exposure compensation.\n</li>
+            <li>Show current save location in settings.\n</li>
+            <li>Don\'t block UI thread when first starting camera preview (for Camera2 API with Android 14+).\n</li>
             <li>Various other improvements and bug fixes.\n</li>
         </ul>
     </string>
