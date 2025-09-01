@@ -26,6 +26,14 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Apply Pro Video Phase 0 patch
+        run: |
+          if [ -f scripts/apply_pro_video_patch.py ]; then
+            python3 scripts/apply_pro_video_patch.py 2>&1 | tee -a logs/patch.log
+          else
+            echo "Patch script not found, skipping"
+          fi
+
       - name: Build Debug APK
         run: |
           chmod +x ./gradlew
