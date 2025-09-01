@@ -46,9 +46,9 @@ jobs:
           name: build-logs
           path: logs/
 
-      - name: Upload APK
+      - name: Upload APKs and AABs
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: app-debug-builds
+          path: app/build/outputs/**/*
