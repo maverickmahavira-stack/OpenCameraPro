@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- ✅ Main Camera Activity -->
+        <!-- 📸 Main Camera Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,15 +36,14 @@
             </intent-filter>
         </activity>
 
-        <!-- ✅ Pro Video Mode (Stage 1: Scaffold) -->
+        <!-- 🎬 Pro Video Mode Activity -->
         <activity
             android:name=".ProVideoActivity"
             android:exported="true"
-            android:label="OpenCameraPro – Pro Video"
+            android:label="🎬 Pro Video Mode"
+            android:icon="@mipmap/ic_launcher_round"
             android:screenOrientation="sensorLandscape"
             android:configChanges="orientation|screenSize|keyboardHidden">
-
-            <!-- This makes it show as a parallel launcher app -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
