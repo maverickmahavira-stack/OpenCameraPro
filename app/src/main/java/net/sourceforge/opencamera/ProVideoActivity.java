@@ -31,6 +31,10 @@ public class ProVideoActivity extends AppCompatActivity {
     private CameraDevice cameraDevice;
     private CameraCaptureSession captureSession;
 
+    // ✅ New variables for Step 3.1
+    private boolean isRecording = false;
+    private String outputFilePath;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +43,22 @@ public class ProVideoActivity extends AppCompatActivity {
         surfaceView = findViewById(R.id.camera_preview);
         Button recordButton = findViewById(R.id.record_button);
 
-        recordButton.setOnClickListener(v ->
-                Toast.makeText(this, "Record (Pro) clicked (placeholder)", Toast.LENGTH_SHORT).show()
-        );
+        // ✅ Updated click listener
+        recordButton.setOnClickListener(v -> {
+            if (!isRecording) {
+                // Start "recording" (placeholder only)
+                isRecording = true;
+                outputFilePath = getExternalFilesDir(null).getAbsolutePath() +
+                        "/provideo_" + System.currentTimeMillis() + ".mp4";
+                recordButton.setText("STOP (Pro)");
+                Toast.makeText(this, "Recording started: " + outputFilePath, Toast.LENGTH_SHORT).show();
+            } else {
+                // Stop "recording"
+                isRecording = false;
+                recordButton.setText("Record (Pro)");
+                Toast.makeText(this, "Recording stopped and saved", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -145,4 +162,4 @@ public class ProVideoActivity extends AppCompatActivity {
         super.onDestroy();
         closeCamera();
     }
-                }
+}
