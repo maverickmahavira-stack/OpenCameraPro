@@ -23,9 +23,10 @@ jobs:
       - name: Build Debug APK
         run: |
           chmod +x ./gradlew
-          ./gradlew --no-daemon --stacktrace :app:assembleDebug
+          ./gradlew --no-daemon --stacktrace :app:assembleDebug 2>&1 | tee build.log
 
       - name: Upload Debug APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: OpenCameraPro-debug
@@ -36,4 +37,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-logs
-          path: app/build/outputs/logs/
+          path: build.log
