@@ -160,26 +160,39 @@ public class ProVideoActivity extends AppCompatActivity {
     }
 
     private void prepareMediaRecorder() throws IOException {
-        mediaRecorder = new MediaRecorder();
-        outputFilePath = getExternalFilesDir(null).getAbsolutePath() +
-                "/provideo_" + System.currentTimeMillis() + ".mp4";
-
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mediaRecorder.setOutputFile(outputFilePath);
-
-        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
-        mediaRecorder.setVideoEncodingBitRate(10_000_000);
-        mediaRecorder.setVideoFrameRate(30);
-        mediaRecorder.setVideoSize(1920, 1080);
-
-        mediaRecorder.prepare();
-        recordSurface = mediaRecorder.getSurface();
+    mediaRecorder = new MediaRecorder();
+    
+    // Ensure target folder exists
+    String folderPath = getExternalFilesDir(null).getAbsolutePath() + "/ProVideo";
+    java.io.File folder = new java.io.File(folderPath);
+    if (!folder.exists()) {
+        folder.mkdirs();
     }
+
+    outputFilePath = folderPath + "/provideo_" + System.currentTimeMillis() + ".mp4";
+    Log.d(TAG, "Output file: " + outputFilePath);
+
+    mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+    mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+
+    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+    mediaRecorder.setOutputFile(outputFilePath);
+
+    mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+    mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+    mediaRecorder.setVideoEncodingBitRate(10_000_000);
+    mediaRecorder.setVideoFrameRate(30);
+    mediaRecorder.setVideoSize(1920, 1080);
+
+    mediaRecorder.setOnErrorListener((mr, what, extra) -> {
+        Log.e(TAG, "MediaRecorder error: " + what + " extra: " + extra);
+        Toast.makeText(this, "Recorder error: " + what, Toast.LENGTH_SHORT).show();
+    });
+
+    mediaRecorder.prepare();
+    recordSurface = mediaRecorder.getSurface();
+}
 
     private void startRecording() {
         try {
