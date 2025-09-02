@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CaptureRequest;
 import android.view.Surface;
 
 import java.util.Arrays;
@@ -27,6 +29,7 @@ public class ProVideoActivity extends AppCompatActivity {
 
     private CameraDevice cameraDevice;
     private CameraCaptureSession captureSession;
+    private CaptureRequest.Builder previewRequestBuilder;
     private SurfaceView surfaceView;
 
     @Override
@@ -35,6 +38,10 @@ public class ProVideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pro_video);
 
         surfaceView = findViewById(R.id.camera_preview);
+        Button recordButton = findViewById(R.id.record_button);
+        recordButton.setOnClickListener(v ->
+                Toast.makeText(this, "Record (Pro) clicked (placeholder)", Toast.LENGTH_SHORT).show()
+        );
 
         // Request camera permission if not granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -86,13 +93,25 @@ public class ProVideoActivity extends AppCompatActivity {
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
                 try {
                     Surface surface = holder.getSurface();
+                    previewRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+                    previewRequestBuilder.addTarget(surface);
+
                     cameraDevice.createCaptureSession(Arrays.asList(surface),
                             new CameraCaptureSession.StateCallback() {
                                 @Override
                                 public void onConfigured(@NonNull CameraCaptureSession session) {
                                     captureSession = session;
-                                    Toast.makeText(ProVideoActivity.this,
-                                            "Camera preview started", Toast.LENGTH_SHORT).show();
+                                    try {
+                                        captureSession.setRepeatingRequest(
+                                                previewRequestBuilder.build(),
+                                                null,
+                                                null
+                                        );
+                                        Toast.makeText(ProVideoActivity.this,
+                                                "Camera preview started", Toast.LENGTH_SHORT).show();
+                                    } catch (CameraAccessException e) {
+                                        Log.e(TAG, "setRepeatingRequest failed: ", e);
+                                    }
                                 }
 
                                 @Override
