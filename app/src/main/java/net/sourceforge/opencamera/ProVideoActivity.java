@@ -253,12 +253,21 @@ public class ProVideoActivity extends AppCompatActivity {
             isRecording = false;
             recordButton.setText("Record (Pro)");
 
-            Toast.makeText(this,
-                    "Recording stopped. Saved: " + outputFilePath,
-                    Toast.LENGTH_LONG).show();
+            java.io.File file = new java.io.File(outputFilePath);
+if (file.exists()) {
+    Toast.makeText(this,
+            "✅ Saved at: " + outputFilePath,
+            Toast.LENGTH_LONG).show();
+    Log.d(TAG, "File exists, size: " + file.length() + " bytes");
+} else {
+    Toast.makeText(this,
+            "⚠️ Recording stopped, but file not found!",
+            Toast.LENGTH_LONG).show();
+    Log.e(TAG, "File missing: " + outputFilePath);
+}
 
-            // Return to preview after recording
-            startPreview();
+// Return to preview after recording
+startPreview();
         } catch (Exception e) {
             Log.e(TAG, "stopRecording error", e);
             Toast.makeText(this, "Stop recording failed", Toast.LENGTH_SHORT).show();
