@@ -1,10 +1,7 @@
-name: Build Open Camera (Pro Video scaffold)
+name: Build OpenCameraPro
 
 on:
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   build:
@@ -14,10 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare logs
-        run: mkdir -p logs
-
-      - name: Set up JDK 17 (required by repo)
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -26,31 +20,20 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Apply Pro Video Phase 0 patch
-        run: |
-          if [ -f scripts/apply_pro_video_patch.py ]; then
-            python3 scripts/apply_pro_video_patch.py 2>&1 | tee -a logs/patch.log
-          else
-            echo "Patch script not found, skipping"
-          fi
-
       - name: Build Debug APK
         run: |
           chmod +x ./gradlew
-          ./gradlew --no-daemon --stacktrace :app:assembleDebug 2>&1 | tee logs/build.log
-          echo "---- SEARCHING FOR APKs ----"
-          find app/ -type f -name "*.apk" -exec ls -lh {} \; | tee -a logs/build.log
+          ./gradlew --no-daemon --stacktrace :app:assembleDebug
 
-      - name: Upload logs
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenCameraPro-debug
+          path: app/build/outputs/apk/debug/*.apk
+
+      - name: Upload Logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-logs
-          path: logs/
-
-      - name: Upload APKs
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenCameraPro-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/logs/
