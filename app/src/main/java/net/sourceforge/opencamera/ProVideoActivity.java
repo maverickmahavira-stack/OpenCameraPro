@@ -2,6 +2,7 @@ package net.sourceforge.opencamera;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -21,7 +22,9 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CameraManager;
 import android.view.Surface;
 
-import java.util.Collections;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProVideoActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 2001;
@@ -31,9 +34,14 @@ public class ProVideoActivity extends AppCompatActivity {
     private CameraDevice cameraDevice;
     private CameraCaptureSession captureSession;
 
-    // ✅ New variables for Step 3.1
     private boolean isRecording = false;
     private String outputFilePath;
+
+    private MediaRecorder mediaRecorder;
+    private Surface previewSurface;
+    private Surface recordSurface;
+
+    private Button recordButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,29 +49,23 @@ public class ProVideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pro_video);
 
         surfaceView = findViewById(R.id.camera_preview);
-        Button recordButton = findViewById(R.id.record_button);
+        recordButton = findViewById(R.id.record_button);
 
-        // ✅ Updated click listener
         recordButton.setOnClickListener(v -> {
             if (!isRecording) {
-                // Start "recording" (placeholder only)
-                isRecording = true;
-                outputFilePath = getExternalFilesDir(null).getAbsolutePath() +
-                        "/provideo_" + System.currentTimeMillis() + ".mp4";
-                recordButton.setText("STOP (Pro)");
-                Toast.makeText(this, "Recording started: " + outputFilePath, Toast.LENGTH_SHORT).show();
+                startRecording();
             } else {
-                // Stop "recording"
-                isRecording = false;
-                recordButton.setText("Record (Pro)");
-                Toast.makeText(this, "Recording stopped and saved", Toast.LENGTH_SHORT).show();
+                stopRecording();
             }
         });
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
+                    CAMERA_REQUEST_CODE);
         } else {
             initSurface();
         }
@@ -73,7 +75,8 @@ public class ProVideoActivity extends AppCompatActivity {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
-                openCamera(holder.getSurface());
+                previewSurface = holder.getSurface();
+                openCamera();
             }
 
             @Override
@@ -86,7 +89,7 @@ public class ProVideoActivity extends AppCompatActivity {
         });
     }
 
-    private void openCamera(Surface previewSurface) {
+    private void openCamera() {
         CameraManager manager = (CameraManager) getSystemService(CAMERA_SERVICE);
         try {
             String cameraId = manager.getCameraIdList()[0]; // back camera
@@ -97,7 +100,7 @@ public class ProVideoActivity extends AppCompatActivity {
                 @Override
                 public void onOpened(@NonNull CameraDevice camera) {
                     cameraDevice = camera;
-                    startPreview(previewSurface);
+                    startPreview();
                 }
 
                 @Override
@@ -118,19 +121,25 @@ public class ProVideoActivity extends AppCompatActivity {
         }
     }
 
-    private void startPreview(Surface previewSurface) {
+    private void startPreview() {
         try {
-            CaptureRequest.Builder builder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            if (cameraDevice == null || previewSurface == null) return;
+
+            CaptureRequest.Builder builder =
+                    cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             builder.addTarget(previewSurface);
 
-            cameraDevice.createCaptureSession(Collections.singletonList(previewSurface),
+            cameraDevice.createCaptureSession(
+                    List.of(previewSurface),
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(@NonNull CameraCaptureSession session) {
                             captureSession = session;
                             try {
                                 session.setRepeatingRequest(builder.build(), null, null);
-                                Toast.makeText(ProVideoActivity.this, "Pro Video Preview started", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProVideoActivity.this,
+                                        "Pro Video Preview started",
+                                        Toast.LENGTH_SHORT).show();
                             } catch (CameraAccessException e) {
                                 Log.e(TAG, "setRepeatingRequest failed", e);
                             }
@@ -138,11 +147,108 @@ public class ProVideoActivity extends AppCompatActivity {
 
                         @Override
                         public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-                            Toast.makeText(ProVideoActivity.this, "Preview config failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProVideoActivity.this,
+                                    "Preview config failed",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                    }, null);
+                    },
+                    null
+            );
         } catch (CameraAccessException e) {
             Log.e(TAG, "startPreview failed", e);
+        }
+    }
+
+    private void prepareMediaRecorder() throws IOException {
+        mediaRecorder = new MediaRecorder();
+        outputFilePath = getExternalFilesDir(null).getAbsolutePath() +
+                "/provideo_" + System.currentTimeMillis() + ".mp4";
+
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setOutputFile(outputFilePath);
+
+        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        mediaRecorder.setVideoEncodingBitRate(10_000_000);
+        mediaRecorder.setVideoFrameRate(30);
+        mediaRecorder.setVideoSize(1920, 1080);
+
+        mediaRecorder.prepare();
+        recordSurface = mediaRecorder.getSurface();
+    }
+
+    private void startRecording() {
+        try {
+            if (cameraDevice == null) return;
+
+            prepareMediaRecorder();
+
+            List<Surface> surfaces = new ArrayList<>();
+            surfaces.add(previewSurface);
+            surfaces.add(recordSurface);
+
+            CaptureRequest.Builder builder =
+                    cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+            builder.addTarget(previewSurface);
+            builder.addTarget(recordSurface);
+
+            cameraDevice.createCaptureSession(surfaces,
+                    new CameraCaptureSession.StateCallback() {
+                        @Override
+                        public void onConfigured(@NonNull CameraCaptureSession session) {
+                            captureSession = session;
+                            try {
+                                captureSession.setRepeatingRequest(builder.build(), null, null);
+                                mediaRecorder.start();
+                                isRecording = true;
+                                recordButton.setText("STOP (Pro)");
+                                Toast.makeText(ProVideoActivity.this,
+                                        "Recording started: " + outputFilePath,
+                                        Toast.LENGTH_SHORT).show();
+                            } catch (CameraAccessException e) {
+                                Log.e(TAG, "startRecording failed", e);
+                            }
+                        }
+
+                        @Override
+                        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+                            Toast.makeText(ProVideoActivity.this,
+                                    "Recording config failed",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    null
+            );
+
+        } catch (Exception e) {
+            Log.e(TAG, "startRecording error", e);
+            Toast.makeText(this, "Recording failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void stopRecording() {
+        try {
+            mediaRecorder.stop();
+            mediaRecorder.reset();
+            mediaRecorder.release();
+            mediaRecorder = null;
+
+            isRecording = false;
+            recordButton.setText("Record (Pro)");
+
+            Toast.makeText(this,
+                    "Recording stopped. Saved: " + outputFilePath,
+                    Toast.LENGTH_LONG).show();
+
+            // Return to preview after recording
+            startPreview();
+        } catch (Exception e) {
+            Log.e(TAG, "stopRecording error", e);
+            Toast.makeText(this, "Stop recording failed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -154,6 +260,10 @@ public class ProVideoActivity extends AppCompatActivity {
         if (cameraDevice != null) {
             cameraDevice.close();
             cameraDevice = null;
+        }
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
         }
     }
 
