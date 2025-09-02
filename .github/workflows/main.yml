@@ -1,4 +1,4 @@
-name: Build Open Camera (baseline)
+name: Build Open Camera (Pro Video scaffold)
 
 on:
   workflow_dispatch:
@@ -38,6 +38,8 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew --no-daemon --stacktrace :app:assembleDebug 2>&1 | tee logs/build.log
+          echo "---- SEARCHING FOR APKs ----"
+          find app/ -type f -name "*.apk" -exec ls -lh {} \; | tee -a logs/build.log
 
       - name: Upload logs
         if: always()
@@ -46,9 +48,9 @@ jobs:
           name: build-logs
           path: logs/
 
-      - name: Upload APKs and AABs
+      - name: Upload APKs
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-builds
-          path: app/build/outputs/**/*
+          name: OpenCameraPro-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
