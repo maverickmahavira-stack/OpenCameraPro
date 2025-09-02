@@ -1,54 +1,9 @@
+// Root build.gradle for OpenCameraPro (modernized for AGP 8.x)
+
 plugins {
-    id 'com.android.application'
+    id 'com.android.application' version '8.3.2' apply false
 }
 
-android {
-    namespace "net.sourceforge.opencamera"
-    compileSdk 35
-
-    defaultConfig {
-        applicationId "net.sourceforge.opencamera"
-        minSdk 21
-        targetSdk 35
-        versionCode 93
-        versionName "1.55"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            minifyEnabled false
-        }
-    }
-
-    // ✅ Force APK output instead of AAB + custom name
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            if (output.outputFile != null) {
-                def baseName = "OpenCameraPro-${variant.name}"
-                output.outputFileName = baseName + ".apk"
-            }
-        }
-    }
-
-    // ✅ Ensure Java 17 toolchain
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
-
-dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
-    implementation 'com.google.android.material:material:1.9.0'
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
