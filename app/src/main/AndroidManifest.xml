@@ -36,13 +36,19 @@
             </intent-filter>
         </activity>
 
-        <!-- ✅ (Placeholder for Pro Video Mode, Stage 1) -->
+        <!-- ✅ Pro Video Mode (Stage 1: Scaffold) -->
         <activity
             android:name=".ProVideoActivity"
             android:exported="true"
-            android:label="Open Camera – Pro Video (Preview)"
+            android:label="OpenCameraPro – Pro Video"
             android:screenOrientation="sensorLandscape"
             android:configChanges="orientation|screenSize|keyboardHidden">
+
+            <!-- This makes it show as a parallel launcher app -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
     </application>
