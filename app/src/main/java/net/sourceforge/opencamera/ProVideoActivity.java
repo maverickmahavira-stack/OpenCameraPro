@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -24,6 +25,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CameraManager;
 import android.view.Surface;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -169,21 +171,28 @@ public class ProVideoActivity extends AppCompatActivity {
     private void prepareMediaRecorder() throws IOException {
         mediaRecorder = new MediaRecorder();
 
-        // ✅ Save to Movies directory
-        String folderPath = getExternalFilesDir(android.os.Environment.DIRECTORY_MOVIES).getAbsolutePath();
-        java.io.File folder = new java.io.File(folderPath);
-        if (!folder.exists()) {
-            folder.mkdirs();
+        // ✅ Create entry in MediaStore directly
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/ProVideo");
+        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+        values.put(MediaStore.Video.Media.DISPLAY_NAME, "provideo_" + System.currentTimeMillis() + ".mp4");
+
+        Uri videoUri = getContentResolver().insert(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
+        if (videoUri == null) {
+            throw new IOException("Failed to create MediaStore entry");
         }
 
-        outputFilePath = folderPath + "/provideo_" + System.currentTimeMillis() + ".mp4";
-        Log.d(TAG, "Output file: " + outputFilePath);
+        FileDescriptor fd = getContentResolver().openFileDescriptor(videoUri, "w").getFileDescriptor();
+
+        outputFilePath = values.getAsString(MediaStore.Video.Media.DISPLAY_NAME);
 
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
 
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mediaRecorder.setOutputFile(outputFilePath);
+        mediaRecorder.setOutputFile(fd);
 
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -229,23 +238,20 @@ public class ProVideoActivity extends AppCompatActivity {
                             try {
                                 captureSession.setRepeatingRequest(builder.build(), null, null);
 
-                                try {
-                                    mediaRecorder.start();
-                                    isRecording = true;
-                                    recordButton.setText("STOP (Pro)");
-                                    Toast.makeText(ProVideoActivity.this,
-                                            "Recording started: " + outputFilePath,
-                                            Toast.LENGTH_SHORT).show();
-                                } catch (Exception e) {
-                                    Log.e(TAG, "MediaRecorder.start() failed", e);
-                                    Toast.makeText(ProVideoActivity.this,
-                                            "❌ MediaRecorder failed: " + e.getMessage(),
-                                            Toast.LENGTH_LONG).show();
-                                }
+                                mediaRecorder.start();
+                                isRecording = true;
+                                recordButton.setText("STOP (Pro)");
+                                Toast.makeText(ProVideoActivity.this,
+                                        "Recording started",
+                                        Toast.LENGTH_SHORT).show();
 
-                            } catch (CameraAccessException e) {
-                                Log.e(TAG, "startRecording session failed", e);
+                            } catch (Exception e) {
+                                Log.e(TAG, "MediaRecorder.start() failed", e);
+                                Toast.makeText(ProVideoActivity.this,
+                                        "❌ MediaRecorder failed: " + e.getMessage(),
+                                        Toast.LENGTH_LONG).show();
                             }
+
                         }
 
                         @Override
@@ -275,36 +281,15 @@ public class ProVideoActivity extends AppCompatActivity {
             recordButton.setText("Record (Pro)");
 
             Toast.makeText(this,
-                    "Recording stopped. Saved: " + outputFilePath,
+                    "Recording stopped. File saved to Gallery",
                     Toast.LENGTH_LONG).show();
 
-            Log.d(TAG, "Recording stopped. File saved at: " + outputFilePath);
-
-            // ✅ Add to MediaStore so it appears in Gallery
-            addVideoToGallery(outputFilePath);
+            Log.d(TAG, "Recording stopped.");
 
             startPreview();
         } catch (Exception e) {
             Log.e(TAG, "stopRecording error", e);
             Toast.makeText(this, "Stop recording failed", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // ✅ New method: Register video with MediaStore
-    private void addVideoToGallery(String filePath) {
-        try {
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Video.Media.TITLE, "ProVideo Recording");
-            values.put(MediaStore.Video.Media.DISPLAY_NAME, filePath.substring(filePath.lastIndexOf("/") + 1));
-            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-            values.put(MediaStore.Video.Media.DATA, filePath);
-            values.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
-
-            getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-
-            Log.d(TAG, "Video added to MediaStore: " + filePath);
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to insert into MediaStore", e);
         }
     }
 
