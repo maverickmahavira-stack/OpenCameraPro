@@ -1,9 +1,11 @@
 package net.sourceforge.opencamera;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -167,7 +169,7 @@ public class ProVideoActivity extends AppCompatActivity {
     private void prepareMediaRecorder() throws IOException {
         mediaRecorder = new MediaRecorder();
 
-        // ✅ Save to Movies directory (safe for Android 12+)
+        // ✅ Save to Movies directory
         String folderPath = getExternalFilesDir(android.os.Environment.DIRECTORY_MOVIES).getAbsolutePath();
         java.io.File folder = new java.io.File(folderPath);
         if (!folder.exists()) {
@@ -203,7 +205,6 @@ public class ProVideoActivity extends AppCompatActivity {
         try {
             if (cameraDevice == null) return;
 
-            // ✅ Close previous session to avoid conflict
             if (captureSession != null) {
                 captureSession.close();
                 captureSession = null;
@@ -279,11 +280,31 @@ public class ProVideoActivity extends AppCompatActivity {
 
             Log.d(TAG, "Recording stopped. File saved at: " + outputFilePath);
 
-            // ✅ Return to preview
+            // ✅ Add to MediaStore so it appears in Gallery
+            addVideoToGallery(outputFilePath);
+
             startPreview();
         } catch (Exception e) {
             Log.e(TAG, "stopRecording error", e);
             Toast.makeText(this, "Stop recording failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // ✅ New method: Register video with MediaStore
+    private void addVideoToGallery(String filePath) {
+        try {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Video.Media.TITLE, "ProVideo Recording");
+            values.put(MediaStore.Video.Media.DISPLAY_NAME, filePath.substring(filePath.lastIndexOf("/") + 1));
+            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+            values.put(MediaStore.Video.Media.DATA, filePath);
+            values.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
+
+            getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
+            Log.d(TAG, "Video added to MediaStore: " + filePath);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to insert into MediaStore", e);
         }
     }
 
