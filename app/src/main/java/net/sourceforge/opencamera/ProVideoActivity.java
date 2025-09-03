@@ -125,6 +125,11 @@ public class ProVideoActivity extends AppCompatActivity {
         try {
             if (cameraDevice == null || previewSurface == null) return;
 
+            if (captureSession != null) {
+                captureSession.close();
+                captureSession = null;
+            }
+
             CaptureRequest.Builder builder =
                     cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             builder.addTarget(previewSurface);
@@ -160,43 +165,49 @@ public class ProVideoActivity extends AppCompatActivity {
     }
 
     private void prepareMediaRecorder() throws IOException {
-    mediaRecorder = new MediaRecorder();
-    
-    // Ensure target folder exists
-    String folderPath = getExternalFilesDir(null).getAbsolutePath() + "/ProVideo";
-    java.io.File folder = new java.io.File(folderPath);
-    if (!folder.exists()) {
-        folder.mkdirs();
+        mediaRecorder = new MediaRecorder();
+
+        // ✅ Save to Movies directory (safe for Android 12+)
+        String folderPath = getExternalFilesDir(android.os.Environment.DIRECTORY_MOVIES).getAbsolutePath();
+        java.io.File folder = new java.io.File(folderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        outputFilePath = folderPath + "/provideo_" + System.currentTimeMillis() + ".mp4";
+        Log.d(TAG, "Output file: " + outputFilePath);
+
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setOutputFile(outputFilePath);
+
+        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        mediaRecorder.setVideoEncodingBitRate(10_000_000);
+        mediaRecorder.setVideoFrameRate(30);
+        mediaRecorder.setVideoSize(1920, 1080);
+
+        mediaRecorder.setOnErrorListener((mr, what, extra) -> {
+            Log.e(TAG, "MediaRecorder error: " + what + " extra: " + extra);
+            Toast.makeText(this, "Recorder error: " + what, Toast.LENGTH_SHORT).show();
+        });
+
+        mediaRecorder.prepare();
+        recordSurface = mediaRecorder.getSurface();
     }
-
-    outputFilePath = folderPath + "/provideo_" + System.currentTimeMillis() + ".mp4";
-    Log.d(TAG, "Output file: " + outputFilePath);
-
-    mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-
-    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-    mediaRecorder.setOutputFile(outputFilePath);
-
-    mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-    mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
-    mediaRecorder.setVideoEncodingBitRate(10_000_000);
-    mediaRecorder.setVideoFrameRate(30);
-    mediaRecorder.setVideoSize(1920, 1080);
-
-    mediaRecorder.setOnErrorListener((mr, what, extra) -> {
-        Log.e(TAG, "MediaRecorder error: " + what + " extra: " + extra);
-        Toast.makeText(this, "Recorder error: " + what, Toast.LENGTH_SHORT).show();
-    });
-
-    mediaRecorder.prepare();
-    recordSurface = mediaRecorder.getSurface();
-}
 
     private void startRecording() {
         try {
             if (cameraDevice == null) return;
+
+            // ✅ Close previous session to avoid conflict
+            if (captureSession != null) {
+                captureSession.close();
+                captureSession = null;
+            }
 
             prepareMediaRecorder();
 
@@ -216,14 +227,23 @@ public class ProVideoActivity extends AppCompatActivity {
                             captureSession = session;
                             try {
                                 captureSession.setRepeatingRequest(builder.build(), null, null);
-                                mediaRecorder.start();
-                                isRecording = true;
-                                recordButton.setText("STOP (Pro)");
-                                Toast.makeText(ProVideoActivity.this,
-                                        "Recording started: " + outputFilePath,
-                                        Toast.LENGTH_SHORT).show();
+
+                                try {
+                                    mediaRecorder.start();
+                                    isRecording = true;
+                                    recordButton.setText("STOP (Pro)");
+                                    Toast.makeText(ProVideoActivity.this,
+                                            "Recording started: " + outputFilePath,
+                                            Toast.LENGTH_SHORT).show();
+                                } catch (Exception e) {
+                                    Log.e(TAG, "MediaRecorder.start() failed", e);
+                                    Toast.makeText(ProVideoActivity.this,
+                                            "❌ MediaRecorder failed: " + e.getMessage(),
+                                            Toast.LENGTH_LONG).show();
+                                }
+
                             } catch (CameraAccessException e) {
-                                Log.e(TAG, "startRecording failed", e);
+                                Log.e(TAG, "startRecording session failed", e);
                             }
                         }
 
@@ -253,21 +273,14 @@ public class ProVideoActivity extends AppCompatActivity {
             isRecording = false;
             recordButton.setText("Record (Pro)");
 
-            java.io.File file = new java.io.File(outputFilePath);
-if (file.exists()) {
-    Toast.makeText(this,
-            "✅ Saved at: " + outputFilePath,
-            Toast.LENGTH_LONG).show();
-    Log.d(TAG, "File exists, size: " + file.length() + " bytes");
-} else {
-    Toast.makeText(this,
-            "⚠️ Recording stopped, but file not found!",
-            Toast.LENGTH_LONG).show();
-    Log.e(TAG, "File missing: " + outputFilePath);
-}
+            Toast.makeText(this,
+                    "Recording stopped. Saved: " + outputFilePath,
+                    Toast.LENGTH_LONG).show();
 
-// Return to preview after recording
-startPreview();
+            Log.d(TAG, "Recording stopped. File saved at: " + outputFilePath);
+
+            // ✅ Return to preview
+            startPreview();
         } catch (Exception e) {
             Log.e(TAG, "stopRecording error", e);
             Toast.makeText(this, "Stop recording failed", Toast.LENGTH_SHORT).show();
