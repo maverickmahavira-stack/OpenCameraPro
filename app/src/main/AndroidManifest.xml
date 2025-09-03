@@ -5,12 +5,12 @@
     <!-- ✅ Permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <!-- ❌ Removed WRITE_EXTERNAL_STORAGE (deprecated on Android 11+) -->
 
     <!-- ✅ Hardware features -->
     <uses-feature android:name="android.hardware.camera" />
@@ -36,13 +36,15 @@
             </intent-filter>
         </activity>
 
-        <!-- ✅ Pro Video Mode -->
+        <!-- ✅ Pro Video Activity (separate app icon) -->
         <activity
             android:name=".ProVideoActivity"
             android:exported="true"
             android:label="OpenCameraPro – Pro Video"
             android:screenOrientation="sensorLandscape"
             android:configChanges="orientation|screenSize|keyboardHidden">
+
+            <!-- Separate launcher icon -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
