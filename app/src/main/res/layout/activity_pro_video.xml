@@ -1,22 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <!-- Camera Preview -->
+    <!-- Camera preview surface -->
     <SurfaceView
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Record Button -->
+    <!-- Top control bar -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="#66000000">
+
+        <Spinner
+            android:id="@+id/spn_resolution"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Spinner
+            android:id="@+id/spn_fps"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Spinner
+            android:id="@+id/spn_bitrate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <CheckBox
+            android:id="@+id/chk_eis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EIS" />
+    </LinearLayout>
+
+    <!-- Bottom manual bar -->
+    <LinearLayout
+        android:id="@+id/bottom_manual_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:background="#66000000">
+
+        <EditText
+            android:id="@+id/et_exposure_ms"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:hint="Shutter ms (0=auto)" />
+
+        <EditText
+            android:id="@+id/et_iso"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:hint="ISO (0=auto)" />
+
+        <EditText
+            android:id="@+id/et_focus_m"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:hint="Focus m (0=auto)" />
+    </LinearLayout>
+
+    <!-- Record button (center bottom) -->
     <Button
         android:id="@+id/record_button"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_width="180dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="90dp"
         android:text="Record (Pro)"
-        android:layout_centerInParent="true"
-        android:background="@android:color/holo_red_dark"
-        android:textColor="@android:color/white"/>
-</RelativeLayout>
+        android:textStyle="bold"
+        android:background="#CCFF3B30"
+        android:textColor="#FFFFFF" />
+
+    <!-- Status line -->
+    <TextView
+        android:id="@+id/txt_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:padding="6dp"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:background="#66000000"
+        android:text="Ready" />
+</FrameLayout>
